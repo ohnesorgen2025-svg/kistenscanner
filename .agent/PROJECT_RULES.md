@@ -1,0 +1,1 @@
+# Project Rules\n\nDocument architecture and product constraints.\n
