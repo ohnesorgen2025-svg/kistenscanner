@@ -27,3 +27,15 @@ Reason: Core workflow requirement (e.g. power supply voltage/specs).
 ## 2026-03-27 — Full-text search includes detail field
 Search covers name + description + detail field.
 Reason: Detail field contains specs — must be findable.
+
+## 2026-03-27 — Monorepo with client/ and server/
+Single repository with separate `client/` and `server/` folders.
+Reason: Matches the current DevPilot task and keeps frontend/backend changes together for local execution.
+
+## 2026-03-27 — Dev ports fixed to 5174 and 4001
+Frontend dev server uses port `5174`, backend uses port `4001`.
+Reason: Ports were checked before scaffold and both were available.
+
+## 2026-03-27 — Vertex provider extracted from inventarisierung analyze route
+`models.ts` was copied directly from `inventarisierung/src/config/models.ts`. The Vertex implementation was copied from the source project's inline analyze route into `server/src/lib/ai/providers/vertex.ts`.
+Reason: The source repo no longer exposes a standalone Vertex provider file, but the working adapter logic still exists there and should stay isolated in the provider layer here.
