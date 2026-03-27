@@ -1,15 +1,23 @@
 # Current Task
 
-## Status: Ready
+## Status:
+🟡 Starting
 
 ## Current Goal
-- Define the current milestone in one or two short bullets.
+Set up the project foundation: Vite + Express + SQLite + AI layer skeleton.
 
 ## Next Action
-- State the next concrete action an execution agent should take.
+Scaffold the monorepo structure:
+- /client (Vite + React + TS)
+- /server (Express + TS + better-sqlite3)
+- Copy models.ts and vertex.ts from inventarisierung
+- Create src/lib/ai/ skeleton files (empty but typed)
 
 ## Open Questions
-- List only questions that currently block or materially change implementation.
+- Monorepo (single repo, two folders) or separate repos?
+- Port convention for kistenscanner.local?
 
 ## Done Recently
-- Record the most recent completed steps relevant for the next session.
+- Project defined and scoped via sparring session
+- AI architecture decided (new build, models.ts + vertex.ts copied)
+- UX direction decided (dark, dev-tool aesthetic)
