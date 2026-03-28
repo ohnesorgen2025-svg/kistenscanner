@@ -44,6 +44,11 @@ function NavigationItem({ icon, label, to }: NavigationLink) {
 
 function App() {
   const location = useLocation();
+  const routeShellClass = location.pathname === "/boxes"
+    ? "page-shell page-shell--boxes"
+    : location.pathname.startsWith("/boxes/") && location.pathname !== "/boxes/add"
+      ? "page-shell page-shell--detail"
+      : "page-shell page-shell--narrow";
 
   return (
     <div className="shell">
@@ -59,7 +64,7 @@ function App() {
         </div>
       </header>
 
-      <main className="page-shell">
+      <main className={routeShellClass}>
         <div className="page-stack page-stack--route" key={location.pathname}>
           <Routes location={location}>
             <Route element={<SearchPage />} path="/" />

@@ -115,3 +115,7 @@ Reason: The current DevPilot LAN deployment for `kistenscanner` is already live 
 ## 2026-03-28 — Bottom-nav route changes force a page remount
 The main routed content in `client/src/App.tsx` is keyed by `location.pathname` so switching between bottom-nav destinations remounts the active page component.
 Reason: This is the smallest robust fix for intermittent blank screens caused by stale per-page runtime state during route changes, especially around camera and scanner pages.
+
+## 2026-03-28 — Desktop keeps a constrained mobile-first reading width
+Large-screen rendering now uses route-specific max widths: default app screens stay narrow, the boxes overview widens into a 2-3 column grid, and box detail gets a medium desktop width instead of stretching edge to edge.
+Reason: The product is still mobile-first, but it should remain comfortable and intentional on desktop instead of scaling the phone layout across the entire viewport.
