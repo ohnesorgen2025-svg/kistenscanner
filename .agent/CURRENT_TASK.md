@@ -1,19 +1,19 @@
 # Current Task
 
 ## Status:
-🟢 Store workflow complete
+🟢 Find workflow complete
 
 ## Current Goal
-Build the first FIND workflow slice on top of the saved box and item data.
+Polish the retrieval workflow and connect it more tightly to real AI output and LAN-ready label handling.
 
 ## Next Action
-Implement search and retrieval for saved inventory:
-- add a search API across item name, description and detail
-- show saved results in the Search page with box number and location
-- keep the QR jump path aligned with `/boxes/:id`
+Strengthen the FIND workflow around the new foundation:
+- verify search quality against real German AI item text
+- harden QR scanning on device hardware and fallback states
+- refine print label styling for real A6 output on the target printer path
 
 ## Open Questions
-- None for the completed store workflow step.
+- No blocking implementation questions after the first FIND slice.
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -42,3 +42,10 @@ Implement search and retrieval for saved inventory:
 - Fixed item thumbnail rendering by resolving server-relative `/images/...` asset paths to the backend origin in the client dev flow
 - Translated the UI to German and normalized visible copy to proper umlauts (`ä`, `ö`, `ü`, `ß`)
 - Updated the box analysis prompt so AI item names and descriptions are requested in German with proper umlauts (`ä`, `ö`, `ü`, `ß`)
+- Added `GET /api/search?q=` across item name, description and detail with box context in the response
+- Added `GET /api/boxes?number=` so QR lookups can resolve a Kistennummer back to a box record
+- Implemented the Search page with focused live search, result cards and navigation into `/boxes/:id`
+- Implemented the Scan page with `html5-qrcode` camera scanning and QR resolution through the new number lookup endpoint
+- Changed QR generation to encode the Kistennummer instead of the internal box ID
+- Added a printable A6 label view in `client/src/pages/BoxDetail.tsx` with QR code, box info and top 5 item names
+- Verified `npm run check`, `npm run build`, `GET /api/search?q=adapter`, `GET /api/boxes?number=2` and the client routes `/`, `/scan` and `/boxes/2`

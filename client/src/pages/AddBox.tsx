@@ -39,7 +39,7 @@ function createReviewItems(items: AnalysisItem[]): ReviewItem[] {
 }
 
 function buildQrValue(box: BoxRecord): string {
-  return `kistenscanner://boxes/${box.id}`;
+  return `kistenscanner://box-number/${box.number}`;
 }
 
 export function AddBoxPage() {

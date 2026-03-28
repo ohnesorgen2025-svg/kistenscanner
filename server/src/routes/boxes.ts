@@ -4,6 +4,7 @@ import {
   createBox,
   deleteBox,
   getBoxById,
+  getBoxByNumber,
   listBoxes,
   updateBox,
 } from "../services/inventory.js";
@@ -36,8 +37,23 @@ boxesRouter.post("/", (request, response) => {
   }
 });
 
-boxesRouter.get("/", (_request, response) => {
-  response.json(listBoxes());
+boxesRouter.get("/", (request, response) => {
+  const rawNumber = request.query.number;
+  if (typeof rawNumber === "string" && rawNumber.trim().length > 0) {
+    const boxNumber = Number(rawNumber);
+    if (!Number.isInteger(boxNumber) || boxNumber <= 0) {
+      return response.status(400).json({ error: "Ungültige Kistennummer." });
+    }
+
+    const box = getBoxByNumber(boxNumber);
+    if (!box) {
+      return response.status(404).json({ error: "Kiste nicht gefunden." });
+    }
+
+    return response.json(box);
+  }
+
+  return response.json(listBoxes());
 });
 
 boxesRouter.get("/:id", (request, response) => {

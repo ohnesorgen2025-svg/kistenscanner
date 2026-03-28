@@ -58,6 +58,22 @@ export type BoxRecord = BoxSummary & {
   items: ItemRecord[];
 };
 
+export type SearchResult = {
+  item: {
+    id: number;
+    name: string;
+    description: string | null;
+    detail: string | null;
+    thumbnailPath: string | null;
+  };
+  box: {
+    id: number;
+    number: number;
+    name: string;
+    location: string;
+  };
+};
+
 const backendAssetOrigin = import.meta.env.DEV ? "http://127.0.0.1:4001" : "";
 
 type RequestOptions = RequestInit & {
@@ -119,8 +135,17 @@ export async function listBoxes(): Promise<BoxSummary[]> {
   return requestJson<BoxSummary[]>("/api/boxes");
 }
 
+export async function getBoxByNumber(boxNumber: number): Promise<BoxSummary> {
+  return requestJson<BoxSummary>(`/api/boxes?number=${boxNumber}`);
+}
+
 export async function getBox(boxId: number): Promise<BoxRecord> {
   return requestJson<BoxRecord>(`/api/boxes/${boxId}`);
+}
+
+export async function searchInventory(query: string): Promise<SearchResult[]> {
+  const params = new URLSearchParams({ q: query });
+  return requestJson<SearchResult[]>(`/api/search?${params.toString()}`);
 }
 
 export async function createBox(payload: {

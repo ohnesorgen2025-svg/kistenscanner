@@ -80,6 +80,22 @@ export type BoxRecord = BoxSummary & {
   items: ItemRecord[];
 };
 
+export type SearchResult = {
+  item: {
+    id: number;
+    name: string;
+    description: string | null;
+    detail: string | null;
+    thumbnailPath: string | null;
+  };
+  box: {
+    id: number;
+    number: number;
+    name: string;
+    location: string;
+  };
+};
+
 type CreateBoxInput = {
   name: string;
   location: string;
@@ -246,6 +262,46 @@ function getBoxSummaryById(boxId: number): BoxSummary | null {
   return row ? toBoxSummary(row) : null;
 }
 
+function getBoxSummaryByNumber(boxNumber: number): BoxSummary | null {
+  const row = database
+    .prepare(
+      `
+        SELECT
+          b.id,
+          b.number,
+          b.name,
+          b.location,
+          b.created_at AS createdAt,
+          b.updated_at AS updatedAt,
+          COUNT(DISTINCT i.id) AS itemCount,
+          COALESCE(
+            (
+              SELECT ii.path
+              FROM items bi
+              LEFT JOIN item_images ii ON ii.id = bi.title_image_id
+              WHERE bi.box_id = b.id AND ii.path IS NOT NULL
+              LIMIT 1
+            ),
+            (
+              SELECT ii2.path
+              FROM item_images ii2
+              JOIN items bi2 ON bi2.id = ii2.item_id
+              WHERE bi2.box_id = b.id
+              ORDER BY ii2.is_title DESC, ii2.id ASC
+              LIMIT 1
+            )
+          ) AS thumbnailPath
+        FROM boxes b
+        LEFT JOIN items i ON i.box_id = b.id
+        WHERE b.number = ?
+        GROUP BY b.id
+      `,
+    )
+    .get(boxNumber) as BoxRow | undefined;
+
+  return row ? toBoxSummary(row) : null;
+}
+
 function requireBoxSummary(boxId: number): BoxSummary {
   const box = getBoxSummaryById(boxId);
   if (!box) {
@@ -302,6 +358,69 @@ export function listBoxes(): BoxSummary[] {
     .all() as BoxRow[];
 
   return rows.map(toBoxSummary);
+}
+
+export function getBoxByNumber(boxNumber: number): BoxSummary | null {
+  return getBoxSummaryByNumber(boxNumber);
+}
+
+export function searchItems(query: string): SearchResult[] {
+  const normalizedQuery = query.trim();
+  if (normalizedQuery.length < 2) {
+    return [];
+  }
+
+  const likeQuery = `%${normalizedQuery}%`;
+  const rows = database
+    .prepare(
+      `
+        SELECT
+          i.id AS itemId,
+          i.name AS itemName,
+          i.description AS itemDescription,
+          i.detail AS itemDetail,
+          ti.path AS thumbnailPath,
+          b.id AS boxId,
+          b.number AS boxNumber,
+          b.name AS boxName,
+          b.location AS boxLocation
+        FROM items i
+        JOIN boxes b ON b.id = i.box_id
+        LEFT JOIN item_images ti ON ti.id = i.title_image_id
+        WHERE i.name LIKE ? COLLATE NOCASE
+           OR COALESCE(i.description, '') LIKE ? COLLATE NOCASE
+           OR COALESCE(i.detail, '') LIKE ? COLLATE NOCASE
+        ORDER BY b.number DESC, i.id ASC
+        LIMIT 25
+      `,
+    )
+    .all(likeQuery, likeQuery, likeQuery) as Array<{
+      itemId: number;
+      itemName: string;
+      itemDescription: string | null;
+      itemDetail: string | null;
+      thumbnailPath: string | null;
+      boxId: number;
+      boxNumber: number;
+      boxName: string;
+      boxLocation: string;
+    }>;
+
+  return rows.map((row) => ({
+    item: {
+      id: row.itemId,
+      name: row.itemName,
+      description: row.itemDescription,
+      detail: row.itemDetail,
+      thumbnailPath: row.thumbnailPath,
+    },
+    box: {
+      id: row.boxId,
+      number: row.boxNumber,
+      name: row.boxName,
+      location: row.boxLocation,
+    },
+  }));
 }
 
 export function getBoxById(boxId: number): BoxRecord | null {

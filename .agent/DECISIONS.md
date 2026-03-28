@@ -75,3 +75,11 @@ Reason: The product is intended for German-language use and should read naturall
 ## 2026-03-28 — AI analysis should answer in German with proper umlauts
 The box-analysis prompt explicitly requests German item names and descriptions and forbids ASCII substitutions like `ae`, `oe` and `ue` where umlauts are correct.
 Reason: Stored AI output should match the German UI and remain natural and searchable for the intended user.
+
+## 2026-03-28 — QR codes encode the visible Kistennummer
+Generated QR codes now encode the box number instead of the internal database ID, and the app resolves scans back to a box through `GET /api/boxes?number=...`.
+Reason: The printed label should expose the human-facing identifier, and scans should stay stable even if internal IDs are not meaningful to the user.
+
+## 2026-03-28 — Initial search uses SQLite LIKE over saved item text
+The first FIND slice searches `items.name`, `items.description` and `items.detail` with SQLite `LIKE` and returns item-plus-box result cards.
+Reason: It is the smallest useful searchable layer on top of the existing schema and is easy to verify immediately before considering FTS5.

@@ -4,6 +4,7 @@ import "./App.css";
 import { AddBoxPage } from "./pages/AddBox";
 import { BoxDetailPage } from "./pages/BoxDetail";
 import { BoxesPage } from "./pages/Boxes";
+import { ScanPage } from "./pages/Scan";
 import { SearchPage } from "./pages/Search";
 
 type NavigationLink = {
@@ -14,7 +15,7 @@ type NavigationLink = {
 
 const navigationLinks: NavigationLink[] = [
   { label: "Suchen", icon: "search", to: "/" },
-  { label: "Scannen", icon: "qr_code_scanner", to: "/boxes/add" },
+  { label: "Scannen", icon: "qr_code_scanner", to: "/scan" },
   { label: "Hinzufügen", icon: "add_box", to: "/boxes/add" },
   { label: "Einstellungen", icon: "settings" },
 ];
@@ -58,6 +59,7 @@ function App() {
       <main className="page-shell">
         <Routes>
           <Route element={<SearchPage />} path="/" />
+          <Route element={<ScanPage />} path="/scan" />
           <Route element={<BoxesPage />} path="/boxes" />
           <Route element={<AddBoxPage />} path="/boxes/add" />
           <Route element={<BoxDetailPage />} path="/boxes/:id" />

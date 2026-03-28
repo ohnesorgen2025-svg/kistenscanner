@@ -22,7 +22,7 @@ type ItemDraft = {
 };
 
 function buildQrValue(box: BoxRecord): string {
-  return `kistenscanner://boxes/${box.id}`;
+  return `kistenscanner://box-number/${box.number}`;
 }
 
 export function BoxDetailPage() {
@@ -36,6 +36,18 @@ export function BoxDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    function clearPrintMode() {
+      document.body.classList.remove("print-label-mode");
+    }
+
+    window.addEventListener("afterprint", clearPrintMode);
+    return () => {
+      clearPrintMode();
+      window.removeEventListener("afterprint", clearPrintMode);
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -112,6 +124,11 @@ export function BoxDetailPage() {
   async function refreshBox() {
     const freshBox = await getBox(boxId);
     setBox(freshBox);
+  }
+
+  function handlePrintLabel() {
+    document.body.classList.add("print-label-mode");
+    window.print();
   }
 
   function beginEdit(item: ItemRecord) {
@@ -197,6 +214,9 @@ export function BoxDetailPage() {
                 <span className="chip">{box.itemCount} Items</span>
               </div>
               <div className="action-row">
+                <button className="button button--primary" onClick={handlePrintLabel} type="button">
+                  Label drucken
+                </button>
                 <Link className="button button--ghost" to="/boxes">
                   Zurück zu den Kisten
                 </Link>
@@ -204,6 +224,27 @@ export function BoxDetailPage() {
             </div>
             <div className="qr-panel qr-panel--compact">
               {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
+            </div>
+          </section>
+
+          <section className="panel print-label-panel" data-print-label="true">
+            <div className="print-label">
+              <div className="print-label__qr">
+                {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
+              </div>
+              <div className="print-label__copy">
+                <p className="print-label__kicker">Kiste #{box.number}</p>
+                <h2>{box.name}</h2>
+                <p>{box.location}</p>
+                <div className="print-label__items">
+                  <span>Top 5 Items</span>
+                  <ol>
+                    {box.items.slice(0, 5).map((item) => (
+                      <li key={item.id}>{item.name}</li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
             </div>
           </section>
 
