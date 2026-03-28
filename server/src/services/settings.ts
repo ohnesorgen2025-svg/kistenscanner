@@ -15,7 +15,7 @@ type StoredSettings = {
 
 const dataDirectory = path.resolve(process.cwd(), "data");
 const settingsFilePath = path.join(dataDirectory, "settings.json");
-const envFilePath = path.resolve(process.cwd(), ".env");
+const envFilePath = path.join(dataDirectory, ".env");
 
 const DEFAULT_ACTIVE_MODEL_ID = MODELS[0]?.id ?? "";
 const TINY_JPEG_BASE64 =
@@ -135,6 +135,8 @@ export async function saveActiveModelId(modelId: string): Promise<StoredSettings
 export async function saveProviderKeys(
   values: Partial<ProviderKeyValueMap>,
 ): Promise<ProviderStatusMap> {
+  await ensureDataDirectory();
+
   const existingEnvValues = await readEnvValues();
   const nextManagedValues = new Map<string, string>();
 

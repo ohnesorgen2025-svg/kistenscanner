@@ -1,8 +1,7 @@
-import "dotenv/config";
-
 import { existsSync } from "node:fs";
 import path from "node:path";
 
+import dotenv from "dotenv";
 import express from "express";
 
 import { database } from "./db/index.js";
@@ -17,8 +16,12 @@ import { searchRouter } from "./routes/search.js";
 const DEFAULT_SERVER_PORT = 4001;
 const app = express();
 const port = Number(process.env.PORT ?? DEFAULT_SERVER_PORT);
+const dataEnvPath = path.resolve(process.cwd(), "data", ".env");
 const clientDistDirectory = path.resolve(process.cwd(), "client", "dist");
 const clientIndexPath = path.join(clientDistDirectory, "index.html");
+
+dotenv.config();
+dotenv.config({ path: dataEnvPath, override: true });
 
 app.use(express.json({ limit: "10mb" }));
 app.use("/images", express.static(path.resolve(process.cwd(), "data", "images")));

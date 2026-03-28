@@ -1,8 +1,6 @@
 services:
   kistenscanner:
     build: .
-    env_file:
-      - .env
     ports:
       - "3008:4001"
     restart: unless-stopped
