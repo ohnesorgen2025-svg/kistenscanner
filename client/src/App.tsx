@@ -13,10 +13,10 @@ type NavigationLink = {
 };
 
 const navigationLinks: NavigationLink[] = [
-  { label: "Search", icon: "search", to: "/" },
-  { label: "Scan", icon: "qr_code_scanner", to: "/boxes/add" },
-  { label: "Add", icon: "add_box", to: "/boxes/add" },
-  { label: "Settings", icon: "settings" },
+  { label: "Suchen", icon: "search", to: "/" },
+  { label: "Scannen", icon: "qr_code_scanner", to: "/boxes/add" },
+  { label: "Hinzufügen", icon: "add_box", to: "/boxes/add" },
+  { label: "Einstellungen", icon: "settings" },
 ];
 
 function NavigationItem({ icon, label, to }: NavigationLink) {
@@ -50,7 +50,7 @@ function App() {
         </div>
         <div className="topbar__actions">
           <NavLink className="topbar__link" to="/boxes">
-            Boxes
+            Kisten
           </NavLink>
         </div>
       </header>

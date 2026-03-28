@@ -6,6 +6,7 @@ import {
   getBox,
   listBoxes,
   moveItem,
+  resolveAssetUrl,
   setItemImageAsTitle,
   type BoxRecord,
   type BoxSummary,
@@ -54,7 +55,7 @@ export function BoxDetailPage() {
           return;
         }
 
-        setError(requestError instanceof Error ? requestError.message : "Box konnte nicht geladen werden.");
+        setError(requestError instanceof Error ? requestError.message : "Kiste konnte nicht geladen werden.");
       } finally {
         if (isMounted) {
           setIsLoading(false);
@@ -141,7 +142,7 @@ export function BoxDetailPage() {
   async function handleMove(itemId: number) {
     const targetBoxId = moveTargets[itemId];
     if (!targetBoxId) {
-      setError("Bitte zuerst eine Ziel-Box wählen.");
+      setError("Bitte zuerst eine Ziel-Kiste wählen.");
       return;
     }
 
@@ -182,27 +183,27 @@ export function BoxDetailPage() {
 
   return (
     <div className="page-stack">
-      {isLoading ? <div className="feedback">Loading box…</div> : null}
+      {isLoading ? <div className="feedback">Kiste wird geladen…</div> : null}
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
       {box ? (
         <>
           <section className="panel box-hero">
             <div className="box-hero__copy">
-              <p className="section-kicker">Box #{box.number}</p>
+              <p className="section-kicker">Kiste #{box.number}</p>
               <h1>{box.name}</h1>
               <p>{box.location}</p>
               <div className="chip-row">
-                <span className="chip">{box.itemCount} items</span>
+                <span className="chip">{box.itemCount} Items</span>
               </div>
               <div className="action-row">
                 <Link className="button button--ghost" to="/boxes">
-                  Back to Boxes
+                  Zurück zu den Kisten
                 </Link>
               </div>
             </div>
             <div className="qr-panel qr-panel--compact">
-              {qrCodeDataUrl ? <img alt={`QR code for box ${box.number}`} src={qrCodeDataUrl} /> : null}
+              {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
             </div>
           </section>
 
@@ -210,7 +211,7 @@ export function BoxDetailPage() {
             <div className="panel-header">
               <div>
                 <p className="section-kicker">Items</p>
-                <h2>Box Contents</h2>
+                <h2>Kisteninhalt</h2>
               </div>
             </div>
 
@@ -221,8 +222,8 @@ export function BoxDetailPage() {
                 return (
                   <article className="review-card review-card--detail" key={item.id}>
                     <div className="review-card__media">
-                      {item.thumbnailPath ? (
-                        <img alt={item.name} src={item.thumbnailPath} />
+                      {resolveAssetUrl(item.thumbnailPath) ? (
+                        <img alt={item.name} src={resolveAssetUrl(item.thumbnailPath) ?? undefined} />
                       ) : (
                         <div className="box-card__placeholder">
                           <span className="material-symbols-outlined">inventory_2</span>
@@ -247,7 +248,7 @@ export function BoxDetailPage() {
                             />
                           </div>
                           <div className="field">
-                            <label htmlFor={`edit-description-${item.id}`}>Description</label>
+                            <label htmlFor={`edit-description-${item.id}`}>Beschreibung</label>
                             <textarea
                               className="textarea"
                               id={`edit-description-${item.id}`}
@@ -263,7 +264,7 @@ export function BoxDetailPage() {
                             />
                           </div>
                           <div className="field">
-                            <label htmlFor={`edit-detail-${item.id}`}>Detail</label>
+                            <label htmlFor={`edit-detail-${item.id}`}>Details</label>
                             <textarea
                               className="textarea"
                               id={`edit-detail-${item.id}`}
@@ -280,8 +281,8 @@ export function BoxDetailPage() {
                       ) : (
                         <>
                           <h2>{item.name}</h2>
-                          <p>{item.description ?? "No description yet."}</p>
-                          <p className="detail-copy">{item.detail ?? "No detail yet."}</p>
+                          <p>{item.description ?? "Noch keine Beschreibung vorhanden."}</p>
+                          <p className="detail-copy">{item.detail ?? "Noch keine Details vorhanden."}</p>
                         </>
                       )}
 
@@ -293,9 +294,9 @@ export function BoxDetailPage() {
                             onClick={() => void handleSetTitle(image.id)}
                             type="button"
                           >
-                            <img alt={item.name} src={image.path} />
+                            <img alt={item.name} src={resolveAssetUrl(image.path) ?? undefined} />
                             <span className="image-thumb__label">
-                              {image.isTitle ? "Title" : "Set title"}
+                              {image.isTitle ? "Titelbild" : "Als Titel setzen"}
                             </span>
                           </button>
                         ))}
@@ -309,7 +310,7 @@ export function BoxDetailPage() {
                               onClick={() => void saveEdit(item.id)}
                               type="button"
                             >
-                              Save
+                              Speichern
                             </button>
                             <button
                               className="button button--ghost"
@@ -319,7 +320,7 @@ export function BoxDetailPage() {
                               }}
                               type="button"
                             >
-                              Cancel
+                              Abbrechen
                             </button>
                           </>
                         ) : (
@@ -328,12 +329,12 @@ export function BoxDetailPage() {
                             onClick={() => beginEdit(item)}
                             type="button"
                           >
-                            Edit
+                            Bearbeiten
                           </button>
                         )}
 
                         <label className="button button--ghost" htmlFor={`item-upload-${item.id}`}>
-                          Add Photo
+                          Foto hinzufügen
                         </label>
                         <input
                           accept="image/*"
@@ -357,7 +358,7 @@ export function BoxDetailPage() {
                               }
                               value={moveTargets[item.id] ?? ""}
                             >
-                              <option value="">Move to…</option>
+                              <option value="">Verschieben nach…</option>
                               {availableMoveTargets.map((target) => (
                                 <option key={target.id} value={target.id}>
                                   #{target.number} · {target.name}
@@ -369,7 +370,7 @@ export function BoxDetailPage() {
                               onClick={() => void handleMove(item.id)}
                               type="button"
                             >
-                              Move
+                              Verschieben
                             </button>
                           </>
                         ) : null}

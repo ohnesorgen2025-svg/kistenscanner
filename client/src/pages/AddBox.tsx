@@ -7,6 +7,7 @@ import {
   createBox,
   createItem,
   getBox,
+  resolveAssetUrl,
   type AnalysisItem,
   type BoxRecord,
 } from "../lib/api";
@@ -135,7 +136,7 @@ export function AddBoxPage() {
       setReviewItems(items.length > 0 ? createReviewItems(items) : [createEmptyReviewItem()]);
 
       if (items.length === 0) {
-        setError("Die Analyse hat keine Gegenstände erkannt. Bitte Review-Item manuell ergänzen oder weitere Fotos versuchen.");
+        setError("Die Analyse hat keine Gegenstände erkannt. Bitte ein Item manuell ergänzen oder weitere Fotos versuchen.");
       }
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Analyse fehlgeschlagen.");
@@ -146,7 +147,7 @@ export function AddBoxPage() {
 
   async function handleSave() {
     if (!boxName.trim() || !location.trim()) {
-      setError("Box-Name und Ort sind erforderlich.");
+      setError("Kistenname und Standort sind erforderlich.");
       return;
     }
 
@@ -176,7 +177,7 @@ export function AddBoxPage() {
       await Promise.all(
         reviewItems.map((item) =>
           createItem(box.id, {
-            name: item.name.trim() || "Untitled item",
+            name: item.name.trim() || "Unbenanntes Item",
             description: item.description,
             detail: item.detail,
             thumbnailPath: item.thumbnailPath,
@@ -187,7 +188,7 @@ export function AddBoxPage() {
       const saved = await getBox(box.id);
       setSavedBox(saved);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Box konnte nicht gespeichert werden.");
+      setError(requestError instanceof Error ? requestError.message : "Kiste konnte nicht gespeichert werden.");
     } finally {
       setIsSaving(false);
     }
@@ -198,26 +199,26 @@ export function AddBoxPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Store Workflow</p>
-            <h1>Add Box</h1>
+            <p className="section-kicker">Speicher-Workflow</p>
+            <h1>Kiste hinzufügen</h1>
           </div>
         </div>
 
         <div className="step-grid">
           <article className={`step-card ${files.length > 0 ? "step-card--active" : ""}`}>
             <span className="step-number">01</span>
-            <h2>Capture</h2>
-            <p>Collect multiple photos of the box contents.</p>
+            <h2>Erfassen</h2>
+            <p>Mehrere Fotos vom Kisteninhalt aufnehmen oder hochladen.</p>
           </article>
           <article className={`step-card ${reviewItems.length > 0 ? "step-card--active" : ""}`}>
             <span className="step-number">02</span>
-            <h2>Review</h2>
-            <p>Inspect AI suggestions and edit item details inline.</p>
+            <h2>Prüfen</h2>
+            <p>KI-Vorschläge prüfen und Item-Details direkt anpassen.</p>
           </article>
           <article className={`step-card ${savedBox ? "step-card--active" : ""}`}>
             <span className="step-number">03</span>
-            <h2>Save</h2>
-            <p>Create a numbered box and prepare the QR/label output.</p>
+            <h2>Speichern</h2>
+            <p>Nummerierte Kiste anlegen und QR-Code mit Etikett vorbereiten.</p>
           </article>
         </div>
       </section>
@@ -227,15 +228,15 @@ export function AddBoxPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Step 1</p>
-            <h2>Photo Capture</h2>
+            <p className="section-kicker">Schritt 1</p>
+            <h2>Fotos erfassen</h2>
           </div>
           <div className="action-row">
             <label className="button button--ghost" htmlFor="capture-input">
-              Open Camera
+              Kamera öffnen
             </label>
             <label className="button button--ghost" htmlFor="upload-input">
-              Upload Files
+              Dateien hochladen
             </label>
           </div>
         </div>
@@ -261,14 +262,14 @@ export function AddBoxPage() {
         <div className="preview-grid">
           {previewUrls.map((url, index) => (
             <div className="preview-card" key={url}>
-              <img alt={`Selected upload ${index + 1}`} src={url} />
-              <span className="preview-card__label">Shot {index + 1}</span>
+              <img alt={`Ausgewählter Upload ${index + 1}`} src={url} />
+              <span className="preview-card__label">Aufnahme {index + 1}</span>
             </div>
           ))}
           {previewUrls.length === 0 ? (
             <div className="empty-dropzone">
               <span className="material-symbols-outlined">photo_camera</span>
-              <p>No photos added yet.</p>
+              <p>Noch keine Fotos hinzugefügt.</p>
             </div>
           ) : null}
         </div>
@@ -277,11 +278,11 @@ export function AddBoxPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Step 2</p>
-            <h2>AI Analysis</h2>
+            <p className="section-kicker">Schritt 2</p>
+            <h2>KI-Analyse</h2>
           </div>
           <div className="field field--compact">
-            <label htmlFor="model-select">Model</label>
+            <label htmlFor="model-select">Modell</label>
             <select
               className="input"
               id="model-select"
@@ -301,22 +302,22 @@ export function AddBoxPage() {
           onClick={() => void handleAnalyze()}
           type="button"
         >
-          {isAnalyzing ? "Analyzing…" : "Start AI Analysis"}
+          {isAnalyzing ? "Analysiere…" : "KI-Analyse starten"}
         </button>
       </section>
 
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Step 3</p>
-            <h2>Review Items</h2>
+            <p className="section-kicker">Schritt 3</p>
+            <h2>Items prüfen</h2>
           </div>
           <button
             className="button button--ghost"
             onClick={appendManualReviewItem}
             type="button"
           >
-            Add Item Manually
+            Item manuell hinzufügen
           </button>
         </div>
 
@@ -324,8 +325,8 @@ export function AddBoxPage() {
           {reviewItems.map((item, index) => (
             <article className="review-card" key={`${item.name}-${index}`}>
               <div className="review-card__media">
-                {item.thumbnailPath ? (
-                  <img alt={item.name} src={item.thumbnailPath} />
+                {resolveAssetUrl(item.thumbnailPath) ? (
+                  <img alt={item.name || `Item ${index + 1}`} src={resolveAssetUrl(item.thumbnailPath) ?? undefined} />
                 ) : (
                   <div className="box-card__placeholder">
                     <span className="material-symbols-outlined">inventory_2</span>
@@ -343,7 +344,7 @@ export function AddBoxPage() {
                   />
                 </div>
                 <div className="field">
-                  <label htmlFor={`item-description-${index}`}>Description</label>
+                  <label htmlFor={`item-description-${index}`}>Beschreibung</label>
                   <textarea
                     className="textarea"
                     id={`item-description-${index}`}
@@ -355,7 +356,7 @@ export function AddBoxPage() {
                   />
                 </div>
                 <div className="field">
-                  <label htmlFor={`item-detail-${index}`}>Detail</label>
+                  <label htmlFor={`item-detail-${index}`}>Details</label>
                   <textarea
                     className="textarea"
                     id={`item-detail-${index}`}
@@ -365,8 +366,8 @@ export function AddBoxPage() {
                   />
                 </div>
                 <div className="chip-row">
-                  <span className="chip">Qty {item.quantity}</span>
-                  {item.sourceImagePath ? <span className="chip chip--quiet">Source saved</span> : null}
+                  <span className="chip">Menge {item.quantity}</span>
+                  {item.sourceImagePath ? <span className="chip chip--quiet">Quelle gespeichert</span> : null}
                 </div>
                 <div className="action-row">
                   <button
@@ -374,7 +375,7 @@ export function AddBoxPage() {
                     onClick={() => removeReviewItem(index)}
                     type="button"
                   >
-                    Remove Item
+                    Item entfernen
                   </button>
                 </div>
               </div>
@@ -383,8 +384,8 @@ export function AddBoxPage() {
 
           {reviewItems.length === 0 ? (
             <div className="empty-state">
-              <p className="section-kicker">Waiting for Analysis</p>
-              <p>Detected items will appear here after the AI pass finishes.</p>
+              <p className="section-kicker">Warte auf Analyse</p>
+              <p>Erkannte Items erscheinen hier nach dem Abschluss der KI-Analyse.</p>
             </div>
           ) : null}
         </div>
@@ -393,29 +394,29 @@ export function AddBoxPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Step 4</p>
-            <h2>Save Box</h2>
+            <p className="section-kicker">Schritt 4</p>
+            <h2>Kiste speichern</h2>
           </div>
         </div>
 
         <div className="form-grid">
           <div className="field">
-            <label htmlFor="box-name">Box Name</label>
+            <label htmlFor="box-name">Kistenname</label>
             <input
               className="input"
               id="box-name"
               onChange={(event) => setBoxName(event.target.value)}
-              placeholder="Workshop adapters"
+              placeholder="Werkstatt-Adapter"
               value={boxName}
             />
           </div>
           <div className="field">
-            <label htmlFor="box-location">Location</label>
+            <label htmlFor="box-location">Standort</label>
             <input
               className="input"
               id="box-location"
               onChange={(event) => setLocation(event.target.value)}
-              placeholder="Garage shelf 02"
+              placeholder="Garagenregal 02"
               value={location}
             />
           </div>
@@ -427,7 +428,7 @@ export function AddBoxPage() {
           onClick={() => void handleSave()}
           type="button"
         >
-          {isSaving ? "Saving…" : "Create Box and Save Items"}
+          {isSaving ? "Speichere…" : "Kiste anlegen und Items speichern"}
         </button>
       </section>
 
@@ -435,11 +436,11 @@ export function AddBoxPage() {
         <section className="panel">
           <div className="panel-header">
             <div>
-              <p className="section-kicker">Step 5</p>
-              <h2>Saved Box</h2>
+              <p className="section-kicker">Schritt 5</p>
+              <h2>Gespeicherte Kiste</h2>
             </div>
             <Link className="button button--ghost" to={`/boxes/${savedBox.id}`}>
-              Open Detail
+              Details öffnen
             </Link>
           </div>
 
@@ -450,7 +451,7 @@ export function AddBoxPage() {
               </h3>
               <p>{savedBox.location}</p>
               <div className="chip-row">
-                <span className="chip">{savedBox.itemCount} items</span>
+                <span className="chip">{savedBox.itemCount} Items</span>
               </div>
               <div className="action-row">
                 <button
@@ -458,13 +459,13 @@ export function AddBoxPage() {
                   onClick={() => window.print()}
                   type="button"
                 >
-                  Print Label
+                  Etikett drucken
                 </button>
               </div>
             </div>
 
             <div className="qr-panel">
-              {qrCodeDataUrl ? <img alt={`QR code for box ${savedBox.number}`} src={qrCodeDataUrl} /> : null}
+              {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${savedBox.number}`} src={qrCodeDataUrl} /> : null}
             </div>
           </div>
         </section>

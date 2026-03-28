@@ -58,9 +58,23 @@ export type BoxRecord = BoxSummary & {
   items: ItemRecord[];
 };
 
+const backendAssetOrigin = import.meta.env.DEV ? "http://127.0.0.1:4001" : "";
+
 type RequestOptions = RequestInit & {
   rawBody?: BodyInit;
 };
+
+export function resolveAssetUrl(assetPath: string | null | undefined): string | null {
+  if (!assetPath) {
+    return null;
+  }
+
+  if (/^https?:\/\//.test(assetPath)) {
+    return assetPath;
+  }
+
+  return `${backendAssetOrigin}${assetPath}`;
+}
 
 async function requestJson<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const headers = new Headers(options.headers);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { type BoxSummary, listBoxes } from "../lib/api";
+import { listBoxes, resolveAssetUrl, type BoxSummary } from "../lib/api";
 
 export function BoxesPage() {
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
@@ -25,7 +25,7 @@ export function BoxesPage() {
           return;
         }
 
-        setError(requestError instanceof Error ? requestError.message : "Boxes konnten nicht geladen werden.");
+        setError(requestError instanceof Error ? requestError.message : "Kisten konnten nicht geladen werden.");
       })
       .finally(() => {
         if (isMounted) {
@@ -43,29 +43,29 @@ export function BoxesPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Inventory</p>
-            <h1>Saved Boxes</h1>
+            <p className="section-kicker">Inventar</p>
+            <h1>Gespeicherte Kisten</h1>
           </div>
           <Link className="button button--primary" to="/boxes/add">
-            Add Box
+            Kiste hinzufügen
           </Link>
         </div>
         <p className="panel-copy">
-          Every card shows the assigned number, current location and the first available
-          thumbnail from stored items.
+          Jede Karte zeigt die vergebene Nummer, den aktuellen Standort und das erste
+          verfügbare Vorschaubild aus den gespeicherten Items.
         </p>
       </section>
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
-      {isLoading ? <div className="feedback">Loading boxes…</div> : null}
+      {isLoading ? <div className="feedback">Kisten werden geladen…</div> : null}
 
       {!isLoading && boxes.length === 0 ? (
         <section className="panel empty-state">
-          <p className="section-kicker">No Boxes Yet</p>
-          <h2>Create the first stored box.</h2>
+          <p className="section-kicker">Noch keine Kisten</p>
+          <h2>Lege die erste gespeicherte Kiste an.</h2>
           <Link className="button button--primary" to="/boxes/add">
-            Open Store Flow
+            Speicher-Workflow öffnen
           </Link>
         </section>
       ) : null}
@@ -74,8 +74,8 @@ export function BoxesPage() {
         {boxes.map((box) => (
           <Link className="box-card panel" key={box.id} to={`/boxes/${box.id}`}>
             <div className="box-card__media">
-              {box.thumbnailPath ? (
-                <img alt={box.name} src={box.thumbnailPath} />
+              {resolveAssetUrl(box.thumbnailPath) ? (
+                <img alt={box.name} src={resolveAssetUrl(box.thumbnailPath) ?? undefined} />
               ) : (
                 <div className="box-card__placeholder">
                   <span className="material-symbols-outlined">inventory_2</span>
@@ -84,8 +84,8 @@ export function BoxesPage() {
             </div>
             <div className="box-card__body">
               <div className="box-card__topline">
-                <span className="section-kicker">Box #{box.number}</span>
-                <span className="chip">{box.itemCount} items</span>
+                <span className="section-kicker">Kiste #{box.number}</span>
+                <span className="chip">{box.itemCount} Items</span>
               </div>
               <h2>{box.name}</h2>
               <p>{box.location}</p>

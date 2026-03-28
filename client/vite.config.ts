@@ -7,6 +7,7 @@ export default defineConfig({
     port: 5174,
     proxy: {
       "/api": "http://127.0.0.1:4001",
+      "/images": "http://127.0.0.1:4001",
     },
   },
   plugins: [react()],

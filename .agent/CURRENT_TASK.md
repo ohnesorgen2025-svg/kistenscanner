@@ -39,3 +39,5 @@ Implement search and retrieval for saved inventory:
 - Added `Boxes` and `BoxDetail` pages and wired React Router for `/`, `/boxes`, `/boxes/add` and `/boxes/:id`
 - Verified the end-to-end store persistence flow with a mock AI server: analyze → create box → save items → fetch list/detail
 - Added a manual review-item fallback when AI returns no detected items so saving a box is not blocked by an empty analysis result
+- Fixed item thumbnail rendering by resolving server-relative `/images/...` asset paths to the backend origin in the client dev flow
+- Translated the UI to German and normalized visible copy to proper umlauts (`ä`, `ö`, `ü`, `ß`)

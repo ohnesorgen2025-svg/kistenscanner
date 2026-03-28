@@ -63,3 +63,11 @@ Reason: Keeps the store workflow simple, avoids gaps from abandoned drafts and m
 ## 2026-03-28 — Store review supports manual fallback items
 The Add Box review step allows adding and removing manual items, and an empty AI analysis seeds a blank review row instead of blocking the workflow.
 Reason: Real provider responses can still return an empty array for ambiguous photos, so the store flow needs a pragmatic fallback to remain usable.
+
+## 2026-03-28 — Image asset paths stay server-relative
+API responses continue to store image paths as server-relative values like `/images/crops/...`, while the React client resolves them to the backend origin during local Vite development.
+Reason: Keeps persisted paths deployment-friendly while fixing local dev rendering where the frontend and backend run on different ports.
+
+## 2026-03-28 — German UI copy uses real umlauts
+Visible frontend copy uses German wording with proper `ä`, `ö`, `ü` and `ß` instead of ASCII substitutions.
+Reason: The product is intended for German-language use and should read naturally during manual testing and later LAN deployment.
