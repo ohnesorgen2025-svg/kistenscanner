@@ -1,0 +1,254 @@
+<!-- Design System -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#3f5868",
+              "on-surface-variant": "#acabaa",
+              "on-error": "#490106",
+              "tertiary-fixed": "#c2def1",
+              "surface-variant": "#252626",
+              "secondary": "#9b9e9f",
+              "primary-container": "#004f58",
+              "on-surface": "#e7e5e4",
+              "on-primary": "#004750",
+              "surface-container-lowest": "#000000",
+              "surface-bright": "#2c2c2c",
+              "error-container": "#7f2927",
+              "surface-container-high": "#1f2020",
+              "inverse-on-surface": "#565555",
+              "surface-tint": "#00daf3",
+              "on-secondary-container": "#bdc0c0",
+              "error-dim": "#bb5551",
+              "on-secondary-fixed": "#3c4041",
+              "surface-container-highest": "#252626",
+              "primary-fixed": "#9cf0ff",
+              "secondary-dim": "#9b9e9f",
+              "secondary-fixed": "#e1e3e3",
+              "primary": "#00daf3",
+              "inverse-primary": "#006976",
+              "on-tertiary-fixed": "#233d4c",
+              "surface": "#0e0e0e",
+              "inverse-surface": "#fcf9f8",
+              "tertiary": "#d1ecff",
+              "primary-fixed-dim": "#49e7ff",
+              "background": "#0e0e0e",
+              "on-background": "#e7e5e4",
+              "error": "#ee7d77",
+              "on-tertiary-container": "#36505f",
+              "on-primary-container": "#00e5ff",
+              "tertiary-fixed-dim": "#b5d0e2",
+              "tertiary-dim": "#b5d0e2",
+              "on-secondary-fixed-variant": "#595c5d",
+              "surface-dim": "#0e0e0e",
+              "on-secondary": "#1d2121",
+              "on-primary-fixed": "#00464f",
+              "tertiary-container": "#c2def1",
+              "surface-container-low": "#131313",
+              "secondary-fixed-dim": "#d2d5d5",
+              "outline": "#767575",
+              "on-primary-fixed-variant": "#006571",
+              "primary-dim": "#00cbe2",
+              "outline-variant": "#484848",
+              "on-tertiary-fixed-variant": "#405969",
+              "on-error-container": "#ff9993",
+              "secondary-container": "#393c3d",
+              "surface-container": "#191a1a"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            background-color: #0e0e0e;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#131313] flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#00E5FF]">package_2</span>
+<h1 class="font-['Space_Grotesk'] uppercase tracking-tighter font-medium text-lg text-[#00E5FF] tracking-[0.2em]">BOX_INVENTORY</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-[#acabaa] hover:bg-[#191a1a] transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto">
+<!-- Search & Scan Section -->
+<section class="mb-10">
+<div class="flex gap-2">
+<div class="relative flex-grow">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border-none focus:ring-1 focus:ring-primary rounded-lg pl-12 pr-4 py-4 font-headline text-sm tracking-widest text-on-surface placeholder:text-outline" placeholder="FIND ITEM OR BOX..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary p-4 rounded-lg flex items-center justify-center active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">qr_code_scanner</span>
+</button>
+</div>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="text-[10px] font-headline tracking-widest text-outline py-1 pr-2">QUICK FILTERS:</span>
+<button class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-headline tracking-widest hover:text-primary border border-outline-variant/20 transition-colors">TOOLS</button>
+<button class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-headline tracking-widest hover:text-primary border border-outline-variant/20 transition-colors">KITCHEN</button>
+<button class="bg-surface-container text-on-surface-variant px-3 py-1 rounded-full text-[10px] font-headline tracking-widest hover:text-primary border border-outline-variant/20 transition-colors">WINTER</button>
+</div>
+</section>
+<!-- Recently Accessed Section -->
+<section>
+<div class="flex justify-between items-end mb-6">
+<h2 class="font-headline text-xs tracking-[0.3em] text-outline uppercase">Recently Accessed</h2>
+<span class="font-headline text-[10px] text-primary tracking-widest">VIEW ALL</span>
+</div>
+<div class="space-y-3">
+<!-- Result Card 1 -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-4 flex gap-4 items-center">
+<div class="w-20 h-20 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="item" class="w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="close-up of a high-quality stainless steel power tool set arranged neatly on a dark workbench with technical lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6WXEXTrUtawzuBuPRFM7qayx2ZHrsZW66EAINwqh7XCcReYlNYW2Y4hgowqeKHfV9xSi-2T46dOtxwrF86mThEKEpBc7MehzB07kQ8ESihhCwbaixBgZ4YgEfaDrcpp8MkR-7T9x4bzTl1RTgGwfPfbyDV2K382-om28-2PdKmheOTXfroaErhaUO_VhK8XVfUuT84pg5Bq5asy54WSBEQTJUepZoxXsnFg2ClWxO27xnLAo4jxAJMaTDvu782_X6RalKY6kwyo0"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline text-sm tracking-wide text-on-surface truncate uppercase">Impact Driver Set</h3>
+<span class="font-headline text-primary text-xl leading-none">#042</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">package_2</span>
+<span class="text-[10px] font-headline tracking-widest text-on-surface-variant uppercase">Storage Unit A</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">location_on</span>
+<span class="text-[10px] font-headline tracking-widest text-on-surface-variant uppercase">Garage Shelf 02</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Result Card 2 -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-4 flex gap-4 items-center">
+<div class="w-20 h-20 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="item" class="w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="neatly stacked professional grade kitchen camera equipment in protective foam padding with dark aesthetic and moody lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZzFG6HhspFy9BUYhgjduLE4EfHWZIUfBqVGuqMdLPEYuPZOY4nRRYE0dK2TbJg0O-gURQBZeALdm7eBI_QE-qUP3HulBmC7kYuyB5UFdlzfyAY8HO1epJHSAJNAv9Sn5Bc2dsRAgWsfrZWfLRsJ658EV8SNmhXoKCQbDjiEc168z4aXPkn_nGqj8ZqS6ft8q7lTgsZ45juWbsU0UfRx8yEJMcVnADru5c6jPnXGwjYynXbXxixlrtPW6nsrr44r6wIJP_k4YC8ts"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline text-sm tracking-wide text-on-surface truncate uppercase">Vintage Lens Kit</h3>
+<span class="font-headline text-primary text-xl leading-none">#118</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">package_2</span>
+<span class="text-[10px] font-headline tracking-widest text-on-surface-variant uppercase">Studio Box 04</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">location_on</span>
+<span class="text-[10px] font-headline tracking-widest text-on-surface-variant uppercase">Main Loft Closet</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Result Card 3 -->
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-4 flex gap-4 items-center">
+<div class="w-20 h-20 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="item" class="w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="organized collection of camping gear including a folded dark green tent and hiking gear against a dark concrete background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv9gP1xnPqUtzYhSFmHjN6lL5JIU8aMewxK4Dfx8j7UnQXhHAxi1Q7Fgb-J44Nn48Ld7nHYOQbNuXhUfJkS2sYYrlVAdd6CmQXyADZMJZHetWoDn8NbMcJx8iknjvCXsptkyEXF5Ew8oaMAbUE6XySMBXpZjTHCqdB-PPhehNJ5kViVtn3HOVcRq8NHTPJ638s2eh4meCzizROuxB5VWDSq0AhDMTpfinQssyxFqiCGX9bmgd8fF4qDm209KiCYkAx9tZb-c7cTwA"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline text-sm tracking-wide text-on-surface truncate uppercase">Alpine Tent Kit</h3>
+<span class="font-headline text-primary text-xl leading-none">#009</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">package_2</span>
+<span class="text-[10px] font-headline tracking-widest text-on-surface-variant uppercase">Outdoor Gear</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">location_on</span>
+<span class="text-[10px] font-headline tracking-widest text-on-surface-variant uppercase">Basement Rack C</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Suggested Result 1 -->
+<div class="pt-8 mb-4">
+<h2 class="font-headline text-xs tracking-[0.3em] text-outline uppercase">Suggested For You</h2>
+</div>
+<div class="bg-surface-container-low border border-outline-variant/20 rounded-xl p-4 flex gap-4 items-center">
+<div class="w-20 h-20 bg-surface-container rounded-lg overflow-hidden flex-shrink-0">
+<img alt="item" class="w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="modern matte black coffee brewing equipment set on a dark slate surface with professional studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKpohKPFle5ur0BH4bybmxUwm-NdI62kuSV4fM_P2mS-XIm0xpVN_YO83tqbjIbmP8iI0D-uydC5uBHqlnH4laYPZAv4ZDTWaiUmF35DDVKLwXULGzeq9cMMqZLl42mPap4Eb0b0cFvtU-wEthqfk-6uCzwbZjYjlVdc7nFVK4VGWTfrzWdZtpFWD6PhS9rZohK573euARf25KbbeUKZmbT9nN6RlCrLUcC2Bxz_pl8VNs57SwECWDptoGsSM1QJNJptzC9oHPRn0"/>
+</div>
+<div class="flex-grow min-w-0">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline text-sm tracking-wide text-on-surface truncate uppercase">Coffee Station</h3>
+<span class="font-headline text-primary text-xl leading-none">#201</span>
+</div>
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">package_2</span>
+<span class="text-[10px] font-headline tracking-widest text-on-surface-variant uppercase">Kitchen Overflow</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">location_on</span>
+<span class="text-[10px] font-headline tracking-widest text-on-surface-variant uppercase">Pantry Top Shelf</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-20 bg-[#2c2c2c]/80 backdrop-blur-xl flex justify-around items-center px-4 pb-safe z-50 border-t border-[#484848]/20 shadow-[0_-24px_24px_rgba(0,0,0,0.4)]">
+<a class="flex flex-col items-center justify-center text-[#00E5FF] scale-105" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium">SEARCH</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium">SCAN</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">add_box</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium">ADD</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium">SETTINGS</span>
+</a>
+</nav>
+</body></html>

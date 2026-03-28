@@ -4,6 +4,7 @@
 - React + TypeScript + Vite
 - Dark mode only (#0F0F0F bg, #1A1A1A cards)
 - Mobile-first, single accent color
+- Design reference: client/src/design-reference/
 
 ## Backend
 - Node.js + Express

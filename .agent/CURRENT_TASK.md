@@ -26,3 +26,4 @@ Create typed DB access utilities in `server/src/db/` or `server/src/services/` f
 - Added `server/src/db/schema.ts` with `boxes`, `items`, `images` and `item_images`
 - Added `server/src/db/migrate.ts` and run migrations during DB initialization
 - Enabled SQLite foreign keys and verified created tables in `server/data/kistenscanner.db`
+- Added `client/src/design-reference/` with Stitch HTML references and a pruning README for implementation use

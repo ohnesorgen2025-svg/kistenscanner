@@ -43,3 +43,7 @@ Reason: The source repo no longer exposes a standalone Vertex provider file, but
 ## 2026-03-28 — SQLite schema bootstraps on server startup
 The SQLite connection now enables foreign keys and runs `CREATE TABLE IF NOT EXISTS` migrations during startup. The local DB file is created under `server/data/`.
 Reason: Keeps the initial backend setup minimal and ensures a fresh checkout can start the server without a separate manual migration step.
+
+## 2026-03-28 — Stitch references stored as local implementation inputs
+The supplied Stitch mockups are stored under `client/src/design-reference/` as static HTML reference files plus a README that lists what to keep and what to strip during implementation.
+Reason: Keeps the visual source material inside the repo and makes the allowed design system elements explicit before UI work begins.

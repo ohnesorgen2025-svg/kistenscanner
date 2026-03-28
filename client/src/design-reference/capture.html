@@ -1,0 +1,218 @@
+<!-- Find / Search -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BOX_INVENTORY - Capture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Space+Grotesk:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary": "#3f5868",
+              "on-surface-variant": "#acabaa",
+              "on-error": "#490106",
+              "tertiary-fixed": "#c2def1",
+              "surface-variant": "#252626",
+              "secondary": "#9b9e9f",
+              "primary-container": "#004f58",
+              "on-surface": "#e7e5e4",
+              "on-primary": "#004750",
+              "surface-container-lowest": "#000000",
+              "surface-bright": "#2c2c2c",
+              "error-container": "#7f2927",
+              "surface-container-high": "#1f2020",
+              "inverse-on-surface": "#565555",
+              "surface-tint": "#00daf3",
+              "on-secondary-container": "#bdc0c0",
+              "error-dim": "#bb5551",
+              "on-secondary-fixed": "#3c4041",
+              "surface-container-highest": "#252626",
+              "primary-fixed": "#9cf0ff",
+              "secondary-dim": "#9b9e9f",
+              "secondary-fixed": "#e1e3e3",
+              "primary": "#00daf3",
+              "inverse-primary": "#006976",
+              "on-tertiary-fixed": "#233d4c",
+              "surface": "#0e0e0e",
+              "inverse-surface": "#fcf9f8",
+              "tertiary": "#d1ecff",
+              "primary-fixed-dim": "#49e7ff",
+              "background": "#0e0e0e",
+              "on-background": "#e7e5e4",
+              "error": "#ee7d77",
+              "on-tertiary-container": "#36505f",
+              "on-primary-container": "#00e5ff",
+              "tertiary-fixed-dim": "#b5d0e2",
+              "tertiary-dim": "#b5d0e2",
+              "on-secondary-fixed-variant": "#595c5d",
+              "surface-dim": "#0e0e0e",
+              "on-secondary": "#1d2121",
+              "on-primary-fixed": "#00464f",
+              "tertiary-container": "#c2def1",
+              "surface-container-low": "#131313",
+              "secondary-fixed-dim": "#d2d5d5",
+              "outline": "#767575",
+              "on-primary-fixed-variant": "#006571",
+              "primary-dim": "#00cbe2",
+              "outline-variant": "#484848",
+              "on-tertiary-fixed-variant": "#405969",
+              "on-error-container": "#ff9993",
+              "secondary-container": "#393c3d",
+              "surface-container": "#191a1a"
+            },
+            fontFamily: {
+              "headline": ["Space Grotesk"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0e0e0e;
+            color: #e7e5e4;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col pb-24">
+<!-- Top Navigation -->
+<header class="fixed top-0 w-full z-50 bg-[#0e0e0e] flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[#00E5FF]">package_2</span>
+<h1 class="font-['Space_Grotesk'] uppercase tracking-tighter font-medium text-lg text-[#00E5FF] tracking-[0.2em]">BOX_INVENTORY</h1>
+</div>
+<button class="hover:bg-[#191a1a] transition-colors p-2 rounded-lg">
+<span class="material-symbols-outlined text-[#acabaa]">close</span>
+</button>
+</header>
+<main class="mt-20 px-6 flex-1 flex flex-col gap-8">
+<!-- Step Indicator -->
+<div class="flex items-center gap-4">
+<div class="flex flex-col">
+<span class="font-headline text-[10px] tracking-widest text-primary uppercase">Step 01</span>
+<h2 class="font-headline text-2xl font-bold text-on-surface">CAPTURE_CONTENTS</h2>
+</div>
+<div class="h-[2px] flex-1 bg-surface-container-highest relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full w-1/3 bg-primary"></div>
+</div>
+</div>
+<!-- Camera Interface (Simulated Viewfinder) -->
+<section class="relative aspect-[3/4] rounded-xl overflow-hidden bg-surface-container-low ring-1 ring-outline-variant/20 flex flex-col items-center justify-center group">
+<div class="absolute inset-0 z-0 opacity-40">
+<img class="w-full h-full object-cover grayscale brightness-50" data-alt="Technical close-up of computer parts inside a cardboard box with shallow depth of field and overhead industrial lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTjHTsl4Wi5AVhmDKK1dTpFgxNbegT9n1KAHxQGHg9St1Q-kmRQex4eIs7CPakAy5X5JaAboGhAidOrs3yr-4C6SPW16tdBd-XDY8lpqdYFBLfOFsr_3mv3alZkWu-NYBEEdVlUxpEng6-jTJU0imeERdS6_QdChzvcTNXAs5urlEwEdlGJPm4cWsM1Qn7G7MdTLgztatBcDOd8LRvZLOeza8AQn7xsf5NqfJxZ_WRVzEtEsOl2ejL109zoJh4rW1zt9sct8WETNE"/>
+</div>
+<!-- Viewfinder Accents -->
+<div class="absolute top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-primary/40"></div>
+<div class="absolute top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-primary/40"></div>
+<div class="absolute bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-primary/40"></div>
+<div class="absolute bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-primary/40"></div>
+<div class="relative z-10 flex flex-col items-center gap-6">
+<button class="w-24 h-24 rounded-full bg-primary/10 border-4 border-primary flex items-center justify-center active:scale-90 transition-transform duration-150 shadow-[0_0_40px_rgba(0,218,243,0.2)]">
+<span class="material-symbols-outlined text-primary text-5xl" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
+</button>
+<p class="font-headline text-xs tracking-widest text-on-surface-variant uppercase bg-surface-container-highest/80 px-4 py-1 backdrop-blur-md rounded-full">Ready for Capture</p>
+</div>
+<!-- Upload Fallback -->
+<button class="absolute bottom-6 right-6 flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors py-2 px-3 bg-surface-container-highest/60 backdrop-blur-md rounded-lg">
+<span class="material-symbols-outlined text-sm">upload_file</span>
+<span class="font-headline text-[10px] tracking-widest font-medium uppercase">Upload</span>
+</button>
+</section>
+<!-- Captured Grid -->
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline text-xs tracking-[0.2em] text-on-surface-variant uppercase">Captured Sessions (3)</h3>
+<span class="font-headline text-[10px] text-primary">SYNC_READY</span>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+<!-- Thumbnail 1 -->
+<div class="bg-surface-container-low p-2 rounded-lg flex flex-col gap-2 ring-1 ring-outline-variant/10">
+<div class="aspect-square rounded overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Electronic circuit boards stacked inside a storage container, macro photography with blue technical light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAQBEmAKf_y3e_GrpbB8kmQwQpqG6AexcW_5QLTFXJZQj55Db74aWSIbUqD1Z9INO8ALT0tWyQNVoYhM_HWEwX8obeobxBp9Kh72tmygv12QE9rl6G2lB5TTXZN-OhedAzbxT4kvS2L7f6okagGFRLbMXPhZgJ7r0QVRhbrVcJt-yHjZFUSIdfeU-cbVLjiNWah7CiKV--MQmaf_dxZt_opKyIUSFLbDskQQd_medLyC28LzDBI7_UoxYHWR9wQsgVjfpu-GxsTLoM"/>
+<div class="absolute top-1 right-1">
+<span class="material-symbols-outlined text-primary text-sm bg-surface-container-highest rounded-full p-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-[9px] text-on-surface-variant uppercase">Shot_001</span>
+<span class="font-headline text-[9px] text-primary/60 tabular-nums">14:02:45 UTC</span>
+</div>
+</div>
+<!-- Thumbnail 2 -->
+<div class="bg-surface-container-low p-2 rounded-lg flex flex-col gap-2 ring-1 ring-outline-variant/10">
+<div class="aspect-square rounded overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Assorted mechanical tools and screws organized in a metal tray with stark high-contrast lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAus4OyqvTaEFEfYQowlV2qAz_jR4i_MIBwDu1-Q2Ed_ftCekdYv1uGipP1Z8gMeQubIRJ4aEjJViM2H7kqFO-kypl3uGdeL7driBxDYkjwka_CInVFU04xhEgu1JzGm1rZ2C514XKnfPhl9reVlp2zt_8V9nS-l1gFy2AhDUI9o8CPH4t1AYhw8s-sBN3yYalGxIi3f1pDWy7GUGq16RIA4I0ROTADHiIwnrxV_o3nEPFF0oJIPSe0LQqGlN7X0Y_pI6qfbvLGncs"/>
+<div class="absolute top-1 right-1">
+<span class="material-symbols-outlined text-primary text-sm bg-surface-container-highest rounded-full p-0.5" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-[9px] text-on-surface-variant uppercase">Shot_002</span>
+<span class="font-headline text-[9px] text-primary/60 tabular-nums">14:03:12 UTC</span>
+</div>
+</div>
+<!-- Thumbnail 3 -->
+<div class="bg-surface-container-low p-2 rounded-lg flex flex-col gap-2 ring-1 ring-outline-variant/10 group">
+<div class="aspect-square rounded overflow-hidden relative border border-primary/20 bg-surface-container-high flex items-center justify-center">
+<img class="w-full h-full object-cover opacity-60" data-alt="Blurry overhead shot of office supplies and cables in a dark box" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5I0UNkESYITVhNTY_9OactjX9a8e1MX4xN3ColJn2TZBPUc55_rv4c2kFBnFKp0Wl97PTGCEP_qzXSplONq-1YWDah6BV3LNd1gJmvep-Pspiy8-k9j1SjukWy2ZBobniFpt2SQ5qm1vNe7YTQllOKbwmW_Z75qWG6Uk0_yZNoTvBTFHR_OIqjxeLbFYXLi9g3rrhhq-AwFbQPZaxoaShemhqNtA6ngG0qYF-ZeT17dDwfRABhPrukbjOmU8za9wWM5pyIiJxWek"/>
+<div class="absolute inset-0 bg-primary/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary animate-pulse">sync</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-headline text-[9px] text-on-surface-variant uppercase">Shot_003</span>
+<span class="font-headline text-[9px] text-primary/60 tabular-nums">PROCESSING...</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Action Area -->
+<section class="flex flex-col gap-4 mt-auto">
+<button class="w-full bg-primary text-on-primary font-headline font-bold uppercase tracking-widest py-5 rounded-xl flex items-center justify-center gap-3 transition-transform active:scale-95 shadow-[0_12px_24px_rgba(0,218,243,0.15)]">
+<span class="material-symbols-outlined">auto_awesome</span>
+                Start AI Analysis
+            </button>
+<p class="text-center font-headline text-[10px] text-on-surface-variant uppercase tracking-wider">
+                System will identify <span class="text-primary">12+ categories</span> automatically
+            </p>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-4 pb-safe bg-[#2c2c2c]/80 backdrop-blur-xl border-t border-[#484848]/20 shadow-[0_-24px_24px_rgba(0,0,0,0.4)] z-50">
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium">SEARCH</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium">SCAN</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#00E5FF] scale-105 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_box</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium">ADD</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium">SETTINGS</span>
+</a>
+</nav>
+</body></html>

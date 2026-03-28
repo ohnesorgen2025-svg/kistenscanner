@@ -1,0 +1,255 @@
+<!-- Store / Capture -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - BOX_INVENTORY</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary": "#3f5868",
+                        "on-surface-variant": "#acabaa",
+                        "on-error": "#490106",
+                        "tertiary-fixed": "#c2def1",
+                        "surface-variant": "#252626",
+                        "secondary": "#9b9e9f",
+                        "primary-container": "#004f58",
+                        "on-surface": "#e7e5e4",
+                        "on-primary": "#004750",
+                        "surface-container-lowest": "#000000",
+                        "surface-bright": "#2c2c2c",
+                        "error-container": "#7f2927",
+                        "surface-container-high": "#1f2020",
+                        "inverse-on-surface": "#565555",
+                        "surface-tint": "#00daf3",
+                        "on-secondary-container": "#bdc0c0",
+                        "error-dim": "#bb5551",
+                        "on-secondary-fixed": "#3c4041",
+                        "surface-container-highest": "#252626",
+                        "primary-fixed": "#9cf0ff",
+                        "secondary-dim": "#9b9e9f",
+                        "secondary-fixed": "#e1e3e3",
+                        "primary": "#00daf3",
+                        "inverse-primary": "#006976",
+                        "on-tertiary-fixed": "#233d4c",
+                        "surface": "#0e0e0e",
+                        "inverse-surface": "#fcf9f8",
+                        "tertiary": "#d1ecff",
+                        "primary-fixed-dim": "#49e7ff",
+                        "background": "#0e0e0e",
+                        "on-background": "#e7e5e4",
+                        "error": "#ee7d77",
+                        "on-tertiary-container": "#36505f",
+                        "on-primary-container": "#00e5ff",
+                        "tertiary-fixed-dim": "#b5d0e2",
+                        "tertiary-dim": "#b5d0e2",
+                        "on-secondary-fixed-variant": "#595c5d",
+                        "surface-dim": "#0e0e0e",
+                        "on-secondary": "#1d2121",
+                        "on-primary-fixed": "#00464f",
+                        "tertiary-container": "#c2def1",
+                        "surface-container-low": "#131313",
+                        "secondary-fixed-dim": "#d2d5d5",
+                        "outline": "#767575",
+                        "on-primary-fixed-variant": "#006571",
+                        "primary-dim": "#00cbe2",
+                        "outline-variant": "#484848",
+                        "on-tertiary-fixed-variant": "#405969",
+                        "on-error-container": "#ff9993",
+                        "secondary-container": "#393c3d",
+                        "surface-container": "#191a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0e0e0e;
+            color: #e7e5e4;
+        }
+        .form-input-focus:focus-within {
+            border-bottom-color: #00daf3;
+        }
+        .kinetic-border {
+            border: 1px solid rgba(72, 72, 72, 0.2);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body selection:bg-primary/30 selection:text-primary">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#0e0e0e] flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#00E5FF]">package_2</span>
+<h1 class="font-['Space_Grotesk'] uppercase tracking-tighter font-medium text-lg font-bold text-[#00E5FF] tracking-[0.2em]">BOX_INVENTORY</h1>
+</div>
+<div class="hidden md:flex gap-8">
+<a class="font-['Space_Grotesk'] text-sm tracking-widest text-[#acabaa] hover:text-[#00E5FF] transition-colors" href="#">SEARCH</a>
+<a class="font-['Space_Grotesk'] text-sm tracking-widest text-[#acabaa] hover:text-[#00E5FF] transition-colors" href="#">SCAN</a>
+<a class="font-['Space_Grotesk'] text-sm tracking-widest text-[#acabaa] hover:text-[#00E5FF] transition-colors" href="#">ADD</a>
+<a class="font-['Space_Grotesk'] text-sm tracking-widest text-[#00E5FF]" href="#">SETTINGS</a>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-3xl mx-auto">
+<!-- Header Section -->
+<section class="mb-12">
+<h2 class="font-headline text-4xl font-bold text-on-surface tracking-tighter mb-2">SYSTEM_CONFIG</h2>
+<p class="font-body text-on-surface-variant text-sm tracking-wide">CONFIGURE ENGINE ARCHITECTURE AND API INTEGRATIONS.</p>
+</section>
+<!-- AI Provider Selector -->
+<section class="space-y-8">
+<div class="bg-surface-container-low p-8 rounded-lg kinetic-border">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary text-xl">psychology</span>
+<h3 class="font-headline text-lg uppercase tracking-widest text-on-surface">AI_PROVIDER</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Provider Card: OpenAI -->
+<button class="flex flex-col items-start p-4 rounded bg-surface-container kinetic-border border-primary/50 text-left transition-all hover:bg-surface-bright group">
+<span class="font-headline text-primary text-xs tracking-[0.2em] mb-2">ACTIVE</span>
+<span class="font-headline text-xl text-on-surface">OPENAI</span>
+<span class="font-body text-[10px] text-on-surface-variant mt-1 uppercase">GPT-4O OMNI</span>
+</button>
+<!-- Provider Card: Anthropic -->
+<button class="flex flex-col items-start p-4 rounded bg-surface-container-low border border-transparent text-left transition-all hover:bg-surface-bright group">
+<span class="font-headline text-on-surface-variant text-xs tracking-[0.2em] mb-2">STANDBY</span>
+<span class="font-headline text-xl text-on-surface/60 group-hover:text-on-surface">CLAUDE</span>
+<span class="font-body text-[10px] text-on-surface-variant mt-1 uppercase">SONNET 3.5</span>
+</button>
+<!-- Provider Card: Google -->
+<button class="flex flex-col items-start p-4 rounded bg-surface-container-low border border-transparent text-left transition-all hover:bg-surface-bright group">
+<span class="font-headline text-on-surface-variant text-xs tracking-[0.2em] mb-2">STANDBY</span>
+<span class="font-headline text-xl text-on-surface/60 group-hover:text-on-surface">GEMINI</span>
+<span class="font-body text-[10px] text-on-surface-variant mt-1 uppercase">PRO 1.5</span>
+</button>
+</div>
+</div>
+<!-- API Configuration Form -->
+<div class="bg-surface-container-low p-8 rounded-lg kinetic-border space-y-10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">key</span>
+<h3 class="font-headline text-lg uppercase tracking-widest text-on-surface">INTEGRATION_KEYS</h3>
+</div>
+<!-- OpenAI Field -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-headline text-xs tracking-[0.2em] text-on-surface-variant">OPENAI_API_KEY</label>
+<span class="text-[10px] font-headline text-primary/60">ENCRYPTED_AES256</span>
+</div>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="flex-1 relative border-b border-outline-variant focus-within:border-primary transition-colors py-2">
+<input class="bg-transparent border-none focus:ring-0 w-full font-mono text-on-surface placeholder:text-outline-variant/50 text-sm" type="password" value="sk-proj-••••••••••••••••••••••••••••••••"/>
+</div>
+<button class="bg-surface-container-highest hover:bg-surface-bright text-primary font-headline text-[10px] tracking-widest px-6 py-3 rounded transition-colors uppercase">
+                            TEST_LINK
+                        </button>
+</div>
+</div>
+<!-- Anthropic Field -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-headline text-xs tracking-[0.2em] text-on-surface-variant">ANTHROPIC_API_KEY</label>
+<span class="text-[10px] font-headline text-on-surface-variant/40">NOT_CONFIGURED</span>
+</div>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="flex-1 relative border-b border-outline-variant/20 focus-within:border-primary transition-colors py-2">
+<input class="bg-transparent border-none focus:ring-0 w-full font-mono text-on-surface placeholder:text-outline-variant/30 text-sm" placeholder="ENTER_KEY_..." type="password"/>
+</div>
+<button class="bg-surface-container-highest/50 text-on-surface-variant/40 cursor-not-allowed font-headline text-[10px] tracking-widest px-6 py-3 rounded uppercase">
+                            TEST_LINK
+                        </button>
+</div>
+</div>
+<!-- Google Field -->
+<div class="space-y-4">
+<div class="flex justify-between items-end">
+<label class="font-headline text-xs tracking-[0.2em] text-on-surface-variant">GEMINI_API_KEY</label>
+<span class="text-[10px] font-headline text-on-surface-variant/40">NOT_CONFIGURED</span>
+</div>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="flex-1 relative border-b border-outline-variant/20 focus-within:border-primary transition-colors py-2">
+<input class="bg-transparent border-none focus:ring-0 w-full font-mono text-on-surface placeholder:text-outline-variant/30 text-sm" placeholder="ENTER_KEY_..." type="password"/>
+</div>
+<button class="bg-surface-container-highest/50 text-on-surface-variant/40 cursor-not-allowed font-headline text-[10px] tracking-widest px-6 py-3 rounded uppercase">
+                            TEST_LINK
+                        </button>
+</div>
+</div>
+</div>
+<!-- Advanced Settings -->
+<div class="bg-surface-container-low p-8 rounded-lg kinetic-border">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-primary text-xl">tune</span>
+<h3 class="font-headline text-lg uppercase tracking-widest text-on-surface">ENGINE_PARAMETERS</h3>
+</div>
+<div class="space-y-8">
+<div class="flex justify-between items-center group">
+<div>
+<p class="font-headline text-sm text-on-surface tracking-wider">AUTO_TAGGING</p>
+<p class="font-body text-[10px] text-on-surface-variant uppercase mt-1">GENERATE METADATA AUTOMATICALLY ON SCAN</p>
+</div>
+<div class="w-12 h-6 bg-primary-container rounded-full relative flex items-center px-1">
+<div class="w-4 h-4 bg-primary rounded-full translate-x-6"></div>
+</div>
+</div>
+<div class="flex justify-between items-center group">
+<div>
+<p class="font-headline text-sm text-on-surface tracking-wider">RECURSIVE_INDEXING</p>
+<p class="font-body text-[10px] text-on-surface-variant uppercase mt-1">ANALYZE BOX CONTENTS WITHIN BOXES</p>
+</div>
+<div class="w-12 h-6 bg-surface-container-highest rounded-full relative flex items-center px-1">
+<div class="w-4 h-4 bg-on-surface-variant rounded-full"></div>
+</div>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary text-on-primary font-headline font-bold py-5 rounded-lg tracking-[0.3em] uppercase hover:brightness-110 active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(0,218,243,0.2)]">
+                COMMIT_CHANGES
+            </button>
+<button class="w-full bg-transparent border border-error/30 text-error font-headline text-xs py-4 rounded-lg tracking-widest uppercase hover:bg-error/5 transition-colors">
+                WIPE_ALL_CREDENTIALS
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-4 pb-safe bg-[#2c2c2c]/80 backdrop-blur-xl z-50 border-t border-[#484848]/20 shadow-[0_-24px_24px_rgba(0,0,0,0.4)]">
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium uppercase mt-1">SEARCH</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium uppercase mt-1">SCAN</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#acabaa] hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">add_box</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium uppercase mt-1">ADD</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#00E5FF] scale-105 transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-['Space_Grotesk'] text-[10px] tracking-widest font-medium uppercase mt-1">SETTINGS</span>
+</a>
+</nav>
+</body></html>
