@@ -1,19 +1,19 @@
 # Current Task
 
 ## Status:
-🟢 Database schema bootstrap complete
+🟢 Analyze endpoint and image pipeline complete
 
 ## Current Goal
-Build the first application-facing backend layer on top of the initialized SQLite schema.
+Build the next STORE workflow layer on top of the analyze pipeline and existing SQLite foundation.
 
 ## Next Action
-Create typed DB access utilities in `server/src/db/` or `server/src/services/` for the first STORE workflow operations:
-- box creation with auto number handling
-- item/image inserts linked to a box
-- keep routes thin and DB logic separated
+Create persistence services for finalized box data:
+- save analyzed items and source images into the SQLite schema
+- assign auto-incrementing box numbers during finalize
+- keep API routes thin and business logic in `src/services/`
 
 ## Open Questions
-- None for the schema bootstrap step.
+- None for the analyze pipeline step.
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -27,3 +27,8 @@ Create typed DB access utilities in `server/src/db/` or `server/src/services/` f
 - Added `server/src/db/migrate.ts` and run migrations during DB initialization
 - Enabled SQLite foreign keys and verified created tables in `server/data/kistenscanner.db`
 - Added `client/src/design-reference/` with Stitch HTML references and a pruning README for implementation use
+- Added `server/.env.example` and ignored `server/.env`
+- Implemented `POST /api/analyze` with multipart upload, image storage and Sharp thumbnail crops
+- Implemented AI provider adapters for Ollama, OpenAI-compatible and Anthropic models
+- Implemented JSON-first analysis parsing with fallback for half-formatted responses
+- Verified the full analyze pipeline end-to-end with `AI_ANALYZE_USE_MOCK=1`, including saved originals and reachable crop URLs

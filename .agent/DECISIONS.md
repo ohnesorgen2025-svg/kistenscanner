@@ -47,3 +47,7 @@ Reason: Keeps the initial backend setup minimal and ensures a fresh checkout can
 ## 2026-03-28 — Stitch references stored as local implementation inputs
 The supplied Stitch mockups are stored under `client/src/design-reference/` as static HTML reference files plus a README that lists what to keep and what to strip during implementation.
 Reason: Keeps the visual source material inside the repo and makes the allowed design system elements explicit before UI work begins.
+
+## 2026-03-28 — Analyze endpoint verified through a mock AI mode
+The analyze pipeline supports verification with `AI_ANALYZE_USE_MOCK=1`, which returns a hardcoded analysis response so uploads, parsing and Sharp crop generation can be tested without external API keys or real provider calls.
+Reason: Lets the project prove the full `/api/analyze` flow end-to-end while avoiding accidental live API usage during local development.
