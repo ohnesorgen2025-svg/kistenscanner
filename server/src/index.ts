@@ -1,5 +1,6 @@
 import "dotenv/config";
 
+import { existsSync } from "node:fs";
 import path from "node:path";
 
 import express from "express";
@@ -16,6 +17,8 @@ import { searchRouter } from "./routes/search.js";
 const DEFAULT_SERVER_PORT = 4001;
 const app = express();
 const port = Number(process.env.PORT ?? DEFAULT_SERVER_PORT);
+const clientDistDirectory = path.resolve(process.cwd(), "client", "dist");
+const clientIndexPath = path.join(clientDistDirectory, "index.html");
 
 app.use(express.json({ limit: "10mb" }));
 app.use("/images", express.static(path.resolve(process.cwd(), "data", "images")));
@@ -37,6 +40,13 @@ app.get("/api", (_request, response) => {
     database: database.name,
   });
 });
+
+if (existsSync(clientIndexPath)) {
+  app.use(express.static(clientDistDirectory));
+  app.get(/^(?!\/api(?:\/|$)|\/images(?:\/|$)).*/, (_request, response) => {
+    response.sendFile(clientIndexPath);
+  });
+}
 
 app.listen(port, () => {
   console.log(`kistenscanner-server listening on http://127.0.0.1:${port}`);

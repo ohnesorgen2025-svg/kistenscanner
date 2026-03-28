@@ -86,8 +86,6 @@ export type SettingsResponse = {
   configuredProviders: Record<"OPENAI" | "ANTHROPIC" | "GEMINI" | "OLLAMA" | "VERTEX", boolean>;
 };
 
-const backendAssetOrigin = import.meta.env.DEV ? "http://127.0.0.1:4001" : "";
-
 type RequestOptions = RequestInit & {
   rawBody?: BodyInit;
 };
@@ -101,7 +99,7 @@ export function resolveAssetUrl(assetPath: string | null | undefined): string | 
     return assetPath;
   }
 
-  return `${backendAssetOrigin}${assetPath}`;
+  return assetPath;
 }
 
 async function requestJson<T>(path: string, options: RequestOptions = {}): Promise<T> {

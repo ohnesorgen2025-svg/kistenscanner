@@ -9,3 +9,4 @@ server/node_modules/
 server/dist/
 server/data/
 server/.env
+.env

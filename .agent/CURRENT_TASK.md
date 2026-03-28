@@ -1,19 +1,19 @@
 # Current Task
 
 ## Status:
-🟢 Mobile UX pass complete
+🟢 LAN deployment prep complete
 
 ## Current Goal
-Polish the app for real mobile use so capture, review, search and detail flows hold up on a small screen.
+Prepare the repo for DevPilot LAN deployment so the app can run as one Dockerized service with persisted local data.
 
 ## Next Action
-Verify the remaining device-dependent paths on physical hardware:
-- confirm live camera preview and torch toggle on a supported phone
-- test QR scan and label printing on the target mobile/browser setup
-- decide whether Add Box should default to the saved active model without showing a manual selector in v1
+Run the first DevPilot-managed LAN deployment and validate the real hostname path:
+- deploy through DevPilot to `http://kistenscanner.local`
+- confirm persisted SQLite data and uploaded images survive container restarts
+- test mobile camera, QR scan and print flow against the deployed LAN origin
 
 ## Open Questions
-- No blocking implementation questions. Remaining work is device validation and polish.
+- No blocking implementation questions. The next step is live LAN validation on the target network.
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -59,3 +59,5 @@ Verify the remaining device-dependent paths on physical hardware:
 - Hardened Settings model persistence by reloading saved settings after each model switch and verified active-model roundtrips through repeated `POST /api/settings` + `GET /api/settings`
 - Added a mobile-focused Add Box camera preview with progressive fallback to the system capture input and a conditional torch toggle for supported devices
 - Raised interactive targets and input font sizing for mobile, reduced horizontal overflow risk, and increased bottom safe-area padding around the fixed navigation
+- Added a multi-stage Docker build plus `compose.yaml` so the Express server and built Vite client run together in one production container on port `4001`
+- Added `.agent/DEPLOYMENT.md`, switched client assets to same-origin paths, and verified `docker build`, `docker compose up`, `http://localhost:4001` and `http://localhost:4001/api/health`

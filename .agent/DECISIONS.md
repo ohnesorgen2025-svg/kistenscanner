@@ -103,3 +103,7 @@ Reason: `models.ts` is the single source of truth, so UI selectors must stay ali
 ## 2026-03-28 — Mobile capture uses progressive enhancement
 The Add Box flow now prefers a live `getUserMedia` camera preview for mobile capture, exposes a torch toggle only when the active device reports torch support, and falls back to the existing `accept="image/*"` plus `capture="environment"` file input when live camera access is unavailable.
 Reason: This keeps the mobile capture flow practical on real phones without breaking the simpler file-input path on unsupported browsers or desktops.
+
+## 2026-03-28 — LAN deployment runs as one container with same-origin frontend and API
+The repo now ships with a root `Dockerfile` and `compose.yaml` that build the Vite client and TypeScript server together, persist runtime data under `./data`, and serve the built client from Express on port `4001`.
+Reason: DevPilot deploys LAN-ready projects most simply when the app can run as a single Dockerized service with one origin for frontend assets, API calls and image paths.
