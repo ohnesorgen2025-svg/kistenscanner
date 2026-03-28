@@ -65,3 +65,5 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Added a route-keyed main content wrapper in `client/src/App.tsx` so tab navigation remounts page components cleanly and avoids stale blank screens between bottom-nav routes
 - Added route-specific desktop width caps so default pages stay mobile-first on large screens, `Kisten` expands to a multi-column desktop grid, and `BoxDetail` no longer stretches across the full shell width
 - Normalized client asset paths and added thumbnail fallbacks so AddBox review can use the source image and BoxDetail can fall back to stored item or box images when a crop path is missing
+- Removed the BoxDetail fallback to whole-box photos so saved items now render only their own stored crop or item image instead of showing the original Kistenfoto as a misleading thumbnail
+- Added a gated thumbnail debug trace to `GET /api/boxes/:id` via `DEBUG_BOX_THUMBNAILS=1` so persisted item thumbnail paths can be inspected quickly during API debugging

@@ -123,3 +123,7 @@ Reason: The product is still mobile-first, but it should remain comfortable and 
 ## 2026-03-28 — Thumbnail rendering falls back to the best available stored image
 Client thumbnail rendering now normalizes relative asset paths and falls back from crop thumbnails to stored source images when no crop path is available.
 Reason: Production showed that some analyzed items legitimately have no saved crop path, so the UI should still render the best available image instead of collapsing straight to a placeholder icon.
+
+## 2026-03-28 — Box detail must not fall back to the whole box photo for item thumbnails
+`BoxDetail` now renders only the item's stored crop or explicit item image and no longer falls back to the box-level source photo.
+Reason: Falling back to the full Kistenfoto makes items look wrong and hides the real persistence state when no crop was saved for that item. Add Box review may still show the source image before saving, but saved item views must not pretend the box photo is an item crop.

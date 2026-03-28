@@ -64,6 +64,17 @@ boxesRouter.get("/:id", (request, response) => {
       return response.status(404).json({ error: "Box nicht gefunden." });
     }
 
+    if (process.env.DEBUG_BOX_THUMBNAILS === "1") {
+      console.info(
+        `[boxes] thumbnail debug for box ${box.id}`,
+        box.items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          thumbnailPath: item.thumbnailPath,
+        })),
+      );
+    }
+
     return response.json(box);
   } catch (error) {
     return response.status(400).json({

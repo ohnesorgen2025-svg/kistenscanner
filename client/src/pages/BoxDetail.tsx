@@ -25,8 +25,8 @@ function buildQrValue(box: BoxRecord): string {
   return `kistenscanner://box-number/${box.number}`;
 }
 
-function getItemImageUrl(item: ItemRecord, box: BoxRecord): string | null {
-  return resolveAssetUrl(item.thumbnailPath ?? item.images[0]?.path ?? box.images[0]?.path ?? null);
+function getItemImageUrl(item: ItemRecord): string | null {
+  return resolveAssetUrl(item.thumbnailPath ?? item.images[0]?.path ?? null);
 }
 
 export function BoxDetailPage() {
@@ -310,8 +310,8 @@ export function BoxDetailPage() {
                 return (
                   <article className="review-card review-card--detail" key={item.id}>
                     <div className="review-card__media">
-                      {getItemImageUrl(item, box) ? (
-                        <img alt={item.name} src={getItemImageUrl(item, box) ?? undefined} />
+                      {getItemImageUrl(item) ? (
+                        <img alt={item.name} src={getItemImageUrl(item) ?? undefined} />
                       ) : (
                         <div className="box-card__placeholder">
                           <span className="material-symbols-outlined">inventory_2</span>
