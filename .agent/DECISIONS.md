@@ -83,3 +83,7 @@ Reason: The printed label should expose the human-facing identifier, and scans s
 ## 2026-03-28 — Initial search uses SQLite LIKE over saved item text
 The first FIND slice searches `items.name`, `items.description` and `items.detail` with SQLite `LIKE` and returns item-plus-box result cards.
 Reason: It is the smallest useful searchable layer on top of the existing schema and is easy to verify immediately before considering FTS5.
+
+## 2026-03-28 — Item move uses a simple inline confirm panel
+The box detail page opens a lightweight inline move panel with a target-box select plus confirm/cancel instead of a heavier modal flow.
+Reason: The backend move endpoint already exists, and the smallest useful UI is easier to understand, verify and maintain.

@@ -49,3 +49,5 @@ Strengthen the FIND workflow around the new foundation:
 - Changed QR generation to encode the Kistennummer instead of the internal box ID
 - Added a printable A6 label view in `client/src/pages/BoxDetail.tsx` with QR code, box info and top 5 item names
 - Verified `npm run check`, `npm run build`, `GET /api/search?q=adapter`, `GET /api/boxes?number=2` and the client routes `/`, `/scan` and `/boxes/2`
+- Reworked item move in `client/src/pages/BoxDetail.tsx` into a simple open/confirm flow with target-box select, confirmation feedback and source-list removal
+- Verified item move with real data by moving item `#11` from box `#3` to box `#2`, checking source and target, then restoring it to box `#3`

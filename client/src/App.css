@@ -508,6 +508,15 @@
   gap: 1rem;
 }
 
+.move-panel {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid rgba(72, 72, 72, 0.35);
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
 .chip {
   display: inline-flex;
   align-items: center;

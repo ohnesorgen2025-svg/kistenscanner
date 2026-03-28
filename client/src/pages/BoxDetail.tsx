@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Link, useParams } from "react-router-dom";
 
@@ -32,10 +32,13 @@ export function BoxDetailPage() {
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
   const [draft, setDraft] = useState<ItemDraft | null>(null);
-  const [moveTargets, setMoveTargets] = useState<Record<number, number>>({});
+  const [movingItemId, setMovingItemId] = useState<number | null>(null);
+  const [selectedTargetBoxId, setSelectedTargetBoxId] = useState<number | null>(null);
+  const [confirmation, setConfirmation] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
+  const confirmationTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
     function clearPrintMode() {
@@ -46,6 +49,14 @@ export function BoxDetailPage() {
     return () => {
       clearPrintMode();
       window.removeEventListener("afterprint", clearPrintMode);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (confirmationTimeoutRef.current) {
+        window.clearTimeout(confirmationTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -156,8 +167,19 @@ export function BoxDetailPage() {
     }
   }
 
+  function openMoveMenu(itemId: number) {
+    setMovingItemId(itemId);
+    setSelectedTargetBoxId(null);
+    setError(null);
+  }
+
+  function closeMoveMenu() {
+    setMovingItemId(null);
+    setSelectedTargetBoxId(null);
+  }
+
   async function handleMove(itemId: number) {
-    const targetBoxId = moveTargets[itemId];
+    const targetBoxId = selectedTargetBoxId;
     if (!targetBoxId) {
       setError("Bitte zuerst eine Ziel-Kiste wählen.");
       return;
@@ -165,10 +187,30 @@ export function BoxDetailPage() {
 
     try {
       await moveItem(itemId, targetBoxId);
-      await refreshBox();
+      setBox((current) => {
+        if (!current) {
+          return current;
+        }
+
+        return {
+          ...current,
+          itemCount: Math.max(current.itemCount - 1, 0),
+          items: current.items.filter((entry) => entry.id !== itemId),
+        };
+      });
+      closeMoveMenu();
       setError(null);
+      setConfirmation("Item wurde verschoben.");
+      if (confirmationTimeoutRef.current) {
+        window.clearTimeout(confirmationTimeoutRef.current);
+      }
+      confirmationTimeoutRef.current = window.setTimeout(() => {
+        setConfirmation(null);
+      }, 2500);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Item konnte nicht verschoben werden.");
+      setError(
+        requestError instanceof Error ? requestError.message : "Verschieben fehlgeschlagen",
+      );
     }
   }
 
@@ -201,6 +243,7 @@ export function BoxDetailPage() {
   return (
     <div className="page-stack">
       {isLoading ? <div className="feedback">Kiste wird geladen…</div> : null}
+      {confirmation ? <div className="feedback">{confirmation}</div> : null}
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
       {box ? (
@@ -387,35 +430,51 @@ export function BoxDetailPage() {
                           type="file"
                         />
 
-                        {availableMoveTargets.length > 0 ? (
-                          <>
+                        <button
+                          className="button button--ghost"
+                          disabled={availableMoveTargets.length === 0}
+                          onClick={() => openMoveMenu(item.id)}
+                          type="button"
+                        >
+                          Verschieben
+                        </button>
+                      </div>
+
+                      {movingItemId === item.id && availableMoveTargets.length > 0 ? (
+                        <div className="move-panel">
+                          <div className="field">
+                            <label htmlFor={`move-item-${item.id}`}>Ziel-Kiste</label>
                             <select
                               className="input move-select"
-                              onChange={(event) =>
-                                setMoveTargets((current) => ({
-                                  ...current,
-                                  [item.id]: Number(event.target.value),
-                                }))
-                              }
-                              value={moveTargets[item.id] ?? ""}
+                              id={`move-item-${item.id}`}
+                              onChange={(event) => {
+                                const value = Number(event.target.value);
+                                setSelectedTargetBoxId(Number.isInteger(value) && value > 0 ? value : null);
+                              }}
+                              value={selectedTargetBoxId ?? ""}
                             >
-                              <option value="">Verschieben nach…</option>
+                              <option value="">Kiste auswählen…</option>
                               {availableMoveTargets.map((target) => (
                                 <option key={target.id} value={target.id}>
                                   #{target.number} · {target.name}
                                 </option>
                               ))}
                             </select>
+                          </div>
+                          <div className="action-row">
                             <button
-                              className="button button--ghost"
+                              className="button button--primary"
                               onClick={() => void handleMove(item.id)}
                               type="button"
                             >
-                              Verschieben
+                              Bestätigen
                             </button>
-                          </>
-                        ) : null}
-                      </div>
+                            <button className="button button--ghost" onClick={closeMoveMenu} type="button">
+                              Abbrechen
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
                     </div>
                   </article>
                 );
