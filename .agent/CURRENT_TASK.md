@@ -4,16 +4,16 @@
 🟢 Find workflow complete
 
 ## Current Goal
-Polish the retrieval workflow and connect it more tightly to real AI output and LAN-ready label handling.
+Polish retrieval and settings so model choice, provider access and label flow work together cleanly.
 
 ## Next Action
-Strengthen the FIND workflow around the new foundation:
-- verify search quality against real German AI item text
-- harden QR scanning on device hardware and fallback states
+Strengthen the settings and runtime integration:
+- verify provider test flows against the real configured endpoints
+- decide whether Add Box should keep the manual model selector or rely solely on the saved active model
 - refine print label styling for real A6 output on the target printer path
 
 ## Open Questions
-- No blocking implementation questions after the first FIND slice.
+- No blocking implementation questions after the initial settings slice.
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -51,3 +51,7 @@ Strengthen the FIND workflow around the new foundation:
 - Verified `npm run check`, `npm run build`, `GET /api/search?q=adapter`, `GET /api/boxes?number=2` and the client routes `/`, `/scan` and `/boxes/2`
 - Reworked item move in `client/src/pages/BoxDetail.tsx` into a simple open/confirm flow with target-box select, confirmation feedback and source-list removal
 - Verified item move with real data by moving item `#11` from box `#3` to box `#2`, checking source and target, then restoring it to box `#3`
+- Added `/api/settings`, `/api/settings/keys`, `/api/settings/test` and `/api/models` with JSON-backed active-model storage in `server/data/settings.json`
+- Implemented `client/src/pages/Settings.tsx` with model cards, provider key status, connection tests and runtime key saving to `server/.env`
+- Updated `POST /api/analyze` to fall back to the saved active model when `modelId` is omitted and synced `AddBox` to load that active model on mount
+- Verified `GET /api/settings`, `GET /api/models`, `POST /api/settings`, `POST /api/analyze` without `modelId` and the client route `/settings`

@@ -276,13 +276,15 @@
 }
 
 .search-panel,
-.scan-panel {
+.scan-panel,
+.settings-panel {
   position: relative;
   overflow: hidden;
 }
 
 .search-panel::after,
-.scan-panel::after {
+.scan-panel::after,
+.settings-panel::after {
   content: "";
   position: absolute;
   inset: auto -3rem -3rem auto;
@@ -443,6 +445,102 @@
 
 .scan-status {
   margin-top: 1rem;
+}
+
+.settings-header {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.settings-section {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.settings-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 1rem;
+}
+
+.settings-model-grid,
+.settings-key-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.settings-model-card,
+.settings-key-card {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1rem;
+  border: 1px solid rgba(72, 72, 72, 0.35);
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.settings-model-card {
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-model-card--active {
+  border-color: rgba(0, 218, 243, 0.45);
+  background: rgba(0, 218, 243, 0.08);
+}
+
+.settings-model-card__state,
+.settings-key-card__status,
+.settings-model-card__protocol,
+.settings-model-card__hint {
+  font-family: var(--heading);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.settings-model-card__state--active,
+.settings-key-card__status--active {
+  color: var(--accent);
+}
+
+.settings-model-card__provider {
+  font-family: var(--heading);
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.settings-model-card__name {
+  font-family: var(--heading);
+  font-size: 1.05rem;
+}
+
+.settings-key-card__topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1rem;
+}
+
+.settings-key-card__topline label {
+  font-family: var(--heading);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.settings-key-card__controls {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.settings-key-card__input {
+  font-family: "SFMono-Regular", "Consolas", monospace;
 }
 
 .preview-grid {
@@ -758,11 +856,26 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .settings-model-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .bottom-nav {
     left: 50%;
     width: min(32rem, calc(100% - 2rem));
     transform: translateX(-50%);
     border-radius: 1rem 1rem 0 0;
+  }
+}
+
+@media (min-width: 64rem) {
+  .settings-model-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .settings-key-card__controls {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
   }
 }
 

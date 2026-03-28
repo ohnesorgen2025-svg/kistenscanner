@@ -7,6 +7,7 @@ import {
   createBox,
   createItem,
   getBox,
+  getSettings,
   resolveAssetUrl,
   type AnalysisItem,
   type BoxRecord,
@@ -65,6 +66,22 @@ export function AddBoxPage() {
       }
     };
   }, [files]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    void getSettings()
+      .then((settings) => {
+        if (isMounted && settings.activeModelId) {
+          setModelId(settings.activeModelId);
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;

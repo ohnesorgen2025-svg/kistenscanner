@@ -6,6 +6,7 @@ import { BoxDetailPage } from "./pages/BoxDetail";
 import { BoxesPage } from "./pages/Boxes";
 import { ScanPage } from "./pages/Scan";
 import { SearchPage } from "./pages/Search";
+import { SettingsPage } from "./pages/Settings";
 
 type NavigationLink = {
   label: string;
@@ -17,7 +18,7 @@ const navigationLinks: NavigationLink[] = [
   { label: "Suchen", icon: "search", to: "/" },
   { label: "Scannen", icon: "qr_code_scanner", to: "/scan" },
   { label: "Hinzufügen", icon: "add_box", to: "/boxes/add" },
-  { label: "Einstellungen", icon: "settings" },
+  { label: "Einstellungen", icon: "settings", to: "/settings" },
 ];
 
 function NavigationItem({ icon, label, to }: NavigationLink) {
@@ -60,6 +61,7 @@ function App() {
         <Routes>
           <Route element={<SearchPage />} path="/" />
           <Route element={<ScanPage />} path="/scan" />
+          <Route element={<SettingsPage />} path="/settings" />
           <Route element={<BoxesPage />} path="/boxes" />
           <Route element={<AddBoxPage />} path="/boxes/add" />
           <Route element={<BoxDetailPage />} path="/boxes/:id" />

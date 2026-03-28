@@ -12,6 +12,7 @@ import {
   parseAnalysis,
 } from "../lib/ai/parse-analysis.js";
 import { BOX_ANALYSIS_PROMPT } from "../lib/ai/prompts/box-analysis.js";
+import { getSettings } from "../services/settings.js";
 
 type SavedImage = {
   absolutePath: string;
@@ -108,12 +109,14 @@ export const analyzeRouter = Router();
 
 analyzeRouter.post("/", upload.any(), async (request, response) => {
   try {
-    const modelId =
+    const requestedModelId =
       typeof request.body.modelId === "string" ? request.body.modelId.trim() : "";
+    const settings = await getSettings();
+    const modelId = requestedModelId || settings.activeModelId;
     const uploadedImages = getUploadedImageFiles(request);
 
     if (!modelId) {
-      return response.status(400).json({ error: "modelId ist erforderlich." });
+      return response.status(400).json({ error: "Kein aktives Modell konfiguriert." });
     }
 
     if (uploadedImages.length === 0) {

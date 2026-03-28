@@ -74,6 +74,18 @@ export type SearchResult = {
   };
 };
 
+export type ModelSummary = {
+  id: string;
+  name: string;
+  provider: string;
+  protocol: string;
+};
+
+export type SettingsResponse = {
+  activeModelId: string;
+  configuredProviders: Record<"OPENAI" | "ANTHROPIC" | "GEMINI" | "OLLAMA" | "VERTEX", boolean>;
+};
+
 const backendAssetOrigin = import.meta.env.DEV ? "http://127.0.0.1:4001" : "";
 
 type RequestOptions = RequestInit & {
@@ -146,6 +158,37 @@ export async function getBox(boxId: number): Promise<BoxRecord> {
 export async function searchInventory(query: string): Promise<SearchResult[]> {
   const params = new URLSearchParams({ q: query });
   return requestJson<SearchResult[]>(`/api/search?${params.toString()}`);
+}
+
+export async function listModels(): Promise<ModelSummary[]> {
+  return requestJson<ModelSummary[]>("/api/models");
+}
+
+export async function getSettings(): Promise<SettingsResponse> {
+  return requestJson<SettingsResponse>("/api/settings");
+}
+
+export async function saveActiveModel(modelId: string): Promise<{ activeModelId: string }> {
+  return requestJson<{ activeModelId: string }>("/api/settings", {
+    method: "POST",
+    body: JSON.stringify({ modelId }),
+  });
+}
+
+export async function saveProviderKeys(payload: Partial<Record<"OPENAI" | "ANTHROPIC" | "GEMINI" | "OLLAMA" | "VERTEX", string>>): Promise<{
+  configuredProviders: SettingsResponse["configuredProviders"];
+}> {
+  return requestJson<{ configuredProviders: SettingsResponse["configuredProviders"] }>("/api/settings/keys", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function testModelConnection(modelId: string): Promise<{ ok: true }> {
+  return requestJson<{ ok: true }>("/api/settings/test", {
+    method: "POST",
+    body: JSON.stringify({ modelId }),
+  });
 }
 
 export async function createBox(payload: {

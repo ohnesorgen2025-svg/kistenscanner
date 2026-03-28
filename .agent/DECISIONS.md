@@ -87,3 +87,11 @@ Reason: It is the smallest useful searchable layer on top of the existing schema
 ## 2026-03-28 — Item move uses a simple inline confirm panel
 The box detail page opens a lightweight inline move panel with a target-box select plus confirm/cancel instead of a heavier modal flow.
 Reason: The backend move endpoint already exists, and the smallest useful UI is easier to understand, verify and maintain.
+
+## 2026-03-28 — Active model is stored outside the database
+The selected active model lives in `server/data/settings.json` and `POST /api/analyze` falls back to that stored model when no `modelId` is sent.
+Reason: The setting is small, local and operational rather than relational, so a JSON file keeps it easy to inspect and change without expanding the SQLite schema.
+
+## 2026-03-28 — Provider keys stay runtime-managed in server/.env
+Settings writes managed provider keys back to `server/.env` and updates `process.env` at runtime instead of introducing a dedicated encrypted storage layer in v1.
+Reason: This is the smallest practical bridge between the Settings UI and the existing provider adapters, and it matches the current local single-user deployment model.

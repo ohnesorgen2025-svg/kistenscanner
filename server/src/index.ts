@@ -10,6 +10,7 @@ import { boxesRouter } from "./routes/boxes.js";
 import { healthRouter } from "./routes/health.js";
 import { itemImageTitleRouter, itemImagesRouter } from "./routes/item-images.js";
 import { boxItemsRouter, itemsRouter } from "./routes/items.js";
+import { modelsRouter, settingsRouter } from "./routes/settings.js";
 import { searchRouter } from "./routes/search.js";
 
 const DEFAULT_SERVER_PORT = 4001;
@@ -26,6 +27,8 @@ app.use("/api/items", itemsRouter);
 app.use("/api/items", itemImagesRouter);
 app.use("/api/item-images", itemImageTitleRouter);
 app.use("/api/search", searchRouter);
+app.use("/api/settings", settingsRouter);
+app.use("/api/models", modelsRouter);
 
 app.get("/api", (_request, response) => {
   response.json({
