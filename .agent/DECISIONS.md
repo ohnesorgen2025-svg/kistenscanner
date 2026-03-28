@@ -95,3 +95,7 @@ Reason: The setting is small, local and operational rather than relational, so a
 ## 2026-03-28 — Provider keys stay runtime-managed in server/.env
 Settings writes managed provider keys back to `server/.env` and updates `process.env` at runtime instead of introducing a dedicated encrypted storage layer in v1.
 Reason: This is the smallest practical bridge between the Settings UI and the existing provider adapters, and it matches the current local single-user deployment model.
+
+## 2026-03-28 — Model selectors should come from the server model registry
+Client model pickers load their options from `/api/models` and use `/api/settings` for the active default instead of hardcoding a subset of known models in the UI.
+Reason: `models.ts` is the single source of truth, so UI selectors must stay aligned automatically when models are added or renamed.

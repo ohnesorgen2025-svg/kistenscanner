@@ -55,3 +55,5 @@ Strengthen the settings and runtime integration:
 - Implemented `client/src/pages/Settings.tsx` with model cards, provider key status, connection tests and runtime key saving to `server/.env`
 - Updated `POST /api/analyze` to fall back to the saved active model when `modelId` is omitted and synced `AddBox` to load that active model on mount
 - Verified `GET /api/settings`, `GET /api/models`, `POST /api/settings`, `POST /api/analyze` without `modelId` and the client route `/settings`
+- Replaced the hardcoded AddBox model dropdown with the dynamic `/api/models` list and preselected the stored active model from `/api/settings`
+- Hardened Settings model persistence by reloading saved settings after each model switch and verified active-model roundtrips through repeated `POST /api/settings` + `GET /api/settings`

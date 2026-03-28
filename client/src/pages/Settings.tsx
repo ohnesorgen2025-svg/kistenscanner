@@ -57,6 +57,12 @@ export function SettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
+  async function reloadSettings(): Promise<void> {
+    const settings = await getSettings();
+    setActiveModelId(settings.activeModelId);
+    setConfiguredProviders(settings.configuredProviders);
+  }
+
   useEffect(() => {
     let isMounted = true;
 
@@ -115,7 +121,7 @@ export function SettingsPage() {
       setError(null);
       setNotice(null);
       await saveActiveModel(modelId);
-      setActiveModelId(modelId);
+      await reloadSettings();
       setNotice("Aktives Modell gespeichert.");
     } catch (requestError) {
       setError(

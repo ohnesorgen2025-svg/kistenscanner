@@ -161,11 +161,15 @@ export async function searchInventory(query: string): Promise<SearchResult[]> {
 }
 
 export async function listModels(): Promise<ModelSummary[]> {
-  return requestJson<ModelSummary[]>("/api/models");
+  return requestJson<ModelSummary[]>("/api/models", {
+    cache: "no-store",
+  });
 }
 
 export async function getSettings(): Promise<SettingsResponse> {
-  return requestJson<SettingsResponse>("/api/settings");
+  return requestJson<SettingsResponse>("/api/settings", {
+    cache: "no-store",
+  });
 }
 
 export async function saveActiveModel(modelId: string): Promise<{ activeModelId: string }> {

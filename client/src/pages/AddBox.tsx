@@ -8,9 +8,11 @@ import {
   createItem,
   getBox,
   getSettings,
+  listModels,
   resolveAssetUrl,
   type AnalysisItem,
   type BoxRecord,
+  type ModelSummary,
 } from "../lib/api";
 
 type ReviewItem = AnalysisItem & {
@@ -47,6 +49,7 @@ export function AddBoxPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
+  const [models, setModels] = useState<ModelSummary[]>([]);
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [boxName, setBoxName] = useState("");
   const [location, setLocation] = useState("");
@@ -70,10 +73,21 @@ export function AddBoxPage() {
   useEffect(() => {
     let isMounted = true;
 
-    void getSettings()
-      .then((settings) => {
-        if (isMounted && settings.activeModelId) {
-          setModelId(settings.activeModelId);
+    void Promise.all([listModels(), getSettings()])
+      .then(([loadedModels, settings]) => {
+        if (!isMounted) {
+          return;
+        }
+
+        setModels(loadedModels);
+        const activeModelId = settings.activeModelId;
+        if (activeModelId && loadedModels.some((model) => model.id === activeModelId)) {
+          setModelId(activeModelId);
+          return;
+        }
+
+        if (loadedModels.length > 0) {
+          setModelId(loadedModels[0].id);
         }
       })
       .catch(() => undefined);
@@ -306,9 +320,11 @@ export function AddBoxPage() {
               onChange={(event) => setModelId(event.target.value)}
               value={modelId}
             >
-              <option value="gemini-31-pro">Gemini 3.1 Pro</option>
-              <option value="claude-sonnet-4">Claude Sonnet 4.6</option>
-              <option value="gpt-5">GPT-5.4</option>
+              {models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
