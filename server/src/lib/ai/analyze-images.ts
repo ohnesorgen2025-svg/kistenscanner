@@ -54,18 +54,17 @@ export async function analyzeImages(input: AnalyzeImagesInput): Promise<string> 
   }
 
   const model = getModelConfig(input.modelId);
+  let rawText: string;
 
   if (model.protocol === "ollama") {
-    return callOllama(model, input.prompt, input.images);
+    rawText = await callOllama(model, input.prompt, input.images);
+  } else if (model.protocol === "openai") {
+    rawText = await callOpenAiCompatible(model, input.prompt, input.images);
+  } else if (model.protocol === "vertex") {
+    rawText = await callVertex(model, input.prompt, input.images);
+  } else {
+    rawText = await callAnthropic(model, input.prompt, input.images);
   }
 
-  if (model.protocol === "openai") {
-    return callOpenAiCompatible(model, input.prompt, input.images);
-  }
-
-  if (model.protocol === "vertex") {
-    return callVertex(model, input.prompt, input.images);
-  }
-
-  return callAnthropic(model, input.prompt, input.images);
+  return rawText;
 }

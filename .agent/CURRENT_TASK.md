@@ -32,3 +32,5 @@ Create persistence services for finalized box data:
 - Implemented AI provider adapters for Ollama, OpenAI-compatible and Anthropic models
 - Implemented JSON-first analysis parsing with fallback for half-formatted responses
 - Verified the full analyze pipeline end-to-end with `AI_ANALYZE_USE_MOCK=1`, including saved originals and reachable crop URLs
+- Debugged a real Gemini request against `/api/analyze` and confirmed fenced JSON parsing works with non-mock output
+- Tightened the analysis prompt to prefer best-effort item extraction instead of returning empty arrays for ambiguous object photos

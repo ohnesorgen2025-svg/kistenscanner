@@ -51,3 +51,7 @@ Reason: Keeps the visual source material inside the repo and makes the allowed d
 ## 2026-03-28 — Analyze endpoint verified through a mock AI mode
 The analyze pipeline supports verification with `AI_ANALYZE_USE_MOCK=1`, which returns a hardcoded analysis response so uploads, parsing and Sharp crop generation can be tested without external API keys or real provider calls.
 Reason: Lets the project prove the full `/api/analyze` flow end-to-end while avoiding accidental live API usage during local development.
+
+## 2026-03-28 — Box analysis prompt should prefer best-effort items over empty arrays
+The analyze prompt now explicitly tells the model to return best-effort item guesses whenever physical objects are visible and to use an empty array only when there are truly no objects in view.
+Reason: A real Gemini test showed the parser can handle fenced JSON correctly, so reducing empty results is best handled at the prompt level instead of by weakening parsing rules.
