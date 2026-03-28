@@ -1,0 +1,48 @@
+export const CREATE_BOXES_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS boxes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    number INTEGER UNIQUE NOT NULL,
+    name TEXT NOT NULL,
+    location TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+`;
+
+export const CREATE_ITEMS_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    box_id INTEGER NOT NULL REFERENCES boxes(id),
+    name TEXT NOT NULL,
+    description TEXT,
+    detail TEXT,
+    title_image_id INTEGER,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  );
+`;
+
+export const CREATE_IMAGES_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    box_id INTEGER NOT NULL REFERENCES boxes(id),
+    path TEXT NOT NULL,
+    taken_at TEXT NOT NULL
+  );
+`;
+
+export const CREATE_ITEM_IMAGES_TABLE_SQL = `
+  CREATE TABLE IF NOT EXISTS item_images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_id INTEGER NOT NULL REFERENCES items(id),
+    path TEXT NOT NULL,
+    is_title INTEGER NOT NULL DEFAULT 0
+  );
+`;
+
+export const SCHEMA_TABLES = [
+  CREATE_BOXES_TABLE_SQL,
+  CREATE_ITEMS_TABLE_SQL,
+  CREATE_IMAGES_TABLE_SQL,
+  CREATE_ITEM_IMAGES_TABLE_SQL,
+];

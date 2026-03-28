@@ -39,3 +39,7 @@ Reason: Ports were checked before scaffold and both were available.
 ## 2026-03-27 — Vertex provider extracted from inventarisierung analyze route
 `models.ts` was copied directly from `inventarisierung/src/config/models.ts`. The Vertex implementation was copied from the source project's inline analyze route into `server/src/lib/ai/providers/vertex.ts`.
 Reason: The source repo no longer exposes a standalone Vertex provider file, but the working adapter logic still exists there and should stay isolated in the provider layer here.
+
+## 2026-03-28 — SQLite schema bootstraps on server startup
+The SQLite connection now enables foreign keys and runs `CREATE TABLE IF NOT EXISTS` migrations during startup. The local DB file is created under `server/data/`.
+Reason: Keeps the initial backend setup minimal and ensures a fresh checkout can start the server without a separate manual migration step.
