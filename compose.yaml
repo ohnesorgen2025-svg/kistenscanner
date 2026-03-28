@@ -4,7 +4,7 @@ services:
     env_file:
       - .env
     ports:
-      - "4001:4001"
+      - "3008:4001"
     restart: unless-stopped
     volumes:
       - ./data:/app/data

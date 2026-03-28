@@ -1,3 +1,3 @@
 name: kistenscanner
-port: 3000
+port: 3008
 stack: node_monorepo
