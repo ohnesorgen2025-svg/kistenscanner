@@ -111,3 +111,7 @@ Reason: DevPilot deploys LAN-ready projects most simply when the app can run as 
 ## 2026-03-28 — Live LAN runtime reads env from the persisted data directory
 The deployed VM now expects the runtime env file under `data/.env`, followed by a container restart so Docker Compose picks the values up.
 Reason: The current DevPilot LAN deployment for `kistenscanner` is already live under `http://kistenscanner.local`, and the persisted data directory is the stable place for runtime environment values on the VM.
+
+## 2026-03-28 — Bottom-nav route changes force a page remount
+The main routed content in `client/src/App.tsx` is keyed by `location.pathname` so switching between bottom-nav destinations remounts the active page component.
+Reason: This is the smallest robust fix for intermittent blank screens caused by stale per-page runtime state during route changes, especially around camera and scanner pages.

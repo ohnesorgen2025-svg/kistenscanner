@@ -1,4 +1,4 @@
-import { NavLink, Route, Routes } from "react-router-dom";
+import { NavLink, Route, Routes, useLocation } from "react-router-dom";
 
 import "./App.css";
 import { AddBoxPage } from "./pages/AddBox";
@@ -43,6 +43,8 @@ function NavigationItem({ icon, label, to }: NavigationLink) {
 }
 
 function App() {
+  const location = useLocation();
+
   return (
     <div className="shell">
       <header className="topbar">
@@ -58,14 +60,16 @@ function App() {
       </header>
 
       <main className="page-shell">
-        <Routes>
-          <Route element={<SearchPage />} path="/" />
-          <Route element={<ScanPage />} path="/scan" />
-          <Route element={<SettingsPage />} path="/settings" />
-          <Route element={<BoxesPage />} path="/boxes" />
-          <Route element={<AddBoxPage />} path="/boxes/add" />
-          <Route element={<BoxDetailPage />} path="/boxes/:id" />
-        </Routes>
+        <div className="page-stack page-stack--route" key={location.pathname}>
+          <Routes location={location}>
+            <Route element={<SearchPage />} path="/" />
+            <Route element={<ScanPage />} path="/scan" />
+            <Route element={<SettingsPage />} path="/settings" />
+            <Route element={<BoxesPage />} path="/boxes" />
+            <Route element={<AddBoxPage />} path="/boxes/add" />
+            <Route element={<BoxDetailPage />} path="/boxes/:id" />
+          </Routes>
+        </div>
       </main>
 
       <nav className="bottom-nav">
