@@ -7,22 +7,7 @@
 - **Port:** 3008
 - **Local Domain:** kistenscanner.local
 - **Deploy Path:** /home/stefan/apps/kistenscanner
-- **Last Deploy:** 2026-03-28T15:56:10.757Z
-
-## Status
-- Confirmed live via DevPilot on `2026-03-28`
-- Verified `GET /api/health` returns `200 OK`
-- Verified `GET /` serves the app via Caddy + Express
-
-## Runtime
-- Container app port: `4001`
-- Published LAN port: `3008`
-- Re-deploy: DevPilot
-- VM env file consumed by container: `data/.env`
-
-## Persistence
-- Data directory: `./data`
-- Docker volume: `./data:/app/data`
+- **Last Deploy:** 2026-03-28T21:21:25.765Z
 
 ## Re-Deploy
 After pushing changes to main, re-deploy with:
