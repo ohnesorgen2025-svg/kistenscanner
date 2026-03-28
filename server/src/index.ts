@@ -6,7 +6,10 @@ import express from "express";
 
 import { database } from "./db/index.js";
 import { analyzeRouter } from "./routes/analyze.js";
+import { boxesRouter } from "./routes/boxes.js";
 import { healthRouter } from "./routes/health.js";
+import { itemImageTitleRouter, itemImagesRouter } from "./routes/item-images.js";
+import { boxItemsRouter, itemsRouter } from "./routes/items.js";
 
 const DEFAULT_SERVER_PORT = 4001;
 const app = express();
@@ -16,6 +19,11 @@ app.use(express.json({ limit: "10mb" }));
 app.use("/images", express.static(path.resolve(process.cwd(), "data", "images")));
 app.use("/api/health", healthRouter);
 app.use("/api/analyze", analyzeRouter);
+app.use("/api/boxes", boxesRouter);
+app.use("/api/boxes", boxItemsRouter);
+app.use("/api/items", itemsRouter);
+app.use("/api/items", itemImagesRouter);
+app.use("/api/item-images", itemImageTitleRouter);
 
 app.get("/api", (_request, response) => {
   response.json({

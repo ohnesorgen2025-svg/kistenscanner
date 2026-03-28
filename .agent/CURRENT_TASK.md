@@ -1,19 +1,19 @@
 # Current Task
 
 ## Status:
-🟢 Analyze endpoint and image pipeline complete
+🟢 Store workflow complete
 
 ## Current Goal
-Build the next STORE workflow layer on top of the analyze pipeline and existing SQLite foundation.
+Build the first FIND workflow slice on top of the saved box and item data.
 
 ## Next Action
-Create persistence services for finalized box data:
-- save analyzed items and source images into the SQLite schema
-- assign auto-incrementing box numbers during finalize
-- keep API routes thin and business logic in `src/services/`
+Implement search and retrieval for saved inventory:
+- add a search API across item name, description and detail
+- show saved results in the Search page with box number and location
+- keep the QR jump path aligned with `/boxes/:id`
 
 ## Open Questions
-- None for the analyze pipeline step.
+- None for the completed store workflow step.
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -34,3 +34,8 @@ Create persistence services for finalized box data:
 - Verified the full analyze pipeline end-to-end with `AI_ANALYZE_USE_MOCK=1`, including saved originals and reachable crop URLs
 - Debugged a real Gemini request against `/api/analyze` and confirmed fenced JSON parsing works with non-mock output
 - Tightened the analysis prompt to prefer best-effort item extraction instead of returning empty arrays for ambiguous object photos
+- Added inventory services plus REST routes for boxes, items and item images
+- Implemented the Store UI flow in `client/src/pages/AddBox.tsx` from photo upload through AI review to saved box with QR label
+- Added `Boxes` and `BoxDetail` pages and wired React Router for `/`, `/boxes`, `/boxes/add` and `/boxes/:id`
+- Verified the end-to-end store persistence flow with a mock AI server: analyze → create box → save items → fetch list/detail
+- Added a manual review-item fallback when AI returns no detected items so saving a box is not blocked by an empty analysis result

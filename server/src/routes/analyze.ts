@@ -22,6 +22,7 @@ type SavedImage = {
 
 type AnalyzeResponseItem = AnalysisItem & {
   thumbnailPath: string | null;
+  sourceImagePath: string | null;
 };
 
 const upload = multer({
@@ -130,18 +131,20 @@ analyzeRouter.post("/", upload.any(), async (request, response) => {
 
     const result: AnalyzeResponseItem[] = await Promise.all(
       parsedItems.map(async (item, itemIndex) => {
+        const sourceIndex = clamp(item.sourceImageIndex ?? 0, 0, savedImages.length - 1);
+        const sourceImage = savedImages[sourceIndex];
+        if (!sourceImage) {
+          throw new Error("Source image for analyze result not found.");
+        }
+
         if (!item.bbox) {
           return {
             ...item,
             thumbnailPath: null,
+            sourceImagePath: sourceImage.publicPath,
           };
         }
 
-        const sourceIndex = clamp(item.sourceImageIndex ?? 0, 0, savedImages.length - 1);
-        const sourceImage = savedImages[sourceIndex];
-        if (!sourceImage) {
-          throw new Error("Source image for crop not found.");
-        }
         const thumbnailPath = await writeThumbnailCrop(
           sourceImage,
           item.bbox,
@@ -151,6 +154,7 @@ analyzeRouter.post("/", upload.any(), async (request, response) => {
         return {
           ...item,
           thumbnailPath,
+          sourceImagePath: sourceImage.publicPath,
         };
       }),
     );

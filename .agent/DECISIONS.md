@@ -55,3 +55,11 @@ Reason: Lets the project prove the full `/api/analyze` flow end-to-end while avo
 ## 2026-03-28 — Box analysis prompt should prefer best-effort items over empty arrays
 The analyze prompt now explicitly tells the model to return best-effort item guesses whenever physical objects are visible and to use an empty array only when there are truly no objects in view.
 Reason: A real Gemini test showed the parser can handle fenced JSON correctly, so reducing empty results is best handled at the prompt level instead of by weakening parsing rules.
+
+## 2026-03-28 — Box numbers are assigned only when a box is finalized
+`POST /api/boxes` assigns the next sequential `number` at save time instead of reserving numbers during photo capture or analysis.
+Reason: Keeps the store workflow simple, avoids gaps from abandoned drafts and matches the v1 single-user local flow.
+
+## 2026-03-28 — Store review supports manual fallback items
+The Add Box review step allows adding and removing manual items, and an empty AI analysis seeds a blank review row instead of blocking the workflow.
+Reason: Real provider responses can still return an empty array for ambiguous photos, so the store flow needs a pragmatic fallback to remain usable.
