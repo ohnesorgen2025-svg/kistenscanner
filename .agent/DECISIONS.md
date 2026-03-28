@@ -99,3 +99,7 @@ Reason: This is the smallest practical bridge between the Settings UI and the ex
 ## 2026-03-28 — Model selectors should come from the server model registry
 Client model pickers load their options from `/api/models` and use `/api/settings` for the active default instead of hardcoding a subset of known models in the UI.
 Reason: `models.ts` is the single source of truth, so UI selectors must stay aligned automatically when models are added or renamed.
+
+## 2026-03-28 — Mobile capture uses progressive enhancement
+The Add Box flow now prefers a live `getUserMedia` camera preview for mobile capture, exposes a torch toggle only when the active device reports torch support, and falls back to the existing `accept="image/*"` plus `capture="environment"` file input when live camera access is unavailable.
+Reason: This keeps the mobile capture flow practical on real phones without breaking the simpler file-input path on unsupported browsers or desktops.

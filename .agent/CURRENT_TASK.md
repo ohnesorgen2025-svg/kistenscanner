@@ -1,19 +1,19 @@
 # Current Task
 
 ## Status:
-🟢 Find workflow complete
+🟢 Mobile UX pass complete
 
 ## Current Goal
-Polish retrieval and settings so model choice, provider access and label flow work together cleanly.
+Polish the app for real mobile use so capture, review, search and detail flows hold up on a small screen.
 
 ## Next Action
-Strengthen the settings and runtime integration:
-- verify provider test flows against the real configured endpoints
-- decide whether Add Box should keep the manual model selector or rely solely on the saved active model
-- refine print label styling for real A6 output on the target printer path
+Verify the remaining device-dependent paths on physical hardware:
+- confirm live camera preview and torch toggle on a supported phone
+- test QR scan and label printing on the target mobile/browser setup
+- decide whether Add Box should default to the saved active model without showing a manual selector in v1
 
 ## Open Questions
-- No blocking implementation questions after the initial settings slice.
+- No blocking implementation questions. Remaining work is device validation and polish.
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -57,3 +57,5 @@ Strengthen the settings and runtime integration:
 - Verified `GET /api/settings`, `GET /api/models`, `POST /api/settings`, `POST /api/analyze` without `modelId` and the client route `/settings`
 - Replaced the hardcoded AddBox model dropdown with the dynamic `/api/models` list and preselected the stored active model from `/api/settings`
 - Hardened Settings model persistence by reloading saved settings after each model switch and verified active-model roundtrips through repeated `POST /api/settings` + `GET /api/settings`
+- Added a mobile-focused Add Box camera preview with progressive fallback to the system capture input and a conditional torch toggle for supported devices
+- Raised interactive targets and input font sizing for mobile, reduced horizontal overflow risk, and increased bottom safe-area padding around the fixed navigation

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Link } from "react-router-dom";
 
@@ -17,6 +17,14 @@ import {
 
 type ReviewItem = AnalysisItem & {
   detail: string;
+};
+
+type TorchCapabilities = MediaTrackCapabilities & {
+  torch?: boolean;
+};
+
+type TorchConstraintSet = MediaTrackConstraintSet & {
+  torch?: boolean;
 };
 
 const DEFAULT_MODEL_ID = "gemini-31-pro";
@@ -46,6 +54,8 @@ function buildQrValue(box: BoxRecord): string {
 }
 
 export function AddBoxPage() {
+  const captureInputRef = useRef<HTMLInputElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
@@ -58,6 +68,33 @@ export function AddBoxPage() {
   const [error, setError] = useState<string | null>(null);
   const [savedBox, setSavedBox] = useState<BoxRecord | null>(null);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [isCameraStarting, setIsCameraStarting] = useState(false);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isTorchSupported, setIsTorchSupported] = useState(false);
+  const [isTorchEnabled, setIsTorchEnabled] = useState(false);
+
+  useEffect(() => {
+    if (!videoRef.current) {
+      return;
+    }
+
+    videoRef.current.srcObject = cameraStream;
+
+    if (cameraStream) {
+      void videoRef.current.play().catch(() => undefined);
+    }
+  }, [cameraStream]);
+
+  useEffect(() => {
+    return () => {
+      if (cameraStream) {
+        for (const track of cameraStream.getTracks()) {
+          track.stop();
+        }
+      }
+    };
+  }, [cameraStream]);
 
   useEffect(() => {
     const urls = files.map((file) => URL.createObjectURL(file));
@@ -128,14 +165,133 @@ export function AddBoxPage() {
     };
   }, [savedBox]);
 
-  function appendFiles(nextFiles: FileList | null) {
+  function appendFiles(nextFiles: FileList | File[] | null) {
     if (!nextFiles || nextFiles.length === 0) {
       return;
     }
 
-    setFiles((current) => [...current, ...Array.from(nextFiles)]);
+    const normalizedFiles = Array.from(nextFiles);
+    setFiles((current) => [...current, ...normalizedFiles]);
     setSavedBox(null);
     setError(null);
+  }
+
+  function stopCamera() {
+    if (cameraStream) {
+      for (const track of cameraStream.getTracks()) {
+        track.stop();
+      }
+    }
+
+    setCameraStream(null);
+    setIsCameraActive(false);
+    setIsTorchSupported(false);
+    setIsTorchEnabled(false);
+  }
+
+  async function startCamera() {
+    if (!navigator.mediaDevices?.getUserMedia) {
+      captureInputRef.current?.click();
+      return;
+    }
+
+    try {
+      setIsCameraStarting(true);
+      setError(null);
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {
+          facingMode: { ideal: "environment" },
+        },
+      });
+
+      const [videoTrack] = stream.getVideoTracks();
+      const capabilities = videoTrack?.getCapabilities() as TorchCapabilities | undefined;
+
+      setCameraStream((current) => {
+        if (current) {
+          for (const track of current.getTracks()) {
+            track.stop();
+          }
+        }
+
+        return stream;
+      });
+      setIsCameraActive(true);
+      setIsTorchSupported(Boolean(capabilities?.torch));
+      setIsTorchEnabled(false);
+    } catch {
+      captureInputRef.current?.click();
+    } finally {
+      setIsCameraStarting(false);
+    }
+  }
+
+  async function toggleTorch() {
+    if (!cameraStream) {
+      return;
+    }
+
+    const [videoTrack] = cameraStream.getVideoTracks();
+    if (!videoTrack) {
+      return;
+    }
+
+    try {
+      const nextValue = !isTorchEnabled;
+      await videoTrack.applyConstraints({
+        advanced: [{ torch: nextValue } as TorchConstraintSet],
+      });
+      setIsTorchEnabled(nextValue);
+    } catch {
+      setError("Taschenlampe konnte nicht umgeschaltet werden.");
+    }
+  }
+
+  async function capturePhotoFromCamera() {
+    const video = videoRef.current;
+
+    if (!video || !isCameraActive) {
+      return;
+    }
+
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+
+    if (width === 0 || height === 0) {
+      setError("Kamera ist noch nicht bereit.");
+      return;
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      setError("Foto konnte nicht erstellt werden.");
+      return;
+    }
+
+    context.drawImage(video, 0, 0, width, height);
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", 0.92);
+    });
+
+    if (!blob) {
+      setError("Foto konnte nicht erstellt werden.");
+      return;
+    }
+
+    const timestamp = Date.now();
+    const file = new File([blob], `aufnahme-${timestamp}.jpg`, {
+      type: "image/jpeg",
+      lastModified: timestamp,
+    });
+
+    appendFiles([file]);
   }
 
   function updateReviewItem(index: number, patch: Partial<ReviewItem>) {
@@ -263,9 +419,14 @@ export function AddBoxPage() {
             <h2>Fotos erfassen</h2>
           </div>
           <div className="action-row">
-            <label className="button button--ghost" htmlFor="capture-input">
-              Kamera öffnen
-            </label>
+            <button
+              className="button button--ghost"
+              disabled={isCameraStarting}
+              onClick={() => void startCamera()}
+              type="button"
+            >
+              {isCameraStarting ? "Kamera startet…" : isCameraActive ? "Kamera aktiv" : "Kamera öffnen"}
+            </button>
             <label className="button button--ghost" htmlFor="upload-input">
               Dateien hochladen
             </label>
@@ -277,6 +438,7 @@ export function AddBoxPage() {
           capture="environment"
           className="sr-only"
           id="capture-input"
+          ref={captureInputRef}
           multiple
           onChange={(event) => appendFiles(event.target.files)}
           type="file"
@@ -289,6 +451,44 @@ export function AddBoxPage() {
           onChange={(event) => appendFiles(event.target.files)}
           type="file"
         />
+
+        {isCameraActive ? (
+          <div className="camera-panel">
+            <div className="camera-preview">
+              <video
+                autoPlay
+                className="camera-preview__video"
+                muted
+                playsInline
+                ref={videoRef}
+              />
+            </div>
+            <div className="action-row action-row--wrap">
+              <button
+                className="button button--primary"
+                onClick={() => void capturePhotoFromCamera()}
+                type="button"
+              >
+                Foto aufnehmen
+              </button>
+              {isTorchSupported ? (
+                <button
+                  className="button button--ghost"
+                  onClick={() => void toggleTorch()}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">
+                    {isTorchEnabled ? "flashlight_off" : "flashlight_on"}
+                  </span>
+                  {isTorchEnabled ? "Licht aus" : "Licht an"}
+                </button>
+              ) : null}
+              <button className="button button--ghost" onClick={stopCamera} type="button">
+                Kamera schließen
+              </button>
+            </div>
+          </div>
+        ) : null}
 
         <div className="preview-grid">
           {previewUrls.map((url, index) => (
