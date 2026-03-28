@@ -64,3 +64,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Confirmed the DevPilot LAN deployment is live at `http://kistenscanner.local`, restarted the deployed container on the VM, and re-verified both `/api/health` and `/`
 - Added a route-keyed main content wrapper in `client/src/App.tsx` so tab navigation remounts page components cleanly and avoids stale blank screens between bottom-nav routes
 - Added route-specific desktop width caps so default pages stay mobile-first on large screens, `Kisten` expands to a multi-column desktop grid, and `BoxDetail` no longer stretches across the full shell width
+- Normalized client asset paths and added thumbnail fallbacks so AddBox review can use the source image and BoxDetail can fall back to stored item or box images when a crop path is missing

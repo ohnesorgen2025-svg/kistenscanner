@@ -119,3 +119,7 @@ Reason: This is the smallest robust fix for intermittent blank screens caused by
 ## 2026-03-28 — Desktop keeps a constrained mobile-first reading width
 Large-screen rendering now uses route-specific max widths: default app screens stay narrow, the boxes overview widens into a 2-3 column grid, and box detail gets a medium desktop width instead of stretching edge to edge.
 Reason: The product is still mobile-first, but it should remain comfortable and intentional on desktop instead of scaling the phone layout across the entire viewport.
+
+## 2026-03-28 — Thumbnail rendering falls back to the best available stored image
+Client thumbnail rendering now normalizes relative asset paths and falls back from crop thumbnails to stored source images when no crop path is available.
+Reason: Production showed that some analyzed items legitimately have no saved crop path, so the UI should still render the best available image instead of collapsing straight to a placeholder icon.

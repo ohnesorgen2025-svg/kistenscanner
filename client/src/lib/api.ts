@@ -99,7 +99,7 @@ export function resolveAssetUrl(assetPath: string | null | undefined): string | 
     return assetPath;
   }
 
-  return assetPath;
+  return assetPath.startsWith("/") ? assetPath : `/${assetPath}`;
 }
 
 async function requestJson<T>(path: string, options: RequestOptions = {}): Promise<T> {

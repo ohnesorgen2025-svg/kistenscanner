@@ -53,6 +53,10 @@ function buildQrValue(box: BoxRecord): string {
   return `kistenscanner://box-number/${box.number}`;
 }
 
+function getReviewImageUrl(item: ReviewItem): string | null {
+  return resolveAssetUrl(item.thumbnailPath ?? item.sourceImagePath);
+}
+
 export function AddBoxPage() {
   const captureInputRef = useRef<HTMLInputElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -558,8 +562,8 @@ export function AddBoxPage() {
           {reviewItems.map((item, index) => (
             <article className="review-card" key={`${item.name}-${index}`}>
               <div className="review-card__media">
-                {resolveAssetUrl(item.thumbnailPath) ? (
-                  <img alt={item.name || `Item ${index + 1}`} src={resolveAssetUrl(item.thumbnailPath) ?? undefined} />
+                {getReviewImageUrl(item) ? (
+                  <img alt={item.name || `Item ${index + 1}`} src={getReviewImageUrl(item) ?? undefined} />
                 ) : (
                   <div className="box-card__placeholder">
                     <span className="material-symbols-outlined">inventory_2</span>
