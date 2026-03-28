@@ -71,3 +71,7 @@ Reason: Keeps persisted paths deployment-friendly while fixing local dev renderi
 ## 2026-03-28 — German UI copy uses real umlauts
 Visible frontend copy uses German wording with proper `ä`, `ö`, `ü` and `ß` instead of ASCII substitutions.
 Reason: The product is intended for German-language use and should read naturally during manual testing and later LAN deployment.
+
+## 2026-03-28 — AI analysis should answer in German with proper umlauts
+The box-analysis prompt explicitly requests German item names and descriptions and forbids ASCII substitutions like `ae`, `oe` and `ue` where umlauts are correct.
+Reason: Stored AI output should match the German UI and remain natural and searchable for the intended user.

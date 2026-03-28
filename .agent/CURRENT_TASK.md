@@ -41,3 +41,4 @@ Implement search and retrieval for saved inventory:
 - Added a manual review-item fallback when AI returns no detected items so saving a box is not blocked by an empty analysis result
 - Fixed item thumbnail rendering by resolving server-relative `/images/...` asset paths to the backend origin in the client dev flow
 - Translated the UI to German and normalized visible copy to proper umlauts (`ä`, `ö`, `ü`, `ß`)
+- Updated the box analysis prompt so AI item names and descriptions are requested in German with proper umlauts (`ä`, `ö`, `ü`, `ß`)
