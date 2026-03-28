@@ -107,3 +107,7 @@ Reason: This keeps the mobile capture flow practical on real phones without brea
 ## 2026-03-28 — LAN deployment runs as one container with same-origin frontend and API
 The repo now ships with a root `Dockerfile` and `compose.yaml` that build the Vite client and TypeScript server together, persist runtime data under `./data`, and serve the built client from Express on port `4001`.
 Reason: DevPilot deploys LAN-ready projects most simply when the app can run as a single Dockerized service with one origin for frontend assets, API calls and image paths.
+
+## 2026-03-28 — Live LAN runtime reads env from the persisted data directory
+The deployed VM now expects the runtime env file under `data/.env`, followed by a container restart so Docker Compose picks the values up.
+Reason: The current DevPilot LAN deployment for `kistenscanner` is already live under `http://kistenscanner.local`, and the persisted data directory is the stable place for runtime environment values on the VM.

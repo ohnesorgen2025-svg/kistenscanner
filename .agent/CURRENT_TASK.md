@@ -1,19 +1,19 @@
 # Current Task
 
 ## Status:
-🟢 LAN deployment prep complete
+🟢 LAN deployment confirmed
 
 ## Current Goal
-Prepare the repo for DevPilot LAN deployment so the app can run as one Dockerized service with persisted local data.
+Keep the deployed LAN version stable and verify the remaining real-device flows against the live hostname.
 
 ## Next Action
-Run the first DevPilot-managed LAN deployment and validate the real hostname path:
-- deploy through DevPilot to `http://kistenscanner.local`
-- confirm persisted SQLite data and uploaded images survive container restarts
-- test mobile camera, QR scan and print flow against the deployed LAN origin
+Validate the live app on real devices against `http://kistenscanner.local`:
+- confirm mobile camera capture and torch behavior against the deployed hostname
+- test QR scan and print label flow in the LAN environment
+- verify persisted SQLite data and uploaded images survive another container restart
 
 ## Open Questions
-- No blocking implementation questions. The next step is live LAN validation on the target network.
+- No blocking implementation questions. Remaining work is live device validation against the deployed LAN URL.
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -61,3 +61,4 @@ Run the first DevPilot-managed LAN deployment and validate the real hostname pat
 - Raised interactive targets and input font sizing for mobile, reduced horizontal overflow risk, and increased bottom safe-area padding around the fixed navigation
 - Added a multi-stage Docker build plus `compose.yaml` so the Express server and built Vite client run together in one production container on port `4001`
 - Added `.agent/DEPLOYMENT.md`, switched client assets to same-origin paths, and verified `docker build`, `docker compose up`, `http://localhost:4001` and `http://localhost:4001/api/health`
+- Confirmed the DevPilot LAN deployment is live at `http://kistenscanner.local`, restarted the deployed container on the VM, and re-verified both `/api/health` and `/`
