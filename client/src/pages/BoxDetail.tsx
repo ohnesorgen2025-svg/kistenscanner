@@ -20,44 +20,71 @@ type ItemDraft = {
   detail: string;
 };
 
-type PrintTemplate = {
+type LabelProfile = {
   id: string;
   label: string;
-  widthMm: number;
-  heightMm: number;
+  pageWidthMm: number;
+  pageHeightMm: number;
+  columns: number;
+  rows: number;
+  labelWidthMm: number;
+  labelHeightMm: number;
+  marginTopMm: number;
+  marginLeftMm: number;
+  gapXmm: number;
+  gapYmm: number;
   qrMm: number;
   numberFontPt: number;
 };
 
-const printTemplates: PrintTemplate[] = [
+type LabelSlot = {
+  index: number;
+  row: number;
+  column: number;
+  leftMm: number;
+  topMm: number;
+};
+
+const labelProfiles: LabelProfile[] = [
   {
-    id: "small",
-    label: "Klein · 45 × 60 mm",
-    widthMm: 45,
-    heightMm: 60,
+    id: "no-5028",
+    label: "No. 5028 · 83,82 × 50,80 mm · 2 × 5",
+    pageWidthMm: 210,
+    pageHeightMm: 297,
+    columns: 2,
+    rows: 5,
+    labelWidthMm: 83.82,
+    labelHeightMm: 50.8,
+    marginTopMm: 15.09,
+    marginLeftMm: 4.67,
+    gapXmm: 2.54,
+    gapYmm: 0,
     qrMm: 28,
-    numberFontPt: 22,
-  },
-  {
-    id: "medium",
-    label: "Mittel · 60 × 80 mm",
-    widthMm: 60,
-    heightMm: 80,
-    qrMm: 38,
-    numberFontPt: 30,
-  },
-  {
-    id: "large",
-    label: "Groß · 80 × 110 mm",
-    widthMm: 80,
-    heightMm: 110,
-    qrMm: 54,
-    numberFontPt: 42,
+    numberFontPt: 26,
   },
 ];
 
+function buildSlots(profile: LabelProfile): LabelSlot[] {
+  return Array.from({ length: profile.columns * profile.rows }, (_, index) => {
+    const row = Math.floor(index / profile.columns);
+    const column = index % profile.columns;
+
+    return {
+      index,
+      row,
+      column,
+      leftMm: profile.marginLeftMm + column * (profile.labelWidthMm + profile.gapXmm),
+      topMm: profile.marginTopMm + row * (profile.labelHeightMm + profile.gapYmm),
+    };
+  });
+}
+
 function buildQrValue(box: BoxRecord): string {
   return `kistenscanner://box-number/${box.number}`;
+}
+
+function formatSlotLabel(slot: LabelSlot): string {
+  return `Feld ${slot.index + 1} · Zeile ${slot.row + 1} · Spalte ${slot.column + 1}`;
 }
 
 function getItemImageUrl(item: ItemRecord): string | null {
@@ -77,7 +104,8 @@ export function BoxDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
-  const [printTemplateId, setPrintTemplateId] = useState<string>(printTemplates[1].id);
+  const [labelProfileId, setLabelProfileId] = useState<string>(labelProfiles[0].id);
+  const [selectedLabelSlotIndex, setSelectedLabelSlotIndex] = useState<number>(0);
   const confirmationTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -270,13 +298,20 @@ export function BoxDetailPage() {
 
 
   const availableMoveTargets = boxes.filter((entry) => entry.id !== box?.id);
-  const activePrintTemplate =
-    printTemplates.find((template) => template.id === printTemplateId) ?? printTemplates[1];
+  const activeLabelProfile =
+    labelProfiles.find((profile) => profile.id === labelProfileId) ?? labelProfiles[0];
+  const labelSlots = buildSlots(activeLabelProfile);
+  const selectedLabelSlot =
+    labelSlots.find((slot) => slot.index === selectedLabelSlotIndex) ?? labelSlots[0];
   const printStickerStyle = {
-    "--print-sticker-width": `${activePrintTemplate.widthMm}mm`,
-    "--print-sticker-height": `${activePrintTemplate.heightMm}mm`,
-    "--print-sticker-qr-size": `${activePrintTemplate.qrMm}mm`,
-    "--print-sticker-number-size": `${activePrintTemplate.numberFontPt}pt`,
+    "--print-sheet-width": `${activeLabelProfile.pageWidthMm}mm`,
+    "--print-sheet-height": `${activeLabelProfile.pageHeightMm}mm`,
+    "--print-sticker-width": `${activeLabelProfile.labelWidthMm}mm`,
+    "--print-sticker-height": `${activeLabelProfile.labelHeightMm}mm`,
+    "--print-sticker-left": `${selectedLabelSlot.leftMm}mm`,
+    "--print-sticker-top": `${selectedLabelSlot.topMm}mm`,
+    "--print-sticker-qr-size": `${activeLabelProfile.qrMm}mm`,
+    "--print-sticker-number-size": `${activeLabelProfile.numberFontPt}pt`,
   } as CSSProperties;
 
   return (
@@ -296,25 +331,7 @@ export function BoxDetailPage() {
                 <span>Standort: {box.location}</span>
                 <span>{box.itemCount} Items</span>
               </div>
-              <div className="field field--compact">
-                <label htmlFor="print-template">Formatvorlage</label>
-                <select
-                  className="input"
-                  id="print-template"
-                  onChange={(event) => setPrintTemplateId(event.target.value)}
-                  value={printTemplateId}
-                >
-                  {printTemplates.map((template) => (
-                    <option key={template.id} value={template.id}>
-                      {template.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div className="action-row">
-                <button className="button button--primary" onClick={handlePrintLabel} type="button">
-                  Label drucken
-                </button>
                 <Link className="button button--ghost" to="/boxes">
                   Zurück zu den Kisten
                 </Link>
@@ -328,11 +345,102 @@ export function BoxDetailPage() {
             </div>
           </section>
 
+          <section className="panel">
+            <div className="panel-header">
+              <div>
+                <p className="section-kicker">Stickerdruck</p>
+                <h2>Bogen und Position</h2>
+              </div>
+            </div>
+
+            <div className="form-grid">
+              <div className="field">
+                <label htmlFor="label-profile">Label-Profil</label>
+                <select
+                  className="input"
+                  id="label-profile"
+                  onChange={(event) => {
+                    const nextProfileId = event.target.value;
+                    setLabelProfileId(nextProfileId);
+                    setSelectedLabelSlotIndex(0);
+                  }}
+                  value={labelProfileId}
+                >
+                  {labelProfiles.map((profile) => (
+                    <option key={profile.id} value={profile.id}>
+                      {profile.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="field">
+                <label htmlFor="label-slot">Position</label>
+                <select
+                  className="input"
+                  id="label-slot"
+                  onChange={(event) => setSelectedLabelSlotIndex(Number(event.target.value))}
+                  value={selectedLabelSlotIndex}
+                >
+                  {labelSlots.map((slot) => (
+                    <option key={slot.index} value={slot.index}>
+                      {formatSlotLabel(slot)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="label-preview__meta">
+              <div className="label-preview__meta-copy">
+                <p className="section-kicker">Auswahl</p>
+                <p className="label-preview__selection">{formatSlotLabel(selectedLabelSlot)}</p>
+              </div>
+              <button className="button button--primary" onClick={handlePrintLabel} type="button">
+                Label drucken
+              </button>
+            </div>
+
+            <div className="label-preview">
+              <div className="label-preview__sheet">
+                {labelSlots.map((slot) => {
+                  const isSelected = slot.index === selectedLabelSlot.index;
+                  const slotStyle = {
+                    left: `${(slot.leftMm / activeLabelProfile.pageWidthMm) * 100}%`,
+                    top: `${(slot.topMm / activeLabelProfile.pageHeightMm) * 100}%`,
+                    width: `${(activeLabelProfile.labelWidthMm / activeLabelProfile.pageWidthMm) * 100}%`,
+                    height: `${(activeLabelProfile.labelHeightMm / activeLabelProfile.pageHeightMm) * 100}%`,
+                  } as CSSProperties;
+
+                  return (
+                    <button
+                      className={`label-preview__slot${isSelected ? " label-preview__slot--active" : ""}`}
+                      key={slot.index}
+                      onClick={() => setSelectedLabelSlotIndex(slot.index)}
+                      style={slotStyle}
+                      type="button"
+                    >
+                      {isSelected ? (
+                        <div className="label-preview__sticker">
+                          <span className="label-preview__number">{box.number}</span>
+                          <span className="label-preview__qr">
+                            <span className="material-symbols-outlined">qr_code_2</span>
+                          </span>
+                        </div>
+                      ) : (
+                        <span className="label-preview__slot-index">{slot.index + 1}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+
           <section className="panel print-label-panel" data-print-label="true">
-            <div className="print-sheet">
+            <div className="print-sheet" style={printStickerStyle}>
               <div
                 className="print-sticker"
-                style={printStickerStyle}
               >
                 <div className="print-sticker__number">{box.number}</div>
                 <div className="print-sticker__qr">

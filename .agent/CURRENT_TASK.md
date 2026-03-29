@@ -4,16 +4,16 @@
 🟢 LAN deployment confirmed
 
 ## Current Goal
-Keep the deployed LAN version stable and remove the remaining route/navigation regressions from the live UI.
+Keep the deployed LAN version stable and refine the live UI plus print workflow against real usage.
 
 ## Next Action
-Validate the live app on real devices against `http://kistenscanner.local`:
-- retest bottom-nav transitions between `Suchen`, `Scannen`, `Hinzufügen`, `Kisten` and `Einstellungen`
-- confirm the scan route can be left and re-entered without stale camera/scanner state
-- continue the remaining device checks for camera capture, QR scan and print flow
+Continue the real-world label workflow:
+- add more real sticker profiles beyond `No. 5028`
+- validate the clickable sheet-position workflow against a real printed test page
+- keep checking the live UI on desktop and mobile for remaining broken layouts
 
 ## Open Questions
-- No blocking implementation questions. Remaining work is targeted live validation against the deployed LAN URL.
+- Which additional bought label packages should become built-in print profiles after `No. 5028`?
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -86,3 +86,5 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Reworked the print-label CSS to use the A6 page area intentionally, with a larger box number, tighter margins and a properly sized QR block instead of a tiny top-left print fragment
 - Replaced the print label with a DIN-A4 sticker print mode that outputs only the box number and QR code, without `#`, item list or other changing metadata
 - Added selectable print format templates in BoxDetail so label size is no longer hardcoded to one layout
+- Replaced the placeholder sticker templates with the first real label profile `No. 5028` (`83,82 × 50,80 mm`, `2 × 5` on A4) including exact margins and gaps
+- Added clickable sheet-position selection so BoxDetail now prints the number plus QR code into one chosen label field on the DIN-A4 sheet instead of wasting a whole page per box

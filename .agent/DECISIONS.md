@@ -203,3 +203,11 @@ Reason: Item names, locations and other metadata can change over time, but the p
 ## 2026-03-29 — Sticker printing is template-based on DIN A4
 Printing now assumes a DIN-A4 sheet and uses selectable sticker format templates instead of a single fixed label size.
 Reason: The real use case involves different sticker sizes on A4 sheets, so the print system must choose between templates rather than baking one label layout into CSS.
+
+## 2026-03-29 — Sticker printing starts from real bought label profiles
+The first built-in label profile is `No. 5028` with `83,82 × 50,80 mm` labels on a `2 × 5` A4 sheet, using measured margins and gaps.
+Reason: Print placement must match actual bought sticker packs, so the system should be grounded in real package dimensions instead of placeholder example sizes.
+
+## 2026-03-29 — Sticker printing targets one chosen field on the A4 sheet
+The print flow now lets the user choose the exact label field on the sheet and renders only that sticker with the large running number plus QR code.
+Reason: One box should not waste a whole DIN-A4 page; the real workflow needs reusing partially used sticker sheets by placing the next box into a free slot.
