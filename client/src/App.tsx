@@ -55,11 +55,11 @@ function NavigationItem({ icon, label, to }: NavigationLink) {
 
 function App() {
   const location = useLocation();
-  const routeShellClass = location.pathname === "/boxes"
-    ? "page-shell page-shell--boxes"
-    : location.pathname.startsWith("/boxes/") && location.pathname !== "/boxes/add"
-      ? "page-shell page-shell--detail"
-      : "page-shell page-shell--narrow";
+  const isBoxDetailRoute =
+    location.pathname.startsWith("/boxes/") && location.pathname !== "/boxes/add";
+  const routeShellClass = isBoxDetailRoute
+    ? "page-shell page-shell--detail"
+    : "page-shell page-shell--app";
 
   return (
     <div className="shell">

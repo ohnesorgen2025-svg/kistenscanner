@@ -175,3 +175,7 @@ Reason: Without its own layout gap, the call-to-action looked glued to the form 
 ## 2026-03-29 — Add Box no longer repeats the workflow as top summary cards
 The top-of-page three-step summary cards have been removed from the Add Box screen.
 Reason: They repeated information the real sections already communicate and pushed the useful capture UI unnecessarily far down the page.
+
+## 2026-03-29 — Main app routes share one desktop content width
+The top-level app routes now use one shared shell width on desktop, while only the box detail route keeps its own layout treatment.
+Reason: Route-specific width caps made the app visually jump when switching between `Suchen`, `Scannen`, `Hinzufügen`, `Kisten` and `Einstellungen`.
