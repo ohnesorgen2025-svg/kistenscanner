@@ -84,3 +84,5 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Introduced one shared page-header pattern for the main app routes and removed the explanatory hero copy so titles and actions stay in one consistent place
 - Rebuilt the BoxDetail header into a fixed hierarchy: `Kiste #`, then name, then `Standort` plus `Items`, with a smaller QR block and a calmer action row
 - Reworked the print-label CSS to use the A6 page area intentionally, with a larger box number, tighter margins and a properly sized QR block instead of a tiny top-left print fragment
+- Replaced the print label with a DIN-A4 sticker print mode that outputs only the box number and QR code, without `#`, item list or other changing metadata
+- Added selectable print format templates in BoxDetail so label size is no longer hardcoded to one layout

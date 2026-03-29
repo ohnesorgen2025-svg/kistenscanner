@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import QRCode from "qrcode";
 import { Link, useParams } from "react-router-dom";
 
@@ -19,6 +19,42 @@ type ItemDraft = {
   description: string;
   detail: string;
 };
+
+type PrintTemplate = {
+  id: string;
+  label: string;
+  widthMm: number;
+  heightMm: number;
+  qrMm: number;
+  numberFontPt: number;
+};
+
+const printTemplates: PrintTemplate[] = [
+  {
+    id: "small",
+    label: "Klein · 45 × 60 mm",
+    widthMm: 45,
+    heightMm: 60,
+    qrMm: 28,
+    numberFontPt: 22,
+  },
+  {
+    id: "medium",
+    label: "Mittel · 60 × 80 mm",
+    widthMm: 60,
+    heightMm: 80,
+    qrMm: 38,
+    numberFontPt: 30,
+  },
+  {
+    id: "large",
+    label: "Groß · 80 × 110 mm",
+    widthMm: 80,
+    heightMm: 110,
+    qrMm: 54,
+    numberFontPt: 42,
+  },
+];
 
 function buildQrValue(box: BoxRecord): string {
   return `kistenscanner://box-number/${box.number}`;
@@ -41,6 +77,7 @@ export function BoxDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
+  const [printTemplateId, setPrintTemplateId] = useState<string>(printTemplates[1].id);
   const confirmationTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -233,6 +270,14 @@ export function BoxDetailPage() {
 
 
   const availableMoveTargets = boxes.filter((entry) => entry.id !== box?.id);
+  const activePrintTemplate =
+    printTemplates.find((template) => template.id === printTemplateId) ?? printTemplates[1];
+  const printStickerStyle = {
+    "--print-sticker-width": `${activePrintTemplate.widthMm}mm`,
+    "--print-sticker-height": `${activePrintTemplate.heightMm}mm`,
+    "--print-sticker-qr-size": `${activePrintTemplate.qrMm}mm`,
+    "--print-sticker-number-size": `${activePrintTemplate.numberFontPt}pt`,
+  } as CSSProperties;
 
   return (
     <div className="page-stack">
@@ -250,6 +295,21 @@ export function BoxDetailPage() {
               <div className="box-detail-header__meta">
                 <span>Standort: {box.location}</span>
                 <span>{box.itemCount} Items</span>
+              </div>
+              <div className="field field--compact">
+                <label htmlFor="print-template">Formatvorlage</label>
+                <select
+                  className="input"
+                  id="print-template"
+                  onChange={(event) => setPrintTemplateId(event.target.value)}
+                  value={printTemplateId}
+                >
+                  {printTemplates.map((template) => (
+                    <option key={template.id} value={template.id}>
+                      {template.label}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="action-row">
                 <button className="button button--primary" onClick={handlePrintLabel} type="button">
@@ -269,23 +329,15 @@ export function BoxDetailPage() {
           </section>
 
           <section className="panel print-label-panel" data-print-label="true">
-            <div className="print-label">
-              <div className="print-label__copy">
-                <p className="print-label__kicker">Kiste</p>
-                <div className="print-label__number">#{box.number}</div>
-                <h2>{box.name}</h2>
-                <p>{box.location}</p>
-                <div className="print-label__items">
-                  <span>Top 5 Items</span>
-                  <ol>
-                    {box.items.slice(0, 5).map((item) => (
-                      <li key={item.id}>{item.name}</li>
-                    ))}
-                  </ol>
+            <div className="print-sheet">
+              <div
+                className="print-sticker"
+                style={printStickerStyle}
+              >
+                <div className="print-sticker__number">{box.number}</div>
+                <div className="print-sticker__qr">
+                  {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
                 </div>
-              </div>
-              <div className="print-label__qr">
-                {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
               </div>
             </div>
           </section>

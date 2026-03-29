@@ -195,3 +195,11 @@ Reason: The box number, name, location and item count are the information humans
 ## 2026-03-29 — Print label should fill the A6 area, not sit tiny in one corner
 The print label now uses tighter print margins, a defined A6 content height, a larger human-readable box number and a compact fixed QR block.
 Reason: The previous print preview produced a tiny fragment in the top-left corner instead of a deliberate label layout that uses the printable area well.
+
+## 2026-03-29 — Sticker print contains only number and QR code
+The box print output is now limited to the human-readable box number and the QR code, with the number first and no leading `#`.
+Reason: Item names, locations and other metadata can change over time, but the physical sticker should remain stable and quickly legible from a distance.
+
+## 2026-03-29 — Sticker printing is template-based on DIN A4
+Printing now assumes a DIN-A4 sheet and uses selectable sticker format templates instead of a single fixed label size.
+Reason: The real use case involves different sticker sizes on A4 sheets, so the print system must choose between templates rather than baking one label layout into CSS.

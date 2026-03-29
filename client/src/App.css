@@ -973,63 +973,45 @@ html {
   display: none;
 }
 
-.print-label {
+.print-sheet {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 5.5rem;
-  gap: 1rem;
-  align-items: center;
+  justify-items: center;
 }
 
-.print-label__qr {
-  width: 100%;
-  max-width: 5.5rem;
-  padding: 0.4rem;
-  border-radius: 0.85rem;
+.print-sticker {
+  width: var(--print-sticker-width);
+  min-height: var(--print-sticker-height);
+  box-sizing: border-box;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 3mm;
+  padding: 4mm;
   background: #fff;
-  justify-self: end;
+  color: #111;
+  border: 1px dashed rgba(0, 0, 0, 0.15);
 }
 
-.print-label__copy {
-  display: grid;
-  gap: 0.45rem;
+.print-sticker__number {
+  font-family: var(--heading);
+  font-size: var(--print-sticker-number-size);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
   color: #111;
 }
 
-.print-label__kicker {
-  margin: 0;
-  font-family: var(--heading);
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.print-sticker__qr {
+  width: var(--print-sticker-qr-size);
+  height: var(--print-sticker-qr-size);
+  padding: 0;
+  background: #fff;
 }
 
-.print-label__number {
-  font-family: var(--heading);
-  font-size: 2.4rem;
-  font-weight: 700;
-  letter-spacing: -0.05em;
-  line-height: 0.95;
-}
-
-.print-label__copy h2,
-.print-label__copy p {
-  margin: 0;
-}
-
-.print-label__items {
-  display: grid;
-  gap: 0.45rem;
-}
-
-.print-label__items span {
-  font-family: var(--heading);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.print-label__items ol {
-  margin: 0;
-  padding-left: 1.25rem;
+.print-sticker__qr img {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .bottom-nav {
@@ -1127,12 +1109,8 @@ html {
     min-height: 15rem;
   }
 
-  .print-label {
-    grid-template-columns: 1fr;
-  }
-
-  .print-label__qr {
-    justify-self: start;
+  .print-sheet {
+    justify-items: start;
   }
 
   .page-shell--detail .review-list {
@@ -1285,8 +1263,8 @@ html {
 
 @media print {
   @page {
-    size: A6 portrait;
-    margin: 6mm;
+    size: A4 portrait;
+    margin: 12mm;
   }
 
   body {
@@ -1322,64 +1300,22 @@ html {
     box-shadow: none;
   }
 
-  body.print-label-mode .print-label {
+  body.print-label-mode .print-sheet {
     width: 100%;
-    min-height: calc(148mm - 12mm);
+    min-height: calc(297mm - 24mm);
     box-sizing: border-box;
-    grid-template-columns: minmax(0, 1fr) 24mm;
-    gap: 4mm;
+    display: grid;
+    justify-items: center;
     align-items: start;
+  }
+
+  body.print-label-mode .print-sticker {
+    border: none;
     color: #111;
   }
 
-  body.print-label-mode .print-label__copy {
-    align-content: start;
-    gap: 2mm;
+  body.print-label-mode .print-sticker__number,
+  body.print-label-mode .print-sticker__qr {
     color: #111;
-  }
-
-  body.print-label-mode .print-label__kicker {
-    font-size: 7pt;
-    letter-spacing: 0.18em;
-  }
-
-  body.print-label-mode .print-label__number {
-    font-size: 28pt;
-    line-height: 0.9;
-  }
-
-  body.print-label-mode .print-label__copy h2 {
-    font-size: 16pt;
-    line-height: 1.05;
-  }
-
-  body.print-label-mode .print-label__copy p {
-    font-size: 10pt;
-    line-height: 1.2;
-  }
-
-  body.print-label-mode .print-label__items {
-    gap: 1.5mm;
-    margin-top: 2mm;
-  }
-
-  body.print-label-mode .print-label__items span {
-    font-size: 7.5pt;
-    letter-spacing: 0.14em;
-  }
-
-  body.print-label-mode .print-label__items ol {
-    padding-left: 4.5mm;
-    font-size: 9pt;
-    line-height: 1.35;
-  }
-
-  body.print-label-mode .print-label__qr {
-    align-self: start;
-    width: 24mm;
-    max-width: 24mm;
-    padding: 1.2mm;
-    border-radius: 0;
-    background: #fff;
   }
 }
