@@ -5,6 +5,10 @@ body,
   overflow-x: clip;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 .shell {
   width: min(100%, 90rem);
   min-height: 100svh;

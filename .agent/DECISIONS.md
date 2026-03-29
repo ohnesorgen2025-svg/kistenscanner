@@ -179,3 +179,7 @@ Reason: They repeated information the real sections already communicate and push
 ## 2026-03-29 — Main app routes share one desktop content width
 The top-level app routes now use one shared shell width on desktop, while only the box detail route keeps its own layout treatment.
 Reason: Route-specific width caps made the app visually jump when switching between `Suchen`, `Scannen`, `Hinzufügen`, `Kisten` and `Einstellungen`.
+
+## 2026-03-29 — Desktop keeps a stable scrollbar gutter across routes
+The app now reserves the browser scrollbar gutter globally instead of letting it appear only on longer pages.
+Reason: Even with unified content widths, switching between short and long views still caused a horizontal jump when the scrollbar appeared or disappeared.

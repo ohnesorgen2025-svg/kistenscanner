@@ -80,3 +80,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Added a dedicated vertical gap to the Add Box save section so the `Kiste anlegen und Items speichern` button no longer sticks directly to the input row
 - Removed the redundant three-step overview cards from the top of the Add Box page so the flow starts directly with the real capture section
 - Unified the desktop content width of the main app routes so `Suchen`, `Scannen`, `Hinzufügen`, `Kisten` and `Einstellungen` no longer jump between different shell widths
+- Reserved the desktop scrollbar gutter globally so route changes between short and long pages do not shift the content area sideways
