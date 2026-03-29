@@ -159,3 +159,11 @@ Reason: Real mobile screenshots showed the item cards becoming unreadable when e
 ## 2026-03-29 — BoxDetail item grid uses fixed 1/2/4 breakpoints
 The item grid in BoxDetail no longer relies on `auto-fill`; it now uses one column on small screens, two columns on medium screens and a maximum of four columns on large screens.
 Reason: The auto-fill layout produced inconsistent breakpoints and visually broken card widths depending on the remaining viewport space.
+
+## 2026-03-29 — Bottom-nav active states are route-specific, not prefix-based
+The navigation now treats `/boxes/add` as its own destination and marks `Kisten` active only for the overview and detail routes, not for every `/boxes/*` path.
+Reason: Prefix matching made both `Kisten` and `Hinzufügen` appear active on the add flow, which visually broke navigation state.
+
+## 2026-03-29 — Scanner teardown must wait for startup before cleanup
+`ScanPage` now tracks pending scanner startup and waits for it to settle before calling `stop()` and `clear()` during route changes.
+Reason: Leaving the scan route while the scanner was still starting was the most fragile runtime path and a plausible source of the reported black follow-up screen.

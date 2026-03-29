@@ -28,6 +28,7 @@ export function ScanPage() {
 
   useEffect(() => {
     let isMounted = true;
+    let scannerStarted = false;
     let html5QrcodeInstance: {
       start: (
         cameraIdOrConfig: string | { facingMode: string },
@@ -38,6 +39,7 @@ export function ScanPage() {
       stop: () => Promise<unknown>;
       clear: () => void;
     } | null = null;
+    let startPromise: Promise<unknown> | null = null;
 
     async function setupScanner() {
       if (!scannerRef.current) {
@@ -53,7 +55,7 @@ export function ScanPage() {
         const scanner = new Html5Qrcode(scannerRef.current.id);
         html5QrcodeInstance = scanner;
 
-        await scanner.start(
+        startPromise = scanner.start(
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 220, height: 220 } },
           async (decodedText: string) => {
@@ -84,10 +86,20 @@ export function ScanPage() {
           },
           () => undefined,
         );
+        await startPromise;
+        scannerStarted = true;
 
-        if (isMounted) {
-          setStatus("QR-Code innerhalb des Rahmens scannen");
+        if (!isMounted) {
+          await scanner.stop().catch(() => undefined);
+          try {
+            scanner.clear();
+          } catch {
+            // Ignore late teardown errors while navigating away.
+          }
+          return;
         }
+
+        setStatus("QR-Code innerhalb des Rahmens scannen");
       } catch (scanError) {
         if (!isMounted) {
           return;
@@ -111,12 +123,19 @@ export function ScanPage() {
         return;
       }
 
-      void instance
-        .stop()
-        .catch(() => undefined)
-        .finally(() => {
+      void (async () => {
+        await startPromise?.catch(() => undefined);
+
+        if (scannerStarted) {
+          await instance.stop().catch(() => undefined);
+        }
+
+        try {
           instance.clear();
-        });
+        } catch {
+          // Ignore cleanup errors from already-removed scanner DOM.
+        }
+      })();
     };
   }, [navigate]);
 

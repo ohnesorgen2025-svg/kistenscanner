@@ -4,16 +4,16 @@
 🟢 LAN deployment confirmed
 
 ## Current Goal
-Keep the deployed LAN version stable and verify the remaining real-device flows against the live hostname.
+Keep the deployed LAN version stable and remove the remaining route/navigation regressions from the live UI.
 
 ## Next Action
 Validate the live app on real devices against `http://kistenscanner.local`:
-- confirm mobile camera capture and torch behavior against the deployed hostname
-- test QR scan and print label flow in the LAN environment
-- verify persisted SQLite data and uploaded images survive another container restart
+- retest bottom-nav transitions between `Suchen`, `Scannen`, `Hinzufügen`, `Kisten` and `Einstellungen`
+- confirm the scan route can be left and re-entered without stale camera/scanner state
+- continue the remaining device checks for camera capture, QR scan and print flow
 
 ## Open Questions
-- No blocking implementation questions. Remaining work is live device validation against the deployed LAN URL.
+- No blocking implementation questions. Remaining work is targeted live validation against the deployed LAN URL.
 
 ## Done Recently
 - Monorepo scaffolded with `client/` and `server/`
@@ -75,3 +75,5 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Reduced the BoxDetail hero, promoted the running box number above the QR code, and updated the print label so the number is the primary element while the QR code stays compact
 - Forced BoxDetail item cards to a single-column stack on small screens and stacked save/cancel plus move actions vertically in mobile edit/move states
 - Replaced the unstable auto-fill grid in BoxDetail with a fixed responsive item grid: 1 column on small screens, 2 on medium screens and at most 4 on large screens
+- Fixed the bottom-nav active-state logic so `/boxes/add` no longer activates both `Hinzufügen` and `Kisten`
+- Hardened `ScanPage` teardown so leaving the scanner waits for startup to settle before stopping and clearing the `html5-qrcode` instance

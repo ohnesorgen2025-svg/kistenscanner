@@ -23,6 +23,8 @@ const navigationLinks: NavigationLink[] = [
 ];
 
 function NavigationItem({ icon, label, to }: NavigationLink) {
+  const location = useLocation();
+
   if (!to) {
     return (
       <span className="nav-link nav-link--disabled">
@@ -32,9 +34,17 @@ function NavigationItem({ icon, label, to }: NavigationLink) {
     );
   }
 
+  const isActive = to === "/"
+    ? location.pathname === "/"
+    : to === "/boxes"
+      ? location.pathname === "/boxes"
+        || (location.pathname.startsWith("/boxes/") && location.pathname !== "/boxes/add")
+      : location.pathname === to;
+
   return (
     <NavLink
-      className={({ isActive }) => `nav-link${isActive ? " nav-link--active" : ""}`}
+      className={() => `nav-link${isActive ? " nav-link--active" : ""}`}
+      end={to !== "/boxes"}
       to={to}
     >
       <span className="material-symbols-outlined">{icon}</span>
