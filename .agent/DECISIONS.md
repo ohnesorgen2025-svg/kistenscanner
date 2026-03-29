@@ -143,3 +143,7 @@ Reason: The old inline grid collapsed badly inside narrow item cards and created
 ## 2026-03-29 — Missing item thumbnails need an explicit placeholder state
 Items without a saved thumbnail in BoxDetail now render a dedicated placeholder with icon plus `Kein Vorschaubild` messaging instead of a thin dark strip with a tiny centered icon.
 Reason: The previous fallback looked like a rendering bug rather than an intentional empty state and made the Kisteninhalt feel broken.
+
+## 2026-03-29 — The whole missing-thumbnail state should act as the upload affordance
+When an item has no preview image in BoxDetail, the entire placeholder is now the upload trigger, and the move state uses the same expanded card treatment as editing.
+Reason: Users naturally click the preview area itself when they want to add a missing photo, and the narrow move card repeated the same cramped pattern that editing had before.

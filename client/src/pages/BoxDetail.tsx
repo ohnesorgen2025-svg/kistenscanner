@@ -296,10 +296,11 @@ export function BoxDetailPage() {
             <div className="review-list">
               {box.items.map((item) => {
                 const isEditing = editingItemId === item.id && draft;
+                const isMoving = movingItemId === item.id;
 
                 return (
                   <article
-                    className={`review-card review-card--detail${isEditing ? " review-card--editing" : ""}`}
+                    className={`review-card review-card--detail${isEditing ? " review-card--editing" : ""}${isMoving ? " review-card--moving" : ""}`}
                     key={item.id}
                   >
                     <div className="review-card__media">
@@ -311,11 +312,15 @@ export function BoxDetailPage() {
                       {getItemImageUrl(item) ? (
                         <img alt={item.name} src={getItemImageUrl(item) ?? undefined} />
                       ) : (
-                        <div className="item-image-placeholder">
+                        <label
+                          className="item-image-placeholder"
+                          htmlFor={`item-upload-${item.id}`}
+                          title="Foto hinzufügen"
+                        >
                           <span className="material-symbols-outlined">imagesmode</span>
                           <strong>Kein Vorschaubild</strong>
                           <span>Foto hinzufügen</span>
-                        </div>
+                        </label>
                       )}
                     </div>
 
@@ -429,7 +434,7 @@ export function BoxDetailPage() {
                       ) : null}
 
 
-                      {movingItemId === item.id && availableMoveTargets.length > 0 ? (
+                      {isMoving && availableMoveTargets.length > 0 ? (
                         <div className="move-panel">
                           <div className="field">
                             <label htmlFor={`move-item-${item.id}`}>Ziel-Kiste</label>
@@ -450,7 +455,7 @@ export function BoxDetailPage() {
                               ))}
                             </select>
                           </div>
-                          <div className="action-row">
+                          <div className="move-panel__actions">
                             <button
                               className="button button--primary"
                               onClick={() => void handleMove(item.id)}
