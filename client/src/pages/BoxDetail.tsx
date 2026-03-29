@@ -311,8 +311,10 @@ export function BoxDetailPage() {
                       {getItemImageUrl(item) ? (
                         <img alt={item.name} src={getItemImageUrl(item) ?? undefined} />
                       ) : (
-                        <div className="box-card__placeholder">
-                          <span className="material-symbols-outlined">inventory_2</span>
+                        <div className="item-image-placeholder">
+                          <span className="material-symbols-outlined">imagesmode</span>
+                          <strong>Kein Vorschaubild</strong>
+                          <span>Foto hinzufügen</span>
                         </div>
                       )}
                     </div>

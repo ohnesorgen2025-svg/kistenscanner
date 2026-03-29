@@ -70,3 +70,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Fixed the mobile bottom navigation to render all five tabs in a single row and corrected the search field icon alignment on the Search page after a live browser pass against `kistenscanner.local`
 - Normalized the BoxDetail item action strip so edit/upload/move render as equally sized subtle buttons instead of left-stacked loose icons
 - Reworked BoxDetail item editing into a stacked single-column form with icon-backed save/cancel buttons and hid the normal item action strip while an item is in edit mode
+- Replaced the broken-looking no-image strip in BoxDetail with an explicit item placeholder card that states `Kein Vorschaubild` and hints at `Foto hinzufügen`

@@ -139,3 +139,7 @@ Reason: The previous layout looked visually uneven and made the action area feel
 ## 2026-03-29 — BoxDetail editing uses a stacked in-card form, not a compressed grid
 Editing an item in BoxDetail now swaps the card body into a simple single-column form with dedicated save/cancel buttons and hides the normal icon action strip until editing ends.
 Reason: The old inline grid collapsed badly inside narrow item cards and created a visibly broken editing state on real data.
+
+## 2026-03-29 — Missing item thumbnails need an explicit placeholder state
+Items without a saved thumbnail in BoxDetail now render a dedicated placeholder with icon plus `Kein Vorschaubild` messaging instead of a thin dark strip with a tiny centered icon.
+Reason: The previous fallback looked like a rendering bug rather than an intentional empty state and made the Kisteninhalt feel broken.
