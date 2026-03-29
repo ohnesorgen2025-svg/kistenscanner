@@ -74,3 +74,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Made the whole no-image placeholder in BoxDetail clickable for item photo upload and gave the move state the same wider in-card treatment as the edit state
 - Reduced the BoxDetail hero, promoted the running box number above the QR code, and updated the print label so the number is the primary element while the QR code stays compact
 - Forced BoxDetail item cards to a single-column stack on small screens and stacked save/cancel plus move actions vertically in mobile edit/move states
+- Replaced the unstable auto-fill grid in BoxDetail with a fixed responsive item grid: 1 column on small screens, 2 on medium screens and at most 4 on large screens

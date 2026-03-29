@@ -1184,6 +1184,10 @@ body,
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .page-shell--detail .review-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .review-card--detail.review-card--editing {
     grid-column: span 2;
   }
@@ -1235,6 +1239,10 @@ body,
 
   .settings-model-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .page-shell--detail .review-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
   .settings-key-card__controls {

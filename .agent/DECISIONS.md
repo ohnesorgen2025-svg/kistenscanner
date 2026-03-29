@@ -155,3 +155,7 @@ Reason: In real use the human-readable number is the first identifier someone lo
 ## 2026-03-29 — Mobile BoxDetail never edits or moves inside a two-column item grid
 On small screens, the BoxDetail item grid collapses to one column, and edit/move action buttons stack vertically instead of sharing cramped horizontal space.
 Reason: Real mobile screenshots showed the item cards becoming unreadable when edit or move states opened inside a multi-column layout.
+
+## 2026-03-29 — BoxDetail item grid uses fixed 1/2/4 breakpoints
+The item grid in BoxDetail no longer relies on `auto-fill`; it now uses one column on small screens, two columns on medium screens and a maximum of four columns on large screens.
+Reason: The auto-fill layout produced inconsistent breakpoints and visually broken card widths depending on the remaining viewport space.
