@@ -394,24 +394,6 @@ export function AddBoxPage() {
             <h1>Kiste hinzufügen</h1>
           </div>
         </div>
-
-        <div className="step-grid">
-          <article className={`step-card ${files.length > 0 ? "step-card--active" : ""}`}>
-            <span className="step-number">01</span>
-            <h2>Erfassen</h2>
-            <p>Mehrere Fotos vom Kisteninhalt aufnehmen oder hochladen.</p>
-          </article>
-          <article className={`step-card ${reviewItems.length > 0 ? "step-card--active" : ""}`}>
-            <span className="step-number">02</span>
-            <h2>Prüfen</h2>
-            <p>KI-Vorschläge prüfen und Item-Details direkt anpassen.</p>
-          </article>
-          <article className={`step-card ${savedBox ? "step-card--active" : ""}`}>
-            <span className="step-number">03</span>
-            <h2>Speichern</h2>
-            <p>Nummerierte Kiste anlegen und QR-Code mit Etikett vorbereiten.</p>
-          </article>
-        </div>
       </section>
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}

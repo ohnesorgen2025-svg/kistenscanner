@@ -78,3 +78,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Fixed the bottom-nav active-state logic so `/boxes/add` no longer activates both `Hinzufügen` and `Kisten`
 - Hardened `ScanPage` teardown so leaving the scanner waits for startup to settle before stopping and clearing the `html5-qrcode` instance
 - Added a dedicated vertical gap to the Add Box save section so the `Kiste anlegen und Items speichern` button no longer sticks directly to the input row
+- Removed the redundant three-step overview cards from the top of the Add Box page so the flow starts directly with the real capture section
