@@ -676,9 +676,10 @@ body,
 }
 
 .review-card__actions {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 0.5rem;
   padding: 0.5rem 0.75rem;
   border-top: 1px solid var(--border);
 }
@@ -687,19 +688,22 @@ body,
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: none;
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid rgba(72, 72, 72, 0.35);
   border-radius: 0.5rem;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.02);
   color: var(--muted);
   cursor: pointer;
-  transition: background 150ms ease, color 150ms ease;
+  box-sizing: border-box;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
 }
 
 .icon-btn:hover {
   background: var(--tertiary);
   color: var(--text);
+  border-color: rgba(0, 218, 243, 0.25);
 }
 
 .icon-btn:disabled {

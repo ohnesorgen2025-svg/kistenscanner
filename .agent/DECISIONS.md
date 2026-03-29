@@ -131,3 +131,7 @@ Reason: Falling back to the full Kistenfoto makes items look wrong and hides the
 ## 2026-03-29 — Mobile bottom nav stays one-row, search uses a dedicated icon wrapper
 The bottom navigation now reserves five mobile columns for the five app sections, and the Search page wraps the input plus icon in a dedicated field container instead of positioning the icon against the whole search block.
 Reason: A live browser pass on `kistenscanner.local` showed the fifth nav item wrapping onto a second row and the search icon drifting between input and action button on small screens.
+
+## 2026-03-29 — BoxDetail item actions use equal-width quiet buttons
+The item action strip in the box detail cards now uses three equally sized subtle buttons for edit, photo upload and move instead of loose left-aligned icon glyphs.
+Reason: The previous layout looked visually uneven and made the action area feel accidental instead of intentional.
