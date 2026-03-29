@@ -127,3 +127,7 @@ Reason: Production showed that some analyzed items legitimately have no saved cr
 ## 2026-03-28 — Box detail must not fall back to the whole box photo for item thumbnails
 `BoxDetail` now renders only the item's stored crop or explicit item image and no longer falls back to the box-level source photo.
 Reason: Falling back to the full Kistenfoto makes items look wrong and hides the real persistence state when no crop was saved for that item. Add Box review may still show the source image before saving, but saved item views must not pretend the box photo is an item crop.
+
+## 2026-03-29 — Mobile bottom nav stays one-row, search uses a dedicated icon wrapper
+The bottom navigation now reserves five mobile columns for the five app sections, and the Search page wraps the input plus icon in a dedicated field container instead of positioning the icon against the whole search block.
+Reason: A live browser pass on `kistenscanner.local` showed the fifth nav item wrapping onto a second row and the search icon drifting between input and action button on small screens.

@@ -19,7 +19,7 @@ const navigationLinks: NavigationLink[] = [
   { label: "Scannen", icon: "qr_code_scanner", to: "/scan" },
   { label: "Hinzufügen", icon: "add_box", to: "/boxes/add" },
   { label: "Kisten", icon: "inventory_2", to: "/boxes" },
-  { label: "Settings", icon: "settings", to: "/settings" },
+  { label: "Einstellungen", icon: "settings", to: "/settings" },
 ];
 
 function NavigationItem({ icon, label, to }: NavigationLink) {

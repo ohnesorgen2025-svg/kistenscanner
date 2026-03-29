@@ -69,16 +69,19 @@ export function SearchPage() {
         </div>
 
         <div className="search-input-wrap">
-          <span className="material-symbols-outlined search-input-wrap__icon">search</span>
-          <input
-            autoComplete="off"
-            className="input search-input"
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Item oder Kiste suchen…"
-            ref={inputRef}
-            type="search"
-            value={query}
-          />
+          <div className="search-input-wrap__field">
+            <span className="material-symbols-outlined search-input-wrap__icon">search</span>
+            <input
+              autoComplete="off"
+              className="input search-input"
+              inputMode="search"
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Item oder Kiste suchen…"
+              ref={inputRef}
+              type="text"
+              value={query}
+            />
+          </div>
           <button
             className="button button--primary search-input-wrap__button"
             onClick={() => navigate("/scan")}

@@ -67,3 +67,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Normalized client asset paths and added thumbnail fallbacks so AddBox review can use the source image and BoxDetail can fall back to stored item or box images when a crop path is missing
 - Removed the BoxDetail fallback to whole-box photos so saved items now render only their own stored crop or item image instead of showing the original Kistenfoto as a misleading thumbnail
 - Added a gated thumbnail debug trace to `GET /api/boxes/:id` via `DEBUG_BOX_THUMBNAILS=1` so persisted item thumbnail paths can be inspected quickly during API debugging
+- Fixed the mobile bottom navigation to render all five tabs in a single row and corrected the search field icon alignment on the Search page after a live browser pass against `kistenscanner.local`
