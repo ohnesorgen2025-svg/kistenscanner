@@ -73,3 +73,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Replaced the broken-looking no-image strip in BoxDetail with an explicit item placeholder card that states `Kein Vorschaubild` and hints at `Foto hinzufügen`
 - Made the whole no-image placeholder in BoxDetail clickable for item photo upload and gave the move state the same wider in-card treatment as the edit state
 - Reduced the BoxDetail hero, promoted the running box number above the QR code, and updated the print label so the number is the primary element while the QR code stays compact
+- Forced BoxDetail item cards to a single-column stack on small screens and stacked save/cancel plus move actions vertically in mobile edit/move states

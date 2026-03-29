@@ -151,3 +151,7 @@ Reason: Users naturally click the preview area itself when they want to add a mi
 ## 2026-03-29 — Box number outranks QR in hero and print label
 The BoxDetail hero and the print label now treat the running box number as the primary visual anchor, while the QR code is present but intentionally smaller.
 Reason: In real use the human-readable number is the first identifier someone looks for on a box, and the QR code is a secondary scan affordance for deeper interaction.
+
+## 2026-03-29 — Mobile BoxDetail never edits or moves inside a two-column item grid
+On small screens, the BoxDetail item grid collapses to one column, and edit/move action buttons stack vertically instead of sharing cramped horizontal space.
+Reason: Real mobile screenshots showed the item cards becoming unreadable when edit or move states opened inside a multi-column layout.

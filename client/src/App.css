@@ -1120,6 +1120,20 @@ body,
   .print-label__qr {
     justify-self: start;
   }
+
+  .page-shell--detail .review-list {
+    grid-template-columns: 1fr;
+  }
+
+  .page-shell--detail .review-card__edit-actions,
+  .page-shell--detail .move-panel__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .page-shell--detail .review-card--detail.review-card--editing,
+  .page-shell--detail .review-card--detail.review-card--moving {
+    grid-column: auto;
+  }
 }
 
 .sr-only {
