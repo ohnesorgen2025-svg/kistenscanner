@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+import { PageHeader } from "../components/PageHeader";
 import { listBoxes, resolveAssetUrl, type BoxSummary } from "../lib/api";
 
 export function BoxesPage() {
@@ -40,21 +41,15 @@ export function BoxesPage() {
 
   return (
     <div className="page-stack">
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <p className="section-kicker">Inventar</p>
-            <h1>Gespeicherte Kisten</h1>
-          </div>
+      <PageHeader
+        actions={(
           <Link className="button button--primary" to="/boxes/add">
             Kiste hinzufügen
           </Link>
-        </div>
-        <p className="panel-copy">
-          Jede Karte zeigt die vergebene Nummer, den aktuellen Standort und das erste
-          verfügbare Vorschaubild aus den gespeicherten Items.
-        </p>
-      </section>
+        )}
+        kicker="Inventar"
+        title="Kisten"
+      />
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 

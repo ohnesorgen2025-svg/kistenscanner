@@ -9,6 +9,7 @@ import {
   type ModelSummary,
   type SettingsResponse,
 } from "../lib/api";
+import { PageHeader } from "../components/PageHeader";
 
 type ProviderKeyId = keyof SettingsResponse["configuredProviders"];
 
@@ -187,16 +188,7 @@ export function SettingsPage() {
 
   return (
     <div className="page-stack">
-      <section className="panel settings-panel">
-        <div className="settings-header">
-          <p className="section-kicker">Systemkonfiguration</p>
-          <h1>KI-Provider und Schlüssel</h1>
-          <p className="panel-copy">
-            Aktives Modell auswählen, Provider-Zugänge pflegen und Verbindungen direkt aus der
-            Anwendung testen.
-          </p>
-        </div>
-      </section>
+      <PageHeader kicker="Systemkonfiguration" title="Einstellungen" />
 
       {isLoading ? <div className="feedback">Einstellungen werden geladen…</div> : null}
       {notice ? <div className="feedback">{notice}</div> : null}

@@ -81,3 +81,5 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Removed the redundant three-step overview cards from the top of the Add Box page so the flow starts directly with the real capture section
 - Unified the desktop content width of the main app routes so `Suchen`, `Scannen`, `Hinzufügen`, `Kisten` and `Einstellungen` no longer jump between different shell widths
 - Reserved the desktop scrollbar gutter globally so route changes between short and long pages do not shift the content area sideways
+- Introduced one shared page-header pattern for the main app routes and removed the explanatory hero copy so titles and actions stay in one consistent place
+- Rebuilt the BoxDetail header into a fixed hierarchy: `Kiste #`, then name, then `Standort` plus `Items`, with a smaller QR block and a calmer action row

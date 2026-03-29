@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { PageHeader } from "../components/PageHeader";
 import { getBoxByNumber } from "../lib/api";
 
 function extractBoxNumber(decodedText: string): number | null {
@@ -141,14 +142,9 @@ export function ScanPage() {
 
   return (
     <div className="page-stack">
-      <section className="panel scan-panel">
-        <div className="panel-header">
-          <div>
-            <p className="section-kicker">Scannen</p>
-            <h1>QR-Code erfassen</h1>
-          </div>
-        </div>
+      <PageHeader kicker="Scannen" title="Scannen" />
 
+      <section className="panel scan-panel">
         <div className="scan-viewfinder">
           <div className="scan-viewfinder__corners" />
           <div className="scan-target" id="qr-reader" ref={scannerRef} />

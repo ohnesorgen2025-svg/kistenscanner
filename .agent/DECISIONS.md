@@ -183,3 +183,11 @@ Reason: Route-specific width caps made the app visually jump when switching betw
 ## 2026-03-29 — Desktop keeps a stable scrollbar gutter across routes
 The app now reserves the browser scrollbar gutter globally instead of letting it appear only on longer pages.
 Reason: Even with unified content widths, switching between short and long views still caused a horizontal jump when the scrollbar appeared or disappeared.
+
+## 2026-03-29 — Main pages use one calm header pattern
+The top-level app pages now use one shared page header with a small kicker, one title, and optional right-aligned actions, without explanatory paragraph copy.
+Reason: The previous mix of hero text, floating buttons and inconsistent spacing made the app feel noisy and structurally inconsistent.
+
+## 2026-03-29 — Box detail prioritizes number, name, location and item count
+The box detail header now presents `Kiste #`, then the box name, then a muted metadata row for `Standort` and `Items`, while the QR code remains available but clearly secondary.
+Reason: The box number, name, location and item count are the information humans need first; the earlier header used too many competing sizes, colors and visual weights at once.

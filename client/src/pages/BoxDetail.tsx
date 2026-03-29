@@ -242,14 +242,14 @@ export function BoxDetailPage() {
 
       {box ? (
         <>
-          <section className="panel box-hero">
-            <div className="box-hero__copy">
+          <section className="panel box-detail-header">
+            <div className="box-detail-header__copy">
               <p className="section-kicker">Kiste</p>
-              <div className="box-hero__number">#{box.number}</div>
-              <h1>{box.name}</h1>
-              <p>{box.location}</p>
-              <div className="chip-row">
-                <span className="chip">{box.itemCount} Items</span>
+              <h1 className="box-detail-header__title">Kiste #{box.number}</h1>
+              <p className="box-detail-header__name">{box.name}</p>
+              <div className="box-detail-header__meta">
+                <span>Standort: {box.location}</span>
+                <span>{box.itemCount} Items</span>
               </div>
               <div className="action-row">
                 <button className="button button--primary" onClick={handlePrintLabel} type="button">
@@ -260,11 +260,11 @@ export function BoxDetailPage() {
                 </Link>
               </div>
             </div>
-            <div className="box-hero__code">
+            <div className="box-detail-header__code">
               <div className="qr-panel qr-panel--compact">
                 {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
               </div>
-              <p className="box-hero__qr-label">QR zum Scannen</p>
+              <p className="box-detail-header__qr-label">QR zum Scannen</p>
             </div>
           </section>
 

@@ -1,6 +1,7 @@
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { PageHeader } from "../components/PageHeader";
 import { resolveAssetUrl, searchInventory, type SearchResult } from "../lib/api";
 
 const MIN_QUERY_LENGTH = 2;
@@ -57,17 +58,9 @@ export function SearchPage() {
 
   return (
     <div className="page-stack">
-      <section className="panel search-panel">
-        <div className="panel-header">
-          <div>
-            <p className="section-kicker">Suchen</p>
-            <h1>Item oder Kiste finden</h1>
-          </div>
-          <Link className="button button--ghost" to="/scan">
-            Scannen
-          </Link>
-        </div>
+      <PageHeader kicker="Suchen" title="Suchen" />
 
+      <section className="panel search-panel">
         <div className="search-input-wrap">
           <div className="search-input-wrap__field">
             <span className="material-symbols-outlined search-input-wrap__icon">search</span>

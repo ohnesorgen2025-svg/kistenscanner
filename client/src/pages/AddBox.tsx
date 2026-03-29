@@ -14,6 +14,7 @@ import {
   type BoxRecord,
   type ModelSummary,
 } from "../lib/api";
+import { PageHeader } from "../components/PageHeader";
 
 type ReviewItem = AnalysisItem & {
   detail: string;
@@ -387,14 +388,7 @@ export function AddBoxPage() {
 
   return (
     <div className="page-stack">
-      <section className="panel">
-        <div className="panel-header">
-          <div>
-            <p className="section-kicker">Speicher-Workflow</p>
-            <h1>Kiste hinzufügen</h1>
-          </div>
-        </div>
-      </section>
+      <PageHeader kicker="Speicher-Workflow" title="Kiste hinzufügen" />
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
