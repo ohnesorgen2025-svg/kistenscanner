@@ -211,3 +211,11 @@ Reason: Print placement must match actual bought sticker packs, so the system sh
 ## 2026-03-29 — Sticker printing targets one chosen field on the A4 sheet
 The print flow now lets the user choose the exact label field on the sheet and renders only that sticker with the large running number plus QR code.
 Reason: One box should not waste a whole DIN-A4 page; the real workflow needs reusing partially used sticker sheets by placing the next box into a free slot.
+
+## 2026-03-29 — Sticker configuration stays collapsed until requested
+The BoxDetail page now keeps the sticker-print configuration closed by default and opens it from the header action.
+Reason: The sheet configuration is important when printing, but it should not dominate the box-detail layout every time the page opens.
+
+## 2026-03-29 — Sticker preview should mimic paper with fine guide lines
+The sheet preview now uses a bright paper-like background and subtle guide outlines for every label position, and the printed page keeps similarly fine slot borders.
+Reason: The previous dark mock-style preview made it hard to judge whether the real label grid was aligned correctly.

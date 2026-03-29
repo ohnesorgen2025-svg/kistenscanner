@@ -94,6 +94,7 @@ function getItemImageUrl(item: ItemRecord): string | null {
 export function BoxDetailPage() {
   const params = useParams();
   const boxId = Number(params.id);
+  const labelPanelRef = useRef<HTMLElement | null>(null);
   const [box, setBox] = useState<BoxRecord | null>(null);
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
@@ -106,6 +107,7 @@ export function BoxDetailPage() {
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [labelProfileId, setLabelProfileId] = useState<string>(labelProfiles[0].id);
   const [selectedLabelSlotIndex, setSelectedLabelSlotIndex] = useState<number>(0);
+  const [isLabelPanelOpen, setIsLabelPanelOpen] = useState(false);
   const confirmationTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -200,6 +202,16 @@ export function BoxDetailPage() {
     };
   }, [box]);
 
+  useEffect(() => {
+    if (!isLabelPanelOpen) {
+      return;
+    }
+
+    window.requestAnimationFrame(() => {
+      labelPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }, [isLabelPanelOpen]);
+
   async function refreshBox() {
     const freshBox = await getBox(boxId);
     setBox(freshBox);
@@ -208,6 +220,10 @@ export function BoxDetailPage() {
   function handlePrintLabel() {
     document.body.classList.add("print-label-mode");
     window.print();
+  }
+
+  function openLabelPanel() {
+    setIsLabelPanelOpen(true);
   }
 
   function beginEdit(item: ItemRecord) {
@@ -332,6 +348,9 @@ export function BoxDetailPage() {
                 <span>{box.itemCount} Items</span>
               </div>
               <div className="action-row">
+                <button className="button button--primary" onClick={openLabelPanel} type="button">
+                  Label drucken
+                </button>
                 <Link className="button button--ghost" to="/boxes">
                   Zurück zu den Kisten
                 </Link>
@@ -345,100 +364,132 @@ export function BoxDetailPage() {
             </div>
           </section>
 
-          <section className="panel">
+          <section
+            className={`panel label-print-panel${isLabelPanelOpen ? "" : " label-print-panel--collapsed"}`}
+            ref={labelPanelRef}
+          >
             <div className="panel-header">
               <div>
                 <p className="section-kicker">Stickerdruck</p>
                 <h2>Bogen und Position</h2>
               </div>
-            </div>
-
-            <div className="form-grid">
-              <div className="field">
-                <label htmlFor="label-profile">Label-Profil</label>
-                <select
-                  className="input"
-                  id="label-profile"
-                  onChange={(event) => {
-                    const nextProfileId = event.target.value;
-                    setLabelProfileId(nextProfileId);
-                    setSelectedLabelSlotIndex(0);
-                  }}
-                  value={labelProfileId}
-                >
-                  {labelProfiles.map((profile) => (
-                    <option key={profile.id} value={profile.id}>
-                      {profile.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="field">
-                <label htmlFor="label-slot">Position</label>
-                <select
-                  className="input"
-                  id="label-slot"
-                  onChange={(event) => setSelectedLabelSlotIndex(Number(event.target.value))}
-                  value={selectedLabelSlotIndex}
-                >
-                  {labelSlots.map((slot) => (
-                    <option key={slot.index} value={slot.index}>
-                      {formatSlotLabel(slot)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="label-preview__meta">
-              <div className="label-preview__meta-copy">
-                <p className="section-kicker">Auswahl</p>
-                <p className="label-preview__selection">{formatSlotLabel(selectedLabelSlot)}</p>
-              </div>
-              <button className="button button--primary" onClick={handlePrintLabel} type="button">
-                Label drucken
+              <button
+                aria-expanded={isLabelPanelOpen}
+                className="button button--ghost"
+                onClick={() => setIsLabelPanelOpen((current) => !current)}
+                type="button"
+              >
+                <span className="material-symbols-outlined">
+                  {isLabelPanelOpen ? "expand_less" : "expand_more"}
+                </span>
+                {isLabelPanelOpen ? "Einklappen" : "Aufklappen"}
               </button>
             </div>
 
-            <div className="label-preview">
-              <div className="label-preview__sheet">
-                {labelSlots.map((slot) => {
-                  const isSelected = slot.index === selectedLabelSlot.index;
-                  const slotStyle = {
-                    left: `${(slot.leftMm / activeLabelProfile.pageWidthMm) * 100}%`,
-                    top: `${(slot.topMm / activeLabelProfile.pageHeightMm) * 100}%`,
-                    width: `${(activeLabelProfile.labelWidthMm / activeLabelProfile.pageWidthMm) * 100}%`,
-                    height: `${(activeLabelProfile.labelHeightMm / activeLabelProfile.pageHeightMm) * 100}%`,
-                  } as CSSProperties;
-
-                  return (
-                    <button
-                      className={`label-preview__slot${isSelected ? " label-preview__slot--active" : ""}`}
-                      key={slot.index}
-                      onClick={() => setSelectedLabelSlotIndex(slot.index)}
-                      style={slotStyle}
-                      type="button"
+            {isLabelPanelOpen ? (
+              <>
+                <div className="form-grid">
+                  <div className="field">
+                    <label htmlFor="label-profile">Label-Profil</label>
+                    <select
+                      className="input"
+                      id="label-profile"
+                      onChange={(event) => {
+                        const nextProfileId = event.target.value;
+                        setLabelProfileId(nextProfileId);
+                        setSelectedLabelSlotIndex(0);
+                      }}
+                      value={labelProfileId}
                     >
-                      {isSelected ? (
-                        <div className="label-preview__sticker">
-                          <span className="label-preview__number">{box.number}</span>
-                          <span className="label-preview__qr">
-                            <span className="material-symbols-outlined">qr_code_2</span>
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="label-preview__slot-index">{slot.index + 1}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+                      {labelProfiles.map((profile) => (
+                        <option key={profile.id} value={profile.id}>
+                          {profile.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="field">
+                    <label htmlFor="label-slot">Position</label>
+                    <select
+                      className="input"
+                      id="label-slot"
+                      onChange={(event) => setSelectedLabelSlotIndex(Number(event.target.value))}
+                      value={selectedLabelSlotIndex}
+                    >
+                      {labelSlots.map((slot) => (
+                        <option key={slot.index} value={slot.index}>
+                          {formatSlotLabel(slot)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="label-preview__meta">
+                  <div className="label-preview__meta-copy">
+                    <p className="section-kicker">Auswahl</p>
+                    <p className="label-preview__selection">{formatSlotLabel(selectedLabelSlot)}</p>
+                  </div>
+                  <button className="button button--primary" onClick={handlePrintLabel} type="button">
+                    Druckdialog öffnen
+                  </button>
+                </div>
+
+                <div className="label-preview">
+                  <div className="label-preview__sheet">
+                    {labelSlots.map((slot) => {
+                      const isSelected = slot.index === selectedLabelSlot.index;
+                      const slotStyle = {
+                        left: `${(slot.leftMm / activeLabelProfile.pageWidthMm) * 100}%`,
+                        top: `${(slot.topMm / activeLabelProfile.pageHeightMm) * 100}%`,
+                        width: `${(activeLabelProfile.labelWidthMm / activeLabelProfile.pageWidthMm) * 100}%`,
+                        height: `${(activeLabelProfile.labelHeightMm / activeLabelProfile.pageHeightMm) * 100}%`,
+                      } as CSSProperties;
+
+                      return (
+                        <button
+                          className={`label-preview__slot${isSelected ? " label-preview__slot--active" : ""}`}
+                          key={slot.index}
+                          onClick={() => setSelectedLabelSlotIndex(slot.index)}
+                          style={slotStyle}
+                          type="button"
+                        >
+                          {isSelected ? (
+                            <div className="label-preview__sticker">
+                              <span className="label-preview__number">{box.number}</span>
+                              <span className="label-preview__qr">
+                                <span className="material-symbols-outlined">qr_code_2</span>
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="label-preview__slot-index">{slot.index + 1}</span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="label-print-panel__hint">
+                Öffne den Bereich, wähle das Label-Profil und die freie Position auf dem Bogen.
+              </p>
+            )}
           </section>
 
           <section className="panel print-label-panel" data-print-label="true">
             <div className="print-sheet" style={printStickerStyle}>
+              {labelSlots.map((slot) => {
+                const guideStyle = {
+                  left: `${slot.leftMm}mm`,
+                  top: `${slot.topMm}mm`,
+                  width: `${activeLabelProfile.labelWidthMm}mm`,
+                  height: `${activeLabelProfile.labelHeightMm}mm`,
+                } as CSSProperties;
+
+                return <div className="print-sheet__guide" key={slot.index} style={guideStyle} />;
+              })}
               <div
                 className="print-sticker"
               >

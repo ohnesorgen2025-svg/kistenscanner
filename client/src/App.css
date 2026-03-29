@@ -973,6 +973,15 @@ html {
   display: none;
 }
 
+.label-print-panel--collapsed {
+  gap: 0.5rem;
+}
+
+.label-print-panel__hint {
+  margin: 0;
+  color: var(--muted);
+}
+
 .label-preview__meta {
   display: flex;
   justify-content: space-between;
@@ -1001,12 +1010,13 @@ html {
   position: relative;
   width: min(100%, 32rem);
   aspect-ratio: 210 / 297;
-  border: 1px solid rgba(72, 72, 72, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 1rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)),
-    rgba(15, 15, 15, 0.95);
+  background: #ffffff;
   overflow: hidden;
+  box-shadow:
+    0 1.25rem 2.5rem rgba(0, 0, 0, 0.18),
+    inset 0 0 0 1px rgba(15, 15, 15, 0.03);
 }
 
 .label-preview__slot {
@@ -1014,25 +1024,24 @@ html {
   display: grid;
   place-items: center;
   padding: 0.35rem;
-  border: 1px dashed rgba(72, 72, 72, 0.55);
-  border-radius: 0.7rem;
-  background: rgba(255, 255, 255, 0.015);
-  color: var(--muted);
+  border: 1px solid rgba(15, 15, 15, 0.12);
+  border-radius: 0.2rem;
+  background: transparent;
+  color: rgba(15, 15, 15, 0.45);
   cursor: pointer;
   transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
   box-sizing: border-box;
 }
 
 .label-preview__slot:hover {
-  border-color: rgba(0, 218, 243, 0.35);
-  background: rgba(0, 218, 243, 0.06);
+  border-color: rgba(0, 218, 243, 0.45);
+  background: rgba(0, 218, 243, 0.05);
 }
 
 .label-preview__slot--active {
-  border-color: rgba(0, 218, 243, 0.5);
-  background:
-    linear-gradient(180deg, rgba(0, 218, 243, 0.12), rgba(255, 255, 255, 0.02)),
-    rgba(255, 255, 255, 0.02);
+  border-color: rgba(0, 218, 243, 0.9);
+  background: rgba(0, 218, 243, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(0, 218, 243, 0.35);
 }
 
 .label-preview__slot-index {
@@ -1057,7 +1066,7 @@ html {
   font-size: clamp(1rem, 2vw, 1.5rem);
   font-weight: 700;
   line-height: 1;
-  color: var(--text);
+  color: #111111;
 }
 
 .label-preview__qr {
@@ -1080,6 +1089,12 @@ html {
   height: var(--print-sheet-height);
   box-sizing: border-box;
   background: #fff;
+}
+
+.print-sheet__guide {
+  position: absolute;
+  box-sizing: border-box;
+  border: 0.15mm solid rgba(0, 0, 0, 0.16);
 }
 
 .print-sticker {
@@ -1226,6 +1241,10 @@ html {
   .label-preview__meta {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .label-preview__sheet {
+    width: 100%;
   }
 
   .label-preview__meta .button {
@@ -1429,6 +1448,10 @@ html {
   body.print-label-mode .print-sticker {
     border: none;
     color: #111;
+  }
+
+  body.print-label-mode .print-sheet__guide {
+    border-color: rgba(0, 0, 0, 0.18);
   }
 
   body.print-label-mode .print-sticker__number,
