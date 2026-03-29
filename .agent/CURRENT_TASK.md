@@ -69,3 +69,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Added a gated thumbnail debug trace to `GET /api/boxes/:id` via `DEBUG_BOX_THUMBNAILS=1` so persisted item thumbnail paths can be inspected quickly during API debugging
 - Fixed the mobile bottom navigation to render all five tabs in a single row and corrected the search field icon alignment on the Search page after a live browser pass against `kistenscanner.local`
 - Normalized the BoxDetail item action strip so edit/upload/move render as equally sized subtle buttons instead of left-stacked loose icons
+- Reworked BoxDetail item editing into a stacked single-column form with icon-backed save/cancel buttons and hid the normal item action strip while an item is in edit mode

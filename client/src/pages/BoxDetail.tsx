@@ -298,7 +298,10 @@ export function BoxDetailPage() {
                 const isEditing = editingItemId === item.id && draft;
 
                 return (
-                  <article className="review-card review-card--detail" key={item.id}>
+                  <article
+                    className={`review-card review-card--detail${isEditing ? " review-card--editing" : ""}`}
+                    key={item.id}
+                  >
                     <div className="review-card__media">
                       {(item.quantity && item.quantity > 0) ? (
                         <div className="card-badge">
@@ -316,7 +319,7 @@ export function BoxDetailPage() {
 
                     <div className="review-card__content">
                       {isEditing ? (
-                        <div className="form-grid">
+                        <div className="review-card__edit-form">
                           <div className="field">
                             <label htmlFor={`edit-name-${item.id}`}>Name</label>
                             <input
@@ -360,12 +363,13 @@ export function BoxDetailPage() {
                               value={draft.detail}
                             />
                           </div>
-                          <div className="action-row">
+                          <div className="review-card__edit-actions">
                             <button
                               className="button button--primary"
                               onClick={() => void saveEdit(item.id)}
                               type="button"
                             >
+                              <span className="material-symbols-outlined">save</span>
                               Speichern
                             </button>
                             <button
@@ -376,6 +380,7 @@ export function BoxDetailPage() {
                               }}
                               type="button"
                             >
+                              <span className="material-symbols-outlined">close</span>
                               Abbrechen
                             </button>
                           </div>
@@ -387,8 +392,8 @@ export function BoxDetailPage() {
                         </div>
                       )}
 
-                      <div className="review-card__actions">
-                        {!isEditing && (
+                      {!isEditing ? (
+                        <div className="review-card__actions">
                           <button
                             className="icon-btn"
                             onClick={() => beginEdit(item)}
@@ -397,29 +402,29 @@ export function BoxDetailPage() {
                           >
                             <span className="material-symbols-outlined">edit</span>
                           </button>
-                        )}
-                        <label className="icon-btn" htmlFor={`item-upload-${item.id}`} title="Foto hinzufügen">
-                          <span className="material-symbols-outlined">add_photo_alternate</span>
-                        </label>
-                        <input
-                          accept="image/*"
-                          className="sr-only"
-                          id={`item-upload-${item.id}`}
-                          onChange={(event) =>
-                            void handleImageUpload(item.id, event.target.files?.[0] ?? null)
-                          }
-                          type="file"
-                        />
-                        <button
-                          className="icon-btn"
-                          disabled={availableMoveTargets.length === 0}
-                          onClick={() => openMoveMenu(item.id)}
-                          title="Verschieben"
-                          type="button"
-                        >
-                          <span className="material-symbols-outlined">drive_file_move</span>
-                        </button>
-                      </div>
+                          <label className="icon-btn" htmlFor={`item-upload-${item.id}`} title="Foto hinzufügen">
+                            <span className="material-symbols-outlined">add_photo_alternate</span>
+                          </label>
+                          <input
+                            accept="image/*"
+                            className="sr-only"
+                            id={`item-upload-${item.id}`}
+                            onChange={(event) =>
+                              void handleImageUpload(item.id, event.target.files?.[0] ?? null)
+                            }
+                            type="file"
+                          />
+                          <button
+                            className="icon-btn"
+                            disabled={availableMoveTargets.length === 0}
+                            onClick={() => openMoveMenu(item.id)}
+                            title="Verschieben"
+                            type="button"
+                          >
+                            <span className="material-symbols-outlined">drive_file_move</span>
+                          </button>
+                        </div>
+                      ) : null}
 
 
                       {movingItemId === item.id && availableMoveTargets.length > 0 ? (

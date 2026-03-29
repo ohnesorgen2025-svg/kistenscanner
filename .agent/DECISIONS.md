@@ -135,3 +135,7 @@ Reason: A live browser pass on `kistenscanner.local` showed the fifth nav item w
 ## 2026-03-29 — BoxDetail item actions use equal-width quiet buttons
 The item action strip in the box detail cards now uses three equally sized subtle buttons for edit, photo upload and move instead of loose left-aligned icon glyphs.
 Reason: The previous layout looked visually uneven and made the action area feel accidental instead of intentional.
+
+## 2026-03-29 — BoxDetail editing uses a stacked in-card form, not a compressed grid
+Editing an item in BoxDetail now swaps the card body into a simple single-column form with dedicated save/cancel buttons and hides the normal icon action strip until editing ends.
+Reason: The old inline grid collapsed badly inside narrow item cards and created a visibly broken editing state on real data.
