@@ -83,3 +83,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Reserved the desktop scrollbar gutter globally so route changes between short and long pages do not shift the content area sideways
 - Introduced one shared page-header pattern for the main app routes and removed the explanatory hero copy so titles and actions stay in one consistent place
 - Rebuilt the BoxDetail header into a fixed hierarchy: `Kiste #`, then name, then `Standort` plus `Items`, with a smaller QR block and a calmer action row
+- Reworked the print-label CSS to use the A6 page area intentionally, with a larger box number, tighter margins and a properly sized QR block instead of a tiny top-left print fragment

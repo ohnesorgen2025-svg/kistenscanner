@@ -1286,7 +1286,7 @@ html {
 @media print {
   @page {
     size: A6 portrait;
-    margin: 8mm;
+    margin: 6mm;
   }
 
   body {
@@ -1314,6 +1314,7 @@ html {
 
   body.print-label-mode .print-label-panel {
     display: block !important;
+    width: 100%;
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -1322,11 +1323,63 @@ html {
   }
 
   body.print-label-mode .print-label {
+    width: 100%;
+    min-height: calc(148mm - 12mm);
+    box-sizing: border-box;
     grid-template-columns: minmax(0, 1fr) 24mm;
+    gap: 4mm;
+    align-items: start;
     color: #111;
   }
 
   body.print-label-mode .print-label__copy {
+    align-content: start;
+    gap: 2mm;
     color: #111;
+  }
+
+  body.print-label-mode .print-label__kicker {
+    font-size: 7pt;
+    letter-spacing: 0.18em;
+  }
+
+  body.print-label-mode .print-label__number {
+    font-size: 28pt;
+    line-height: 0.9;
+  }
+
+  body.print-label-mode .print-label__copy h2 {
+    font-size: 16pt;
+    line-height: 1.05;
+  }
+
+  body.print-label-mode .print-label__copy p {
+    font-size: 10pt;
+    line-height: 1.2;
+  }
+
+  body.print-label-mode .print-label__items {
+    gap: 1.5mm;
+    margin-top: 2mm;
+  }
+
+  body.print-label-mode .print-label__items span {
+    font-size: 7.5pt;
+    letter-spacing: 0.14em;
+  }
+
+  body.print-label-mode .print-label__items ol {
+    padding-left: 4.5mm;
+    font-size: 9pt;
+    line-height: 1.35;
+  }
+
+  body.print-label-mode .print-label__qr {
+    align-self: start;
+    width: 24mm;
+    max-width: 24mm;
+    padding: 1.2mm;
+    border-radius: 0;
+    background: #fff;
   }
 }

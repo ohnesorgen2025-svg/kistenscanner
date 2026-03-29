@@ -191,3 +191,7 @@ Reason: The previous mix of hero text, floating buttons and inconsistent spacing
 ## 2026-03-29 — Box detail prioritizes number, name, location and item count
 The box detail header now presents `Kiste #`, then the box name, then a muted metadata row for `Standort` and `Items`, while the QR code remains available but clearly secondary.
 Reason: The box number, name, location and item count are the information humans need first; the earlier header used too many competing sizes, colors and visual weights at once.
+
+## 2026-03-29 — Print label should fill the A6 area, not sit tiny in one corner
+The print label now uses tighter print margins, a defined A6 content height, a larger human-readable box number and a compact fixed QR block.
+Reason: The previous print preview produced a tiny fragment in the top-left corner instead of a deliberate label layout that uses the printable area well.
