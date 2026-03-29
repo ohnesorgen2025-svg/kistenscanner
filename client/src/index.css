@@ -2,21 +2,22 @@
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400;500;700&display=swap");
 
 :root {
-  --bg: #0f0f0f;
-  --card-bg: #1a1a1a;
-  --text: #e7e5e4;
-  --muted: #acabaa;
-  --border: #2b2b2b;
+  --bg: #1E2124;
+  --card-bg: #2B2F33;
+  --tertiary: #3D4248;
+  --text: #FFFFFF;
+  --muted: #9CA3AF;
+  --border: rgba(255, 255, 255, 0.1);
   --code-bg: #171717;
-  --accent: #00daf3;
-  --panel-shadow: rgba(0, 0, 0, 0.35) 0 24px 48px -24px;
+  --accent: #3B82F6;
+  --panel-shadow: rgba(0, 0, 0, 0.4) 0 8px 24px -8px;
 
   --sans: "Inter", "Segoe UI", sans-serif;
-  --heading: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
+  --heading: "Inter", "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", "SFMono-Regular", monospace;
 
-  font: 18px/1.45 var(--sans);
-  letter-spacing: 0.18px;
+  font: 15px/1.5 var(--sans);
+  letter-spacing: 0;
   background: var(--bg);
   color: var(--text);
   color-scheme: dark;
@@ -36,9 +37,7 @@
 body {
   margin: 0;
   min-width: 20rem;
-  background:
-    radial-gradient(circle at top left, rgba(0, 218, 243, 0.08), transparent 24rem),
-    linear-gradient(180deg, #101111 0%, #0f0f0f 100%);
+  background: var(--bg);
 }
 
 h1,
@@ -49,17 +48,19 @@ h2 {
 }
 
 h1 {
-  font-size: clamp(2.5rem, 7vw, 4.8rem);
-  line-height: 0.98;
-  letter-spacing: -0.05em;
-  margin: 0 0 1rem;
+  font-size: clamp(1.8rem, 4.5vw, 2.2rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.85rem;
 }
 
 h2 {
-  font-size: 1.3rem;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
 }
 
 p {

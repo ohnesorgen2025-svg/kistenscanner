@@ -18,7 +18,8 @@ const navigationLinks: NavigationLink[] = [
   { label: "Suchen", icon: "search", to: "/" },
   { label: "Scannen", icon: "qr_code_scanner", to: "/scan" },
   { label: "Hinzufügen", icon: "add_box", to: "/boxes/add" },
-  { label: "Einstellungen", icon: "settings", to: "/settings" },
+  { label: "Kisten", icon: "inventory_2", to: "/boxes" },
+  { label: "Settings", icon: "settings", to: "/settings" },
 ];
 
 function NavigationItem({ icon, label, to }: NavigationLink) {
@@ -52,17 +53,7 @@ function App() {
 
   return (
     <div className="shell">
-      <header className="topbar">
-        <div className="brand">
-          <span className="material-symbols-outlined brand__icon">package_2</span>
-          <span className="brand__text">KISTENSCANNER</span>
-        </div>
-        <div className="topbar__actions">
-          <NavLink className="topbar__link" to="/boxes">
-            Kisten
-          </NavLink>
-        </div>
-      </header>
+
 
       <main className={routeShellClass}>
         <div className="page-stack page-stack--route" key={location.pathname}>

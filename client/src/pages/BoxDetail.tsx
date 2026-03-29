@@ -7,7 +7,6 @@ import {
   listBoxes,
   moveItem,
   resolveAssetUrl,
-  setItemImageAsTitle,
   type BoxRecord,
   type BoxSummary,
   type ItemRecord,
@@ -232,15 +231,6 @@ export function BoxDetailPage() {
     }
   }
 
-  async function handleSetTitle(itemImageId: number) {
-    try {
-      await setItemImageAsTitle(itemImageId);
-      await refreshBox();
-      setError(null);
-    } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Titelbild konnte nicht gesetzt werden.");
-    }
-  }
 
   const availableMoveTargets = boxes.filter((entry) => entry.id !== box?.id);
 
@@ -310,6 +300,11 @@ export function BoxDetailPage() {
                 return (
                   <article className="review-card review-card--detail" key={item.id}>
                     <div className="review-card__media">
+                      {(item.quantity && item.quantity > 0) ? (
+                        <div className="card-badge">
+                          x{item.quantity}
+                        </div>
+                      ) : null}
                       {getItemImageUrl(item) ? (
                         <img alt={item.name} src={getItemImageUrl(item) ?? undefined} />
                       ) : (
@@ -365,34 +360,7 @@ export function BoxDetailPage() {
                               value={draft.detail}
                             />
                           </div>
-                        </div>
-                      ) : (
-                        <>
-                          <h2>{item.name}</h2>
-                          <p>{item.description ?? "Noch keine Beschreibung vorhanden."}</p>
-                          <p className="detail-copy">{item.detail ?? "Noch keine Details vorhanden."}</p>
-                        </>
-                      )}
-
-                      <div className="image-strip">
-                        {item.images.map((image) => (
-                          <button
-                            className={`image-thumb ${image.isTitle ? "image-thumb--active" : ""}`}
-                            key={image.id}
-                            onClick={() => void handleSetTitle(image.id)}
-                            type="button"
-                          >
-                            <img alt={item.name} src={resolveAssetUrl(image.path) ?? undefined} />
-                            <span className="image-thumb__label">
-                              {image.isTitle ? "Titelbild" : "Als Titel setzen"}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="action-row action-row--wrap">
-                        {isEditing ? (
-                          <>
+                          <div className="action-row">
                             <button
                               className="button button--primary"
                               onClick={() => void saveEdit(item.id)}
@@ -410,19 +378,28 @@ export function BoxDetailPage() {
                             >
                               Abbrechen
                             </button>
-                          </>
-                        ) : (
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="review-card__body">
+                          <p className="review-card__name">{item.name}</p>
+                          {item.description ? <p className="review-card__desc">{item.description}</p> : null}
+                        </div>
+                      )}
+
+                      <div className="review-card__actions">
+                        {!isEditing && (
                           <button
-                            className="button button--ghost"
+                            className="icon-btn"
                             onClick={() => beginEdit(item)}
+                            title="Bearbeiten"
                             type="button"
                           >
-                            Bearbeiten
+                            <span className="material-symbols-outlined">edit</span>
                           </button>
                         )}
-
-                        <label className="button button--ghost" htmlFor={`item-upload-${item.id}`}>
-                          Foto hinzufügen
+                        <label className="icon-btn" htmlFor={`item-upload-${item.id}`} title="Foto hinzufügen">
+                          <span className="material-symbols-outlined">add_photo_alternate</span>
                         </label>
                         <input
                           accept="image/*"
@@ -433,16 +410,17 @@ export function BoxDetailPage() {
                           }
                           type="file"
                         />
-
                         <button
-                          className="button button--ghost"
+                          className="icon-btn"
                           disabled={availableMoveTargets.length === 0}
                           onClick={() => openMoveMenu(item.id)}
+                          title="Verschieben"
                           type="button"
                         >
-                          Verschieben
+                          <span className="material-symbols-outlined">drive_file_move</span>
                         </button>
                       </div>
+
 
                       {movingItemId === item.id && availableMoveTargets.length > 0 ? (
                         <div className="move-panel">

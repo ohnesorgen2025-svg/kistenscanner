@@ -27,6 +27,7 @@ export type ItemRecord = {
   boxId: number;
   name: string;
   description: string | null;
+  quantity?: number;
   detail: string | null;
   titleImageId: number | null;
   thumbnailPath: string | null;
