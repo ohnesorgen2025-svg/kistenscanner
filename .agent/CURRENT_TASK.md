@@ -77,3 +77,4 @@ Validate the live app on real devices against `http://kistenscanner.local`:
 - Replaced the unstable auto-fill grid in BoxDetail with a fixed responsive item grid: 1 column on small screens, 2 on medium screens and at most 4 on large screens
 - Fixed the bottom-nav active-state logic so `/boxes/add` no longer activates both `Hinzufügen` and `Kisten`
 - Hardened `ScanPage` teardown so leaving the scanner waits for startup to settle before stopping and clearing the `html5-qrcode` instance
+- Added a dedicated vertical gap to the Add Box save section so the `Kiste anlegen und Items speichern` button no longer sticks directly to the input row

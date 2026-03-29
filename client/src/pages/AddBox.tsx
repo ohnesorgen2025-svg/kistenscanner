@@ -628,7 +628,7 @@ export function AddBoxPage() {
         </div>
       </section>
 
-      <section className="panel">
+      <section className="panel add-box-save-panel">
         <div className="panel-header">
           <div>
             <p className="section-kicker">Schritt 4</p>

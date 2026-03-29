@@ -167,3 +167,7 @@ Reason: Prefix matching made both `Kisten` and `Hinzufügen` appear active on th
 ## 2026-03-29 — Scanner teardown must wait for startup before cleanup
 `ScanPage` now tracks pending scanner startup and waits for it to settle before calling `stop()` and `clear()` during route changes.
 Reason: Leaving the scan route while the scanner was still starting was the most fragile runtime path and a plausible source of the reported black follow-up screen.
+
+## 2026-03-29 — Add Box save form uses its own vertical spacing context
+The save section in the Add Box flow now uses an explicit stacked layout so the final save button keeps a visible gap below the input fields.
+Reason: Without its own layout gap, the call-to-action looked glued to the form row and made the saving step feel cramped.
