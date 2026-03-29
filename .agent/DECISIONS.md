@@ -147,3 +147,7 @@ Reason: The previous fallback looked like a rendering bug rather than an intenti
 ## 2026-03-29 — The whole missing-thumbnail state should act as the upload affordance
 When an item has no preview image in BoxDetail, the entire placeholder is now the upload trigger, and the move state uses the same expanded card treatment as editing.
 Reason: Users naturally click the preview area itself when they want to add a missing photo, and the narrow move card repeated the same cramped pattern that editing had before.
+
+## 2026-03-29 — Box number outranks QR in hero and print label
+The BoxDetail hero and the print label now treat the running box number as the primary visual anchor, while the QR code is present but intentionally smaller.
+Reason: In real use the human-readable number is the first identifier someone looks for on a box, and the QR code is a secondary scan affordance for deeper interaction.

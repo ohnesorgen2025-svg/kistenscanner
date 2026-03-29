@@ -244,7 +244,8 @@ export function BoxDetailPage() {
         <>
           <section className="panel box-hero">
             <div className="box-hero__copy">
-              <p className="section-kicker">Kiste #{box.number}</p>
+              <p className="section-kicker">Kiste</p>
+              <div className="box-hero__number">#{box.number}</div>
               <h1>{box.name}</h1>
               <p>{box.location}</p>
               <div className="chip-row">
@@ -259,18 +260,19 @@ export function BoxDetailPage() {
                 </Link>
               </div>
             </div>
-            <div className="qr-panel qr-panel--compact">
-              {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
+            <div className="box-hero__code">
+              <div className="qr-panel qr-panel--compact">
+                {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
+              </div>
+              <p className="box-hero__qr-label">QR zum Scannen</p>
             </div>
           </section>
 
           <section className="panel print-label-panel" data-print-label="true">
             <div className="print-label">
-              <div className="print-label__qr">
-                {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
-              </div>
               <div className="print-label__copy">
-                <p className="print-label__kicker">Kiste #{box.number}</p>
+                <p className="print-label__kicker">Kiste</p>
+                <div className="print-label__number">#{box.number}</div>
                 <h2>{box.name}</h2>
                 <p>{box.location}</p>
                 <div className="print-label__items">
@@ -281,6 +283,9 @@ export function BoxDetailPage() {
                     ))}
                   </ol>
                 </div>
+              </div>
+              <div className="print-label__qr">
+                {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
               </div>
             </div>
           </section>
