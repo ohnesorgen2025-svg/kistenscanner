@@ -247,3 +247,7 @@ Reason: Pure mathematical centering still looked a touch too high in practice, s
 ## 2026-03-31 — A temporary center guideline can be used for sticker alignment checks
 The shared sticker artwork currently includes a horizontal midpoint guide so the number and QR code can be judged against the true vertical center of the label.
 Reason: Visual centering is easier to calibrate when preview and print expose the exact halfway line through the sticker.
+
+## 2026-03-31 — QR code may need its own optical Y correction
+The sticker geometry now allows the QR code to sit slightly higher than the number while keeping both on the same shared artwork.
+Reason: The QR code's visual mass does not always read as centered when it shares the exact same Y center as a large numeral.
