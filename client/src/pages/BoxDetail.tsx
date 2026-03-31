@@ -588,7 +588,12 @@ export function BoxDetailPage() {
       return;
     }
     try {
-      await createLoan(lendingItemId, lendingBorrower.trim(), lendingDueDate || undefined, lendingNotes || undefined);
+      await createLoan({
+        itemId: lendingItemId,
+        borrowerName: lendingBorrower.trim(),
+        dueDate: lendingDueDate || undefined,
+        notes: lendingNotes || undefined,
+      });
       closeLendDialog();
       await refreshBox();
       await loadItemLoans();
