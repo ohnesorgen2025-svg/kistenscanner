@@ -1002,6 +1002,19 @@ html {
   color: var(--text);
 }
 
+.label-preview__selection-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.label-preview__meta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
 .label-preview {
   margin-top: 1rem;
 }
@@ -1052,27 +1065,29 @@ html {
 
 .label-preview__sticker {
   display: grid;
-  justify-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   align-content: center;
-  gap: 0.35rem;
+  gap: 0.65rem;
   width: 100%;
   height: 100%;
-  padding: 0.2rem;
+  padding: 0.3rem 0.45rem;
   box-sizing: border-box;
 }
 
 .label-preview__number {
   font-family: var(--heading);
-  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(1.25rem, 3vw, 1.85rem);
   font-weight: 700;
   line-height: 1;
   color: #111111;
+  justify-self: center;
 }
 
 .label-preview__qr {
   display: grid;
   place-items: center;
-  width: min(2.6rem, 55%);
+  width: min(2rem, 38%);
   aspect-ratio: 1 / 1;
   border-radius: 0.4rem;
   background: #ffffff;
@@ -1105,17 +1120,17 @@ html {
   height: var(--print-sticker-height);
   box-sizing: border-box;
   display: grid;
-  justify-items: center;
-  align-content: center;
-  gap: 4mm;
-  padding: 4mm 3.5mm;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 4mm;
+  padding: 3.5mm 4mm;
   background: #fff;
   color: #111;
 }
 
 .print-sticker__number {
   font-family: var(--heading);
-  font-size: var(--print-sticker-number-size);
+  font-size: calc(var(--print-sticker-number-size) * 1.45);
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -1243,7 +1258,15 @@ html {
     align-items: stretch;
   }
 
+  .label-preview__meta-actions {
+    justify-content: stretch;
+  }
+
   .label-preview__sheet {
+    width: 100%;
+  }
+
+  .label-preview__meta-actions .button {
     width: 100%;
   }
 

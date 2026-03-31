@@ -91,3 +91,5 @@ Continue the real-world label workflow:
 - Changed the sticker section in BoxDetail to stay collapsed by default and open from the header action instead of always occupying the page
 - Reworked the A4 sticker preview into a bright paper-style sheet with fine guide lines so the real label grid is easier to judge before printing
 - Updated `No. 5028` to a symmetric geometry based on the measured 5 mm center gap: `18,7 mm` left/right margins and `21,5 mm` top/bottom margins
+- Switched the sticker content to a side-by-side layout so the box number can use more of the label width with the QR code beside it
+- Changed the sheet selection to multi-select so the same sticker can be printed into several free fields on one A4 page

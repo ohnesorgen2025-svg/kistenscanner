@@ -223,3 +223,11 @@ Reason: The previous dark mock-style preview made it hard to judge whether the r
 ## 2026-03-31 — No. 5028 uses symmetric A4 margins with a 5 mm center gap
 The `No. 5028` label profile now assumes `83,8 × 50,8 mm` labels on A4 with a `5 mm` center gap, `0 mm` vertical gap, `18,7 mm` left/right margins and `21,5 mm` top/bottom margins.
 Reason: The earlier asymmetric margin values did not match the real-world expectation for this bought sheet, while the measured center gap plus equal outer margins produce a consistent printable grid.
+
+## 2026-03-31 — Sticker number and QR code share the label width side by side
+The sticker now prints the large box number next to the QR code instead of stacking them vertically.
+Reason: A horizontal layout uses the available width better and lets the human-readable number grow without making the QR code unreadably small.
+
+## 2026-03-31 — One print can fill multiple selected fields with the same sticker
+The sheet preview now supports selecting multiple free label fields, and the print output repeats the same box number plus QR code into every selected slot.
+Reason: In practice the same sticker may be needed more than once for the same box, for example on the box body and separately on the lid.

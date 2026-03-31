@@ -83,8 +83,11 @@ function buildQrValue(box: BoxRecord): string {
   return `kistenscanner://box-number/${box.number}`;
 }
 
-function formatSlotLabel(slot: LabelSlot): string {
-  return `Feld ${slot.index + 1} · Zeile ${slot.row + 1} · Spalte ${slot.column + 1}`;
+function formatSlotList(slots: LabelSlot[]): string {
+  return slots
+    .map((slot) => slot.index + 1)
+    .sort((left, right) => left - right)
+    .join(", ");
 }
 
 function getItemImageUrl(item: ItemRecord): string | null {
@@ -106,7 +109,7 @@ export function BoxDetailPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
   const [labelProfileId, setLabelProfileId] = useState<string>(labelProfiles[0].id);
-  const [selectedLabelSlotIndex, setSelectedLabelSlotIndex] = useState<number>(0);
+  const [selectedLabelSlotIndices, setSelectedLabelSlotIndices] = useState<number[]>([0]);
   const [isLabelPanelOpen, setIsLabelPanelOpen] = useState(false);
   const confirmationTimeoutRef = useRef<number | null>(null);
 
@@ -222,6 +225,16 @@ export function BoxDetailPage() {
     window.print();
   }
 
+  function toggleSelectedLabelSlot(slotIndex: number) {
+    setSelectedLabelSlotIndices((current) => {
+      if (current.includes(slotIndex)) {
+        return current.filter((entry) => entry !== slotIndex);
+      }
+
+      return [...current, slotIndex].sort((left, right) => left - right);
+    });
+  }
+
   function openLabelPanel() {
     setIsLabelPanelOpen(true);
   }
@@ -317,15 +330,10 @@ export function BoxDetailPage() {
   const activeLabelProfile =
     labelProfiles.find((profile) => profile.id === labelProfileId) ?? labelProfiles[0];
   const labelSlots = buildSlots(activeLabelProfile);
-  const selectedLabelSlot =
-    labelSlots.find((slot) => slot.index === selectedLabelSlotIndex) ?? labelSlots[0];
-  const printStickerStyle = {
+  const selectedLabelSlots = labelSlots.filter((slot) => selectedLabelSlotIndices.includes(slot.index));
+  const printSheetStyle = {
     "--print-sheet-width": `${activeLabelProfile.pageWidthMm}mm`,
     "--print-sheet-height": `${activeLabelProfile.pageHeightMm}mm`,
-    "--print-sticker-width": `${activeLabelProfile.labelWidthMm}mm`,
-    "--print-sticker-height": `${activeLabelProfile.labelHeightMm}mm`,
-    "--print-sticker-left": `${selectedLabelSlot.leftMm}mm`,
-    "--print-sticker-top": `${selectedLabelSlot.topMm}mm`,
     "--print-sticker-qr-size": `${activeLabelProfile.qrMm}mm`,
     "--print-sticker-number-size": `${activeLabelProfile.numberFontPt}pt`,
   } as CSSProperties;
@@ -397,7 +405,7 @@ export function BoxDetailPage() {
                       onChange={(event) => {
                         const nextProfileId = event.target.value;
                         setLabelProfileId(nextProfileId);
-                        setSelectedLabelSlotIndex(0);
+                        setSelectedLabelSlotIndices([0]);
                       }}
                       value={labelProfileId}
                     >
@@ -408,38 +416,43 @@ export function BoxDetailPage() {
                       ))}
                     </select>
                   </div>
-
-                  <div className="field">
-                    <label htmlFor="label-slot">Position</label>
-                    <select
-                      className="input"
-                      id="label-slot"
-                      onChange={(event) => setSelectedLabelSlotIndex(Number(event.target.value))}
-                      value={selectedLabelSlotIndex}
-                    >
-                      {labelSlots.map((slot) => (
-                        <option key={slot.index} value={slot.index}>
-                          {formatSlotLabel(slot)}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
                 </div>
 
                 <div className="label-preview__meta">
                   <div className="label-preview__meta-copy">
                     <p className="section-kicker">Auswahl</p>
-                    <p className="label-preview__selection">{formatSlotLabel(selectedLabelSlot)}</p>
+                    <p className="label-preview__selection">
+                      {selectedLabelSlots.length === 0
+                        ? "Noch kein Feld ausgewählt"
+                        : `${selectedLabelSlots.length} Etikett${selectedLabelSlots.length > 1 ? "en" : ""} · Felder ${formatSlotList(selectedLabelSlots)}`}
+                    </p>
+                    <p className="label-preview__selection-hint">
+                      Klicke mehrere freie Felder an, wenn dieselbe Nummer mehrfach auf den Bogen soll.
+                    </p>
                   </div>
-                  <button className="button button--primary" onClick={handlePrintLabel} type="button">
-                    Druckdialog öffnen
-                  </button>
+                  <div className="label-preview__meta-actions">
+                    <button
+                      className="button button--ghost"
+                      onClick={() => setSelectedLabelSlotIndices([0])}
+                      type="button"
+                    >
+                      Auswahl zurücksetzen
+                    </button>
+                    <button
+                      className="button button--primary"
+                      disabled={selectedLabelSlots.length === 0}
+                      onClick={handlePrintLabel}
+                      type="button"
+                    >
+                      Druckdialog öffnen
+                    </button>
+                  </div>
                 </div>
 
                 <div className="label-preview">
                   <div className="label-preview__sheet">
                     {labelSlots.map((slot) => {
-                      const isSelected = slot.index === selectedLabelSlot.index;
+                      const isSelected = selectedLabelSlotIndices.includes(slot.index);
                       const slotStyle = {
                         left: `${(slot.leftMm / activeLabelProfile.pageWidthMm) * 100}%`,
                         top: `${(slot.topMm / activeLabelProfile.pageHeightMm) * 100}%`,
@@ -451,7 +464,7 @@ export function BoxDetailPage() {
                         <button
                           className={`label-preview__slot${isSelected ? " label-preview__slot--active" : ""}`}
                           key={slot.index}
-                          onClick={() => setSelectedLabelSlotIndex(slot.index)}
+                          onClick={() => toggleSelectedLabelSlot(slot.index)}
                           style={slotStyle}
                           type="button"
                         >
@@ -479,7 +492,7 @@ export function BoxDetailPage() {
           </section>
 
           <section className="panel print-label-panel" data-print-label="true">
-            <div className="print-sheet" style={printStickerStyle}>
+            <div className="print-sheet" style={printSheetStyle}>
               {labelSlots.map((slot) => {
                 const guideStyle = {
                   left: `${slot.leftMm}mm`,
@@ -490,14 +503,27 @@ export function BoxDetailPage() {
 
                 return <div className="print-sheet__guide" key={slot.index} style={guideStyle} />;
               })}
-              <div
-                className="print-sticker"
-              >
-                <div className="print-sticker__number">{box.number}</div>
-                <div className="print-sticker__qr">
-                  {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
-                </div>
-              </div>
+              {selectedLabelSlots.map((slot) => {
+                const printStickerStyle = {
+                  "--print-sticker-width": `${activeLabelProfile.labelWidthMm}mm`,
+                  "--print-sticker-height": `${activeLabelProfile.labelHeightMm}mm`,
+                  "--print-sticker-left": `${slot.leftMm}mm`,
+                  "--print-sticker-top": `${slot.topMm}mm`,
+                } as CSSProperties;
+
+                return (
+                  <div
+                    className="print-sticker"
+                    key={slot.index}
+                    style={printStickerStyle}
+                  >
+                    <div className="print-sticker__number">{box.number}</div>
+                    <div className="print-sticker__qr">
+                      {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
 
