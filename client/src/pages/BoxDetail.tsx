@@ -460,59 +460,64 @@ export function BoxDetailPage() {
       {box ? (
         <>
           <section className="panel box-detail-header">
-            <div className="box-detail-header__main">
-              <div className="box-detail-header__content">
-                <p className="box-detail-header__kicker">Standort</p>
-                <h1 className="box-detail-header__location">{box.location}</h1>
-                <div className="box-detail-header__facts">
-                  <span className="box-badge">Kiste #{box.number}</span>
-                  {box.name ? <span className="box-badge">{box.name}</span> : null}
-                  <span className="box-badge box-badge--dim">
-                    {box.itemCount} {box.itemCount === 1 ? "Item" : "Items"}
-                  </span>
+            <div className="box-detail-header__identity">
+              <div className="box-detail-header__code">
+                <div className="qr-panel qr-panel--compact box-detail-header__qr-panel">
+                  {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
                 </div>
+                <p className="box-detail-header__qr-label">QR zum Scannen</p>
               </div>
 
-              <div className="box-detail-header__qr">
-                <div className="qr-panel qr-panel--compact">
-                  {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
+              <div className="box-detail-header__summary">
+                <p className="section-kicker">Standort</p>
+                <h1 className="box-detail-header__location">{box.location}</h1>
+                <div className="box-detail-header__facts">
+                  <div className="box-detail-header__fact">
+                    <span className="box-detail-header__fact-label">Kiste</span>
+                    <strong className="box-detail-header__fact-value">#{box.number}</strong>
+                  </div>
+                  <div className="box-detail-header__fact">
+                    <span className="box-detail-header__fact-label">Name</span>
+                    <strong className="box-detail-header__fact-value">{box.name}</strong>
+                  </div>
+                  <div className="box-detail-header__fact">
+                    <span className="box-detail-header__fact-label">Items</span>
+                    <strong className="box-detail-header__fact-value">{box.itemCount}</strong>
+                  </div>
                 </div>
               </div>
             </div>
 
             <div className="box-detail-toolbar" role="toolbar" aria-label="Kistenaktionen">
-              <div className="box-detail-toolbar__group">
-                <Link
-                  aria-label="Zurück zu den Kisten"
-                  className="button button--ghost"
-                  title="Zurück zu den Kisten"
-                  to="/boxes"
-                >
-                  <span className="material-symbols-outlined">arrow_back</span>
-                  <span className="box-detail-toolbar__text">Zurück</span>
-                </Link>
-              </div>
-              <div className="box-detail-toolbar__group">
-                <button
-                  aria-label="Label drucken"
-                  className="button button--ghost"
-                  onClick={openLabelPanel}
-                  title="Label drucken"
-                  type="button"
-                >
-                  <span className="material-symbols-outlined">print</span>
-                  <span className="box-detail-toolbar__text">Label drucken</span>
-                </button>
-                <button
-                  aria-label="Kiste löschen"
-                  className="button button--ghost button--danger"
-                  onClick={() => void handleDeleteBox()}
-                  title="Kiste löschen"
-                  type="button"
-                >
-                  <span className="material-symbols-outlined">delete</span>
-                </button>
-              </div>
+              <button
+                aria-label="Label drucken"
+                className="button button--ghost box-detail-toolbar__action"
+                onClick={openLabelPanel}
+                title="Label drucken"
+                type="button"
+              >
+                <span className="material-symbols-outlined">print</span>
+                <span className="box-detail-toolbar__text">Label drucken</span>
+              </button>
+              <Link
+                aria-label="Zurück zu den Kisten"
+                className="button button--ghost box-detail-toolbar__action"
+                title="Zurück zu den Kisten"
+                to="/boxes"
+              >
+                <span className="material-symbols-outlined">arrow_back</span>
+                <span className="box-detail-toolbar__text">Zurück</span>
+              </Link>
+              <button
+                aria-label="Kiste löschen"
+                className="button button--ghost box-detail-toolbar__action box-detail-toolbar__action--danger"
+                onClick={() => void handleDeleteBox()}
+                title="Kiste löschen"
+                type="button"
+              >
+                <span className="material-symbols-outlined">delete</span>
+                <span className="box-detail-toolbar__text">Löschen</span>
+              </button>
             </div>
           </section>
 
