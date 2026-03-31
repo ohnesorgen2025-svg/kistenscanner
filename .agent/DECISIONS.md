@@ -231,3 +231,7 @@ Reason: A horizontal layout uses the available width better and lets the human-r
 ## 2026-03-31 — One print can fill multiple selected fields with the same sticker
 The sheet preview now supports selecting multiple free label fields, and the print output repeats the same box number plus QR code into every selected slot.
 Reason: In practice the same sticker may be needed more than once for the same box, for example on the box body and separately on the lid.
+
+## 2026-03-31 — Sticker content uses a strict 50/50 label split with inner padding
+Inside each label, the usable area now keeps roughly 10% padding to the outer edges and splits the remaining space into two equal halves: the number on the left and the QR code on the right, both horizontally and vertically centered.
+Reason: A strict geometric split uses the label area more predictably and makes both the number and the QR code feel deliberate instead of loosely arranged.
