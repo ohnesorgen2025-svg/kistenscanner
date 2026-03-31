@@ -28,5 +28,5 @@ COPY --from=prod-deps /app/package-lock.json ./package-lock.json
 COPY --from=prod-deps /app/server/package.json ./server/package.json
 COPY --from=build /app/client/dist ./client/dist
 COPY --from=build /app/server/dist ./server/dist
-EXPOSE 4001
+EXPOSE 4001 4443
 CMD ["node", "server/dist/index.js"]
