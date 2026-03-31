@@ -6,6 +6,10 @@ Do not return an empty array unless there are truly no physical objects visible.
 Return all item names and descriptions in German.
 Use correct German umlauts and ß where appropriate: ä, ö, ü, ß.
 Never use ae, oe or ue as substitutes when a German umlaut is correct.
+If the same real-world object is visible in multiple photos, return it only once.
+Use the richest combined description you can infer across the photos.
+Set sourceImageIndex to the photo where that object is most clearly visible.
+Do not increase quantity just because the same object appears again in another photo.
 Each item must contain:
 - name: short item name
 - description: concise identifying description

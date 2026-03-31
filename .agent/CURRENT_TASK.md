@@ -97,3 +97,5 @@ Continue the real-world label workflow:
 - Replaced the rough CSS-based sticker sizing with one shared SVG artwork so preview and print use the same geometry and scale behavior
 - Added a small shared optical Y-offset in the sticker artwork so number and QR read visually centered instead of only mathematically centered
 - Fine-tuned the QR code position separately from the number so the QR can sit a touch higher without disturbing the now-correct number alignment
+- Strengthened multi-photo analysis dedupe with conservative heuristics instead of exact `name + description` matching only
+- Updated the AI prompt to explicitly consolidate the same object across multiple photos, keep the richest description and avoid fake quantity increases from repeat views

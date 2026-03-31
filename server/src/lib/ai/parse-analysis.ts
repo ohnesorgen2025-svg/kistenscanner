@@ -13,8 +13,343 @@ export type AnalysisItem = {
   bbox: AnalysisItemBoundingBox | null;
 };
 
+const GENERIC_ITEM_NAMES = new Set([
+  "adapter",
+  "akku",
+  "behalter",
+  "beutel",
+  "box",
+  "buch",
+  "dose",
+  "fernbedienung",
+  "geraet",
+  "gerät",
+  "kabel",
+  "karte",
+  "netzteil",
+  "stecker",
+  "tasche",
+  "teil",
+  "werkzeug",
+]);
+
+const STOP_WORDS = new Set([
+  "a",
+  "an",
+  "am",
+  "an",
+  "auf",
+  "aus",
+  "bei",
+  "das",
+  "dem",
+  "den",
+  "der",
+  "des",
+  "die",
+  "ein",
+  "eine",
+  "einem",
+  "einen",
+  "einer",
+  "eines",
+  "fuer",
+  "für",
+  "im",
+  "in",
+  "inkl",
+  "inklusive",
+  "ist",
+  "mit",
+  "ohne",
+  "oder",
+  "plus",
+  "samt",
+  "the",
+  "und",
+  "vom",
+  "von",
+  "zum",
+  "zur",
+]);
+
+const WEAK_DESCRIPTOR_TOKENS = new Set([
+  "alt",
+  "alte",
+  "blau",
+  "blaue",
+  "blauen",
+  "defekt",
+  "defekte",
+  "gebraucht",
+  "gelb",
+  "grau",
+  "gruen",
+  "grün",
+  "klein",
+  "kleine",
+  "kurz",
+  "lang",
+  "lange",
+  "marke",
+  "modell",
+  "neu",
+  "rote",
+  "rot",
+  "schwarz",
+  "schwarze",
+  "schwarzen",
+  "silber",
+  "silbern",
+  "weiss",
+  "weiße",
+  "weisses",
+  "weiß",
+  "weißen",
+  "weiss",
+  "weisser",
+  "weisses",
+  "weissgrau",
+  "weißes",
+  "weißer",
+  "weisslich",
+  "weisser",
+  "weisses",
+  "weisses",
+  "weißlich",
+  "zustand",
+]);
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
+}
+
+function normalizeText(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/ß/g, "ss")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function tokenize(value: string): string[] {
+  return normalizeText(value)
+    .split(" ")
+    .map((token) => token.trim())
+    .filter((token) => token.length > 0);
+}
+
+function uniqueTokens(tokens: string[]): string[] {
+  return Array.from(new Set(tokens));
+}
+
+function normalizeName(name: string): string {
+  return normalizeText(name);
+}
+
+function nameTokens(name: string): string[] {
+  return uniqueTokens(tokenize(name).filter((token) => !STOP_WORDS.has(token)));
+}
+
+function descriptionTokens(description: string): string[] {
+  return uniqueTokens(tokenize(description).filter((token) => !STOP_WORDS.has(token)));
+}
+
+function strongDescriptionTokens(description: string): string[] {
+  return descriptionTokens(description).filter((token) => !WEAK_DESCRIPTOR_TOKENS.has(token));
+}
+
+function tokenSimilarity(left: string[], right: string[]): number {
+  if (left.length === 0 || right.length === 0) {
+    return 0;
+  }
+
+  const leftSet = new Set(left);
+  const rightSet = new Set(right);
+  let overlap = 0;
+
+  for (const token of leftSet) {
+    if (rightSet.has(token)) {
+      overlap += 1;
+    }
+  }
+
+  return overlap / Math.max(leftSet.size, rightSet.size);
+}
+
+function isSubset(left: string[], right: string[]): boolean {
+  if (left.length === 0) {
+    return true;
+  }
+
+  const rightSet = new Set(right);
+  return left.every((token) => rightSet.has(token));
+}
+
+function isGenericName(name: string): boolean {
+  const normalized = normalizeName(name);
+  if (GENERIC_ITEM_NAMES.has(normalized)) {
+    return true;
+  }
+
+  return nameTokens(name).every((token) => GENERIC_ITEM_NAMES.has(token));
+}
+
+function bboxIntersectionOverUnion(
+  left: AnalysisItemBoundingBox | null,
+  right: AnalysisItemBoundingBox | null,
+): number {
+  if (!left || !right) {
+    return 0;
+  }
+
+  const x1 = Math.max(left.x, right.x);
+  const y1 = Math.max(left.y, right.y);
+  const x2 = Math.min(left.x + left.width, right.x + right.width);
+  const y2 = Math.min(left.y + left.height, right.y + right.height);
+  const intersectionWidth = Math.max(0, x2 - x1);
+  const intersectionHeight = Math.max(0, y2 - y1);
+  const intersection = intersectionWidth * intersectionHeight;
+
+  if (intersection <= 0) {
+    return 0;
+  }
+
+  const leftArea = left.width * left.height;
+  const rightArea = right.width * right.height;
+  const union = leftArea + rightArea - intersection;
+
+  return union > 0 ? intersection / union : 0;
+}
+
+function bboxCenterDistance(
+  left: AnalysisItemBoundingBox | null,
+  right: AnalysisItemBoundingBox | null,
+): number {
+  if (!left || !right) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  const leftCenterX = left.x + left.width / 2;
+  const leftCenterY = left.y + left.height / 2;
+  const rightCenterX = right.x + right.width / 2;
+  const rightCenterY = right.y + right.height / 2;
+
+  return Math.hypot(leftCenterX - rightCenterX, leftCenterY - rightCenterY);
+}
+
+function looksLikeSeparateObjectsInSameImage(left: AnalysisItem, right: AnalysisItem): boolean {
+  return (
+    left.sourceImageIndex !== null &&
+    left.sourceImageIndex === right.sourceImageIndex &&
+    bboxIntersectionOverUnion(left.bbox, right.bbox) < 0.05 &&
+    bboxCenterDistance(left.bbox, right.bbox) > 0.28
+  );
+}
+
+function choosePreferredItem(left: AnalysisItem, right: AnalysisItem): AnalysisItem {
+  const leftStrong = strongDescriptionTokens(left.description).length;
+  const rightStrong = strongDescriptionTokens(right.description).length;
+
+  if (rightStrong !== leftStrong) {
+    return rightStrong > leftStrong ? right : left;
+  }
+
+  if (right.description.length !== left.description.length) {
+    return right.description.length > left.description.length ? right : left;
+  }
+
+  if (right.bbox && !left.bbox) {
+    return right;
+  }
+
+  return left;
+}
+
+function shouldMergeItems(existing: AnalysisItem, candidate: AnalysisItem): boolean {
+  const existingName = normalizeName(existing.name);
+  const candidateName = normalizeName(candidate.name);
+  const namesEqual = existingName === candidateName;
+  const nameSimilarity = tokenSimilarity(nameTokens(existing.name), nameTokens(candidate.name));
+
+  if (!namesEqual && nameSimilarity < 0.8) {
+    return false;
+  }
+
+  const existingDescription = normalizeText(existing.description);
+  const candidateDescription = normalizeText(candidate.description);
+
+  if (existingDescription === candidateDescription) {
+    if (looksLikeSeparateObjectsInSameImage(existing, candidate)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  if (!existingDescription || !candidateDescription) {
+    return namesEqual && !isGenericName(existing.name);
+  }
+
+  const existingStrongDescription = strongDescriptionTokens(existing.description);
+  const candidateStrongDescription = strongDescriptionTokens(candidate.description);
+  const existingDescriptionTokens = descriptionTokens(existing.description);
+  const candidateDescriptionTokens = descriptionTokens(candidate.description);
+  const strongSimilarity = tokenSimilarity(existingStrongDescription, candidateStrongDescription);
+  const fullSimilarity = tokenSimilarity(existingDescriptionTokens, candidateDescriptionTokens);
+  const genericName = isGenericName(existing.name) || isGenericName(candidate.name);
+
+  if (
+    (isSubset(existingDescriptionTokens, candidateDescriptionTokens) ||
+      isSubset(candidateDescriptionTokens, existingDescriptionTokens)) &&
+    fullSimilarity >= 0.5
+  ) {
+    if (looksLikeSeparateObjectsInSameImage(existing, candidate)) {
+      return false;
+    }
+
+    return !genericName || existing.sourceImageIndex !== candidate.sourceImageIndex || fullSimilarity >= 0.75;
+  }
+
+  if (
+    existingStrongDescription.length > 0 &&
+    candidateStrongDescription.length > 0 &&
+    (isSubset(existingStrongDescription, candidateStrongDescription) ||
+      isSubset(candidateStrongDescription, existingStrongDescription))
+  ) {
+    if (looksLikeSeparateObjectsInSameImage(existing, candidate)) {
+      return false;
+    }
+
+    return !genericName || strongSimilarity >= 0.5;
+  }
+
+  if (genericName) {
+    return strongSimilarity >= 0.8 || (strongSimilarity >= 0.6 && fullSimilarity >= 0.75);
+  }
+
+  if (namesEqual) {
+    return strongSimilarity >= 0.5 || fullSimilarity >= 0.72;
+  }
+
+  return nameSimilarity >= 0.9 && strongSimilarity >= 0.6;
+}
+
+function mergeTwoItems(existing: AnalysisItem, candidate: AnalysisItem): AnalysisItem {
+  const preferred = choosePreferredItem(existing, candidate);
+  const fallback = preferred === existing ? candidate : existing;
+
+  return {
+    name: preferred.name,
+    description: preferred.description || fallback.description,
+    quantity: Math.max(existing.quantity, candidate.quantity),
+    sourceImageIndex:
+      preferred.sourceImageIndex ?? fallback.sourceImageIndex ?? existing.sourceImageIndex,
+    bbox: preferred.bbox ?? fallback.bbox ?? existing.bbox,
+  };
 }
 
 function sanitizeAnalysisItem(value: unknown): AnalysisItem | null {
@@ -248,29 +583,20 @@ function parseKeyValueAnalysisItems(rawResponse: string): AnalysisItem[] {
 }
 
 function mergeItems(items: AnalysisItem[]): AnalysisItem[] {
-  const merged = new Map<string, AnalysisItem>();
+  const merged: AnalysisItem[] = [];
 
   for (const item of items) {
-    const key = `${item.name.toLowerCase()}::${item.description.toLowerCase()}`;
-    const existing = merged.get(key);
+    const matchIndex = merged.findIndex((existing) => shouldMergeItems(existing, item));
 
-    if (!existing) {
-      merged.set(key, { ...item });
+    if (matchIndex === -1) {
+      merged.push({ ...item });
       continue;
     }
 
-    existing.quantity += item.quantity;
-
-    if (existing.sourceImageIndex === null && item.sourceImageIndex !== null) {
-      existing.sourceImageIndex = item.sourceImageIndex;
-    }
-
-    if (!existing.bbox && item.bbox) {
-      existing.bbox = item.bbox;
-    }
+    merged[matchIndex] = mergeTwoItems(merged[matchIndex]!, item);
   }
 
-  return Array.from(merged.values());
+  return merged;
 }
 
 export function parseAnalysis(rawResponse: string): AnalysisItem[] {

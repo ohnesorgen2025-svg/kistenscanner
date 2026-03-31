@@ -247,3 +247,11 @@ Reason: Pure mathematical centering still looked a touch too high in practice, s
 ## 2026-03-31 — QR code may need its own optical Y correction
 The sticker geometry now allows the QR code to sit slightly higher than the number while keeping both on the same shared artwork.
 Reason: The QR code's visual mass does not always read as centered when it shares the exact same Y center as a large numeral.
+
+## 2026-03-31 — Multi-photo dedupe uses conservative heuristics, not just exact text
+The analysis parser now merges likely duplicates with normalized names, description token overlap, generic-name safeguards, source-image awareness and conservative quantity handling.
+Reason: Exact `name + description` matching left obvious duplicate items in multi-photo box analyses, but blindly aggressive merging would risk collapsing truly separate objects.
+
+## 2026-03-31 — Quantity should not grow just because the same object appears in another photo
+When duplicate detections are merged across photos, quantity now keeps the safer maximum value instead of blindly summing.
+Reason: In multi-photo analysis the same physical object is often seen more than once, so summing duplicate quantities tends to overcount.
