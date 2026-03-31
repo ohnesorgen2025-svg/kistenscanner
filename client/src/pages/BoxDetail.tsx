@@ -791,45 +791,45 @@ export function BoxDetailPage() {
                           {item.description ? <p className="review-card__desc">{item.description}</p> : null}
                         </div>
                       )}
+                    </div>
 
-                      {!isEditing ? (
-                        <div className="review-card__actions">
-                          <button
-                            className="icon-btn"
-                            onClick={() => beginEdit(item)}
-                            title="Bearbeiten"
-                            type="button"
-                          >
-                            <span className="material-symbols-outlined">edit</span>
-                          </button>
-                          <label className="icon-btn" htmlFor={`item-upload-${item.id}`} title="Foto hinzufügen">
-                            <span className="material-symbols-outlined">add_photo_alternate</span>
-                          </label>
-                          <input
-                            accept="image/*"
-                            className="sr-only"
-                            id={`item-upload-${item.id}`}
-                            onChange={(event) =>
-                              void handleImageUpload(item.id, event.target.files?.[0] ?? null)
-                            }
-                            type="file"
-                          />
-                          <button
-                            className="icon-btn"
-                            disabled={availableMoveTargets.length === 0}
-                            onClick={() => openMoveMenu(item.id)}
-                            title="Verschieben"
-                            type="button"
-                          >
-                            <span className="material-symbols-outlined">drive_file_move</span>
-                          </button>
-                        </div>
-                      ) : null}
+                    {!isEditing ? (
+                      <div className="review-card__actions">
+                        <button
+                          className="icon-btn"
+                          onClick={() => beginEdit(item)}
+                          title="Bearbeiten"
+                          type="button"
+                        >
+                          <span className="material-symbols-outlined">edit</span>
+                        </button>
+                        <label className="icon-btn" htmlFor={`item-upload-${item.id}`} title="Foto hinzufügen">
+                          <span className="material-symbols-outlined">add_photo_alternate</span>
+                        </label>
+                        <input
+                          accept="image/*"
+                          className="sr-only"
+                          id={`item-upload-${item.id}`}
+                          onChange={(event) =>
+                            void handleImageUpload(item.id, event.target.files?.[0] ?? null)
+                          }
+                          type="file"
+                        />
+                        <button
+                          className="icon-btn"
+                          disabled={availableMoveTargets.length === 0}
+                          onClick={() => openMoveMenu(item.id)}
+                          title="Verschieben"
+                          type="button"
+                        >
+                          <span className="material-symbols-outlined">drive_file_move</span>
+                        </button>
+                      </div>
+                    ) : null}
 
-
-                      {isMoving && availableMoveTargets.length > 0 ? (
-                        <div className="move-panel">
-                          <div className="field">
+                    {isMoving && availableMoveTargets.length > 0 ? (
+                      <div className="move-panel">
+                        <div className="field">
                             <label htmlFor={`move-item-${item.id}`}>Ziel-Kiste</label>
                             <select
                               className="input move-select"
@@ -862,7 +862,6 @@ export function BoxDetailPage() {
                           </div>
                         </div>
                       ) : null}
-                    </div>
                   </article>
                 );
               })}

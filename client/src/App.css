@@ -581,7 +581,8 @@ html {
 }
 
 .review-card {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0;
   padding: 0;
   overflow: hidden;
@@ -594,7 +595,7 @@ html {
 }
 
 .review-card--detail {
-  align-items: start;
+  /* removed align-items: start because it breaks flex columns, we let it stretch */
 }
 
 .review-card__media {
