@@ -14,6 +14,7 @@ import { boxItemsRouter, itemsRouter } from "./routes/items.js";
 import { modelsRouter, settingsRouter } from "./routes/settings.js";
 import { searchRouter } from "./routes/search.js";
 import { aiFeaturesRouter } from "./routes/ai-features.js";
+import { barcodeRouter } from "./routes/barcode.js";
 import { loansRouter } from "./routes/loans.js";
 
 const DEFAULT_SERVER_PORT = 4001;
@@ -42,6 +43,7 @@ app.use("/api/settings", settingsRouter);
 app.use("/api/models", modelsRouter);
 app.use("/api/ai", aiFeaturesRouter);
 app.use("/api/loans", loansRouter);
+app.use("/api/barcode", barcodeRouter);
 
 app.get("/api", (_request, response) => {
   response.json({

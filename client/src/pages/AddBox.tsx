@@ -10,6 +10,7 @@ import {
   getBox,
   getSettings,
   listBoxes,
+  listLocations,
   listModels,
   resolveAssetUrl,
   type AnalysisItem,
@@ -75,6 +76,7 @@ export function AddBoxPage() {
   const [containerType, setContainerType] = useState<ContainerType>("box");
   const [parentId, setParentId] = useState<number | null>(null);
   const [allBoxes, setAllBoxes] = useState<BoxSummary[]>([]);
+  const [allLocations, setAllLocations] = useState<string[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,14 +124,15 @@ export function AddBoxPage() {
   useEffect(() => {
     let isMounted = true;
 
-    void Promise.all([listModels(), getSettings(), listBoxes()])
-      .then(([loadedModels, settings, boxes]) => {
+    void Promise.all([listModels(), getSettings(), listBoxes(), listLocations()])
+      .then(([loadedModels, settings, boxes, locations]) => {
         if (!isMounted) {
           return;
         }
 
         setModels(loadedModels);
         setAllBoxes(boxes);
+        setAllLocations(locations);
         const activeModelId = settings.activeModelId;
         if (activeModelId && loadedModels.some((model) => model.id === activeModelId)) {
           setModelId(activeModelId);
@@ -668,12 +671,19 @@ export function AddBoxPage() {
           <div className="field">
             <label htmlFor="box-location">Standort</label>
             <input
+              autoComplete="off"
               className="input"
               id="box-location"
+              list="location-suggestions"
               onChange={(event) => setLocation(event.target.value)}
               placeholder="Garagenregal 02"
               value={location}
             />
+            <datalist id="location-suggestions">
+              {allLocations.map((loc) => (
+                <option key={loc} value={loc} />
+              ))}
+            </datalist>
           </div>
         </div>
 
@@ -715,6 +725,22 @@ export function AddBoxPage() {
                   type="button"
                 >
                   Etikett drucken
+                </button>
+                <button
+                  className="button button--ghost"
+                  onClick={() => {
+                    setFiles([]);
+                    setPreviewUrls([]);
+                    setReviewItems([]);
+                    setBoxName("");
+                    setSavedBox(null);
+                    setQrCodeDataUrl(null);
+                    setError(null);
+                  }}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">replay</span>
+                  Nächsten Behälter erfassen
                 </button>
               </div>
             </div>

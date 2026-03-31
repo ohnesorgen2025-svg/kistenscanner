@@ -47,18 +47,22 @@ export function HelpPage() {
           <span className="material-symbols-outlined help-section__icon">qr_code_scanner</span>
           <div>
             <p className="section-kicker">Schnellzugriff</p>
-            <h2>QR-Code Scanner</h2>
+            <h2>QR-Code & Barcode Scanner</h2>
           </div>
         </div>
         <div className="help-section__body">
-          <p>Halte die Kamera auf den QR-Code einer Kiste — die App springt sofort zur Detailansicht. Jeder Behälter bekommt beim Anlegen automatisch einen eindeutigen QR-Code.</p>
+          <p>Halte die Kamera auf den QR-Code einer Kiste — die App springt sofort zur Detailansicht. Oder scanne einen Produkt-Barcode (EAN/UPC), um Produktinformationen nachzuschlagen.</p>
           <div className="help-feature">
-            <h3><span className="material-symbols-outlined">videocam</span> Live-Scanner</h3>
-            <p>Öffnet die Kamera mit Echtzeit-Erkennung. Sobald ein gültiger Code erkannt wird, navigiert die App automatisch.</p>
+            <h3><span className="material-symbols-outlined">qr_code_scanner</span> QR-Modus</h3>
+            <p>Öffnet die Kamera mit Echtzeit-Erkennung. Sobald ein gültiger Kisten-QR-Code erkannt wird, navigiert die App automatisch.</p>
+          </div>
+          <div className="help-feature">
+            <h3><span className="material-symbols-outlined">barcode_scanner</span> Barcode-Modus</h3>
+            <p>Scannt EAN/UPC-Barcodes von Produkten und schlägt den Artikelnamen, Marke und Kategorie über die OpenFoodFacts-Datenbank nach.</p>
           </div>
           <div className="help-feature">
             <h3><span className="material-symbols-outlined">upload</span> Bild-Fallback</h3>
-            <p>Falls die Kamera nicht verfügbar ist (z.B. ohne HTTPS), kannst du ein Foto des QR-Codes hochladen oder aufnehmen.</p>
+            <p>Falls die Kamera nicht verfügbar ist (z.B. ohne HTTPS), kannst du ein Foto des Codes hochladen oder aufnehmen.</p>
           </div>
         </div>
       </section>
@@ -85,10 +89,10 @@ export function HelpPage() {
               <strong>Items prüfen</strong> — Die erkannten Items werden als editierbare Karten angezeigt. Korrigiere Namen, ergänze Details oder entferne falsche Treffer. Items lassen sich auch manuell hinzufügen.
             </li>
             <li>
-              <strong>Behälter speichern</strong> — Vergib einen Namen und Standort. Wähle den <strong>Behältertyp</strong> (Kiste, Schrank, Schublade, Regal, Tasche oder Raum) und optional einen <strong>übergeordneten Behälter</strong> für die Verschachtelung.
+              <strong>Behälter speichern</strong> — Vergib einen Namen und Standort. Der <strong>Standort</strong> bietet Autovervollständigung basierend auf bereits verwendeten Standorten. Wähle den <strong>Behältertyp</strong> (Kiste, Schrank, Schublade, Regal, Tasche oder Raum) und optional einen <strong>übergeordneten Behälter</strong> für die Verschachtelung.
             </li>
             <li>
-              <strong>QR-Code drucken</strong> — Nach dem Speichern wird ein QR-Code generiert. Drucke ihn direkt aus und klebe ihn auf den Behälter.
+              <strong>QR-Code drucken</strong> — Nach dem Speichern wird ein QR-Code generiert. Drucke ihn direkt aus und klebe ihn auf den Behälter. Mit dem <strong>„Nächsten Behälter erfassen"</strong>-Button kannst du sofort den nächsten Behälter anlegen — Standort, Typ und Eltern-Behälter bleiben vorausgefüllt.
             </li>
           </ol>
         </div>
@@ -192,6 +196,16 @@ export function HelpPage() {
           <div className="help-feature">
             <h3><span className="material-symbols-outlined">account_tree</span> Unterbehälter</h3>
             <p>Falls verschachtelte Behälter vorhanden sind, werden diese als anklickbare Karten angezeigt.</p>
+          </div>
+
+          <div className="help-feature">
+            <h3><span className="material-symbols-outlined">checklist</span> Mehrfachauswahl (Batch)</h3>
+            <p>Tippe auf „Mehrfachauswahl", um mehrere Items gleichzeitig auszuwählen. Dann kannst du alle markierten Items gemeinsam <strong>verschieben</strong> oder <strong>löschen</strong>. Ideal beim Umräumen oder Aufräumen.</p>
+          </div>
+
+          <div className="help-feature">
+            <h3><span className="material-symbols-outlined">ios_share</span> Teilen / Packliste</h3>
+            <p>Tippe auf „Teilen" in der Toolbar, um den gesamten Inhalt als Text-Packliste über die native Teilen-Funktion (WhatsApp, E-Mail etc.) zu versenden oder in die Zwischenablage zu kopieren.</p>
           </div>
         </div>
       </section>

@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { PageHeader } from "../components/PageHeader";
-import { getBoxByNumber } from "../lib/api";
+import { getBoxByNumber, lookupBarcode, type BarcodeResult } from "../lib/api";
+
+type ScanMode = "qr" | "barcode";
 
 function extractBoxNumber(decodedText: string): number | null {
   const trimmed = decodedText.trim();
@@ -20,6 +22,10 @@ function extractBoxNumber(decodedText: string): number | null {
   return Number.isInteger(boxNumber) && boxNumber > 0 ? boxNumber : null;
 }
 
+function isBarcodeLike(text: string): boolean {
+  return /^\d{8,14}$/.test(text.trim());
+}
+
 export function ScanPage() {
   const navigate = useNavigate();
   const scannerRef = useRef<HTMLDivElement | null>(null);
@@ -29,6 +35,9 @@ export function ScanPage() {
   const [error, setError] = useState<string | null>(null);
   const [cameraAvailable, setCameraAvailable] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [scanMode, setScanMode] = useState<ScanMode>("qr");
+  const [barcodeResult, setBarcodeResult] = useState<BarcodeResult | null>(null);
+  const [isLookingUp, setIsLookingUp] = useState(false);
 
   async function resolveDecodedText(decodedText: string) {
     if (hasResolvedRef.current) {
@@ -36,6 +45,25 @@ export function ScanPage() {
     }
 
     hasResolvedRef.current = true;
+
+    if (scanMode === "barcode" || isBarcodeLike(decodedText)) {
+      setStatus("Barcode erkannt. Produkt wird gesucht…");
+      setError(null);
+      setIsLookingUp(true);
+      try {
+        const result = await lookupBarcode(decodedText.trim());
+        setBarcodeResult(result);
+        setStatus(result.found ? `Produkt gefunden: ${result.name}` : `Barcode ${result.code} — kein Produkt gefunden`);
+      } catch {
+        setBarcodeResult({ found: false, code: decodedText.trim() });
+        setStatus("Produktsuche fehlgeschlagen");
+      } finally {
+        setIsLookingUp(false);
+        hasResolvedRef.current = false;
+      }
+      return;
+    }
+
     setStatus("QR-Code erkannt. Kiste wird geladen…");
     setError(null);
 
@@ -65,7 +93,7 @@ export function ScanPage() {
 
     setIsProcessing(true);
     setError(null);
-    setStatus("QR-Code wird erkannt…");
+    setStatus("Code wird erkannt…");
 
     try {
       const { Html5Qrcode } = await import("html5-qrcode");
@@ -74,14 +102,22 @@ export function ScanPage() {
       scanner.clear();
       await resolveDecodedText(decodedText);
     } catch {
-      setError("Kein QR-Code im Bild erkannt. Bitte erneut versuchen.");
-      setStatus("QR-Code nicht erkannt");
+      setError("Kein Code im Bild erkannt. Bitte erneut versuchen.");
+      setStatus("Code nicht erkannt");
     } finally {
       setIsProcessing(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     }
+  }
+
+  function handleModeSwitch(mode: ScanMode) {
+    setScanMode(mode);
+    setBarcodeResult(null);
+    setError(null);
+    hasResolvedRef.current = false;
+    setStatus(mode === "barcode" ? "Barcode scannen…" : "QR-Code innerhalb des Rahmens scannen");
   }
 
   useEffect(() => {
@@ -175,6 +211,25 @@ export function ScanPage() {
     <div className="page-stack">
       <PageHeader kicker="Scannen" title="Scannen" />
 
+      <div className="scan-mode-toggle">
+        <button
+          className={`button ${scanMode === "qr" ? "button--primary" : "button--ghost"}`}
+          onClick={() => handleModeSwitch("qr")}
+          type="button"
+        >
+          <span className="material-symbols-outlined">qr_code_scanner</span>
+          QR-Code
+        </button>
+        <button
+          className={`button ${scanMode === "barcode" ? "button--primary" : "button--ghost"}`}
+          onClick={() => handleModeSwitch("barcode")}
+          type="button"
+        >
+          <span className="material-symbols-outlined">barcode_scanner</span>
+          Barcode
+        </button>
+      </div>
+
       {cameraAvailable ? (
         <section className="panel scan-panel">
           <div className="scan-viewfinder">
@@ -232,6 +287,59 @@ export function ScanPage() {
       )}
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
+
+      {isLookingUp ? (
+        <div className="feedback">
+          <span className="material-symbols-outlined spin">progress_activity</span>
+          Produkt wird gesucht…
+        </div>
+      ) : null}
+
+      {barcodeResult ? (
+        <section className="panel barcode-result-panel">
+          <div className="panel-header">
+            <div>
+              <p className="section-kicker">Barcode-Ergebnis</p>
+              <h2>{barcodeResult.found ? barcodeResult.name : "Unbekanntes Produkt"}</h2>
+            </div>
+            <button
+              className="button button--ghost"
+              onClick={() => {
+                setBarcodeResult(null);
+                hasResolvedRef.current = false;
+              }}
+              type="button"
+            >
+              <span className="material-symbols-outlined">close</span>
+              Schließen
+            </button>
+          </div>
+
+          <div className="barcode-result-details">
+            <div className="chip-row">
+              <span className="chip">EAN {barcodeResult.code}</span>
+              {barcodeResult.brand ? <span className="chip">{barcodeResult.brand}</span> : null}
+              {barcodeResult.quantity ? <span className="chip">{barcodeResult.quantity}</span> : null}
+              {barcodeResult.category ? <span className="chip chip--quiet">{barcodeResult.category}</span> : null}
+            </div>
+
+            {barcodeResult.found && barcodeResult.imageUrl ? (
+              <img
+                alt={barcodeResult.name}
+                className="barcode-result-image"
+                src={barcodeResult.imageUrl}
+              />
+            ) : null}
+
+            {!barcodeResult.found ? (
+              <p className="barcode-result-hint">
+                Dieses Produkt wurde nicht in der OpenFoodFacts-Datenbank gefunden.
+                Du kannst den Barcode-Code trotzdem als Artikelname verwenden.
+              </p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

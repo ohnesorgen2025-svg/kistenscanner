@@ -180,6 +180,10 @@ export async function listBoxes(): Promise<BoxSummary[]> {
   return requestJson<BoxSummary[]>("/api/boxes");
 }
 
+export async function listLocations(): Promise<string[]> {
+  return requestJson<string[]>("/api/boxes/locations");
+}
+
 export async function getBoxByNumber(boxNumber: number): Promise<BoxSummary> {
   return requestJson<BoxSummary>(`/api/boxes?number=${boxNumber}`);
 }
@@ -279,6 +283,20 @@ export async function moveItem(itemId: number, targetBoxId: number): Promise<Ite
   return requestJson<ItemRecord>(`/api/items/${itemId}/move`, {
     method: "PATCH",
     body: JSON.stringify({ targetBoxId }),
+  });
+}
+
+export async function batchMoveItems(itemIds: number[], targetBoxId: number): Promise<{ moved: number }> {
+  return requestJson<{ moved: number }>("/api/items/batch-move", {
+    method: "POST",
+    body: JSON.stringify({ itemIds, targetBoxId }),
+  });
+}
+
+export async function batchDeleteItems(itemIds: number[]): Promise<{ deleted: number }> {
+  return requestJson<{ deleted: number }>("/api/items/batch-delete", {
+    method: "POST",
+    body: JSON.stringify({ itemIds }),
   });
 }
 
@@ -461,4 +479,20 @@ export async function updateBox(
     method: "PATCH",
     body: JSON.stringify(payload),
   });
+}
+
+// --- Barcode ---
+
+export type BarcodeResult = {
+  found: boolean;
+  code: string;
+  name?: string;
+  brand?: string | null;
+  category?: string | null;
+  quantity?: string | null;
+  imageUrl?: string | null;
+};
+
+export async function lookupBarcode(code: string): Promise<BarcodeResult> {
+  return requestJson<BarcodeResult>(`/api/barcode/${encodeURIComponent(code)}`);
 }

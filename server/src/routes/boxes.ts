@@ -7,6 +7,7 @@ import {
   getBoxById,
   getBoxByNumber,
   listBoxes,
+  listLocations,
   listRootContainers,
   updateBox,
   type ContainerType,
@@ -29,6 +30,10 @@ boxesRouter.get("/root", (_request, response) => {
 
 boxesRouter.get("/container-types", (_request, response) => {
   response.json(CONTAINER_TYPES);
+});
+
+boxesRouter.get("/locations", (_request, response) => {
+  response.json(listLocations());
 });
 
 boxesRouter.post("/", (request, response) => {

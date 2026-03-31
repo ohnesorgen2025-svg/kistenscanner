@@ -740,6 +740,38 @@ export function moveItem(itemId: number, targetBoxId: number): ItemRecord {
   return requireItemRecord(itemId);
 }
 
+export function batchMoveItems(itemIds: number[], targetBoxId: number): void {
+  requireBoxSummary(targetBoxId);
+  const now = nowIso();
+
+  const move = database.transaction(() => {
+    const stmt = database.prepare("UPDATE items SET box_id = ?, updated_at = ? WHERE id = ?");
+    for (const itemId of itemIds) {
+      requireItemRecord(itemId);
+      stmt.run(targetBoxId, now, itemId);
+    }
+  });
+
+  move();
+}
+
+export function batchDeleteItems(itemIds: number[]): void {
+  const remove = database.transaction(() => {
+    const deleteImages = database.prepare("DELETE FROM item_images WHERE item_id = ?");
+    const deleteLoans = database.prepare("DELETE FROM loans WHERE item_id = ?");
+    const deleteItem = database.prepare("DELETE FROM items WHERE id = ?");
+
+    for (const itemId of itemIds) {
+      requireItemRecord(itemId);
+      deleteImages.run(itemId);
+      deleteLoans.run(itemId);
+      deleteItem.run(itemId);
+    }
+  });
+
+  remove();
+}
+
 export function addItemImage(itemId: number, imagePath: string): ItemRecord {
   const item = requireItemRecord(itemId);
   const now = nowIso();
@@ -1076,6 +1108,14 @@ export function getActiveLoansForItem(itemId: number): LoanRecord[] {
     .all(itemId) as LoanRow[];
 
   return rows.map(toLoanRecord);
+}
+
+/** List all distinct locations used across containers. */
+export function listLocations(): string[] {
+  const rows = database
+    .prepare("SELECT DISTINCT location FROM boxes ORDER BY location COLLATE NOCASE ASC")
+    .all() as Array<{ location: string }>;
+  return rows.map((r) => r.location);
 }
 
 /** List all containers that have no parent (root level). */

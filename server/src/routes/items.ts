@@ -1,6 +1,8 @@
 import { Router } from "express";
 
 import {
+  batchDeleteItems,
+  batchMoveItems,
   createItem,
   deleteItem,
   moveItem,
@@ -19,6 +21,40 @@ function parseRouteId(value: string): number {
 
 export const boxItemsRouter = Router();
 export const itemsRouter = Router();
+
+itemsRouter.post("/batch-move", (request, response) => {
+  try {
+    const itemIds = request.body.itemIds;
+    const targetBoxId = Number(request.body.targetBoxId);
+
+    if (!Array.isArray(itemIds) || itemIds.length === 0 || !itemIds.every((id: unknown) => typeof id === "number" && Number.isInteger(id) && id > 0)) {
+      return response.status(400).json({ error: "itemIds muss ein Array von gültigen IDs sein." });
+    }
+    if (!Number.isInteger(targetBoxId) || targetBoxId <= 0) {
+      return response.status(400).json({ error: "targetBoxId ist erforderlich." });
+    }
+
+    batchMoveItems(itemIds as number[], targetBoxId);
+    return response.json({ moved: itemIds.length });
+  } catch (error) {
+    return response.status(400).json({ error: error instanceof Error ? error.message : "Batch-Verschieben fehlgeschlagen." });
+  }
+});
+
+itemsRouter.post("/batch-delete", (request, response) => {
+  try {
+    const itemIds = request.body.itemIds;
+
+    if (!Array.isArray(itemIds) || itemIds.length === 0 || !itemIds.every((id: unknown) => typeof id === "number" && Number.isInteger(id) && id > 0)) {
+      return response.status(400).json({ error: "itemIds muss ein Array von gültigen IDs sein." });
+    }
+
+    batchDeleteItems(itemIds as number[]);
+    return response.json({ deleted: itemIds.length });
+  } catch (error) {
+    return response.status(400).json({ error: error instanceof Error ? error.message : "Batch-Löschen fehlgeschlagen." });
+  }
+});
 
 boxItemsRouter.post("/:id/items", (request, response) => {
   try {

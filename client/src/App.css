@@ -2198,3 +2198,97 @@ html {
   background: #f44336;
   color: #fff;
 }
+
+/* ─── Batch Mode ─── */
+
+.batch-action-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-raised, #f5f5f5);
+  border-radius: var(--radius);
+  margin-bottom: 0.75rem;
+}
+
+.batch-action-bar__count {
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.batch-move-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.batch-move-row .input {
+  flex: 1;
+  min-width: 140px;
+}
+
+.batch-checkbox {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.75rem 0 0.75rem 0.75rem;
+}
+
+.batch-checkbox input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--accent, #4361ee);
+  cursor: pointer;
+}
+
+.review-card--selected {
+  outline: 2px solid var(--accent, #4361ee);
+  outline-offset: -2px;
+  background: color-mix(in srgb, var(--accent, #4361ee) 6%, transparent);
+}
+
+.button--active {
+  background: var(--accent, #4361ee);
+  color: #fff;
+}
+
+/* ─── Scan Mode Toggle ─── */
+
+.scan-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+/* ─── Barcode Result ─── */
+
+.barcode-result-panel {
+  animation: fadeIn 0.25s ease;
+}
+
+.barcode-result-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.barcode-result-image {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: var(--radius);
+  object-fit: contain;
+  align-self: center;
+}
+
+.barcode-result-hint {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

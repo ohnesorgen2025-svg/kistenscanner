@@ -3,6 +3,8 @@ import QRCode from "qrcode";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
+  batchDeleteItems,
+  batchMoveItems,
   CONTAINER_TYPE_ICONS,
   CONTAINER_TYPE_LABELS,
   createItem,
@@ -230,6 +232,10 @@ export function BoxDetailPage() {
   const [lendingDueDate, setLendingDueDate] = useState("");
   const [lendingNotes, setLendingNotes] = useState("");
   const [itemLoans, setItemLoans] = useState<Record<number, LoanRecord[]>>({});
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const [selectedItemIds, setSelectedItemIds] = useState<Set<number>>(new Set());
+  const [batchMoveTargetId, setBatchMoveTargetId] = useState<number | null>(null);
+  const [isBatchMoving, setIsBatchMoving] = useState(false);
 
   useEffect(() => {
     function clearPrintMode() {
@@ -635,6 +641,92 @@ export function BoxDetailPage() {
     confirmationTimeoutRef.current = window.setTimeout(() => setConfirmation(null), 3000);
   }
 
+  function toggleBatchSelect(itemId: number) {
+    setSelectedItemIds((current) => {
+      const next = new Set(current);
+      if (next.has(itemId)) {
+        next.delete(itemId);
+      } else {
+        next.add(itemId);
+      }
+      return next;
+    });
+  }
+
+  function exitBatchMode() {
+    setIsBatchMode(false);
+    setSelectedItemIds(new Set());
+    setIsBatchMoving(false);
+    setBatchMoveTargetId(null);
+  }
+
+  async function handleBatchDelete() {
+    if (selectedItemIds.size === 0) return;
+    const confirmed = window.confirm(`${selectedItemIds.size} Item(s) wirklich löschen?`);
+    if (!confirmed) return;
+    try {
+      await batchDeleteItems([...selectedItemIds]);
+      await refreshBox();
+      showConfirmation(`${selectedItemIds.size} Items gelöscht.`);
+      exitBatchMode();
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Batch-Löschen fehlgeschlagen.");
+    }
+  }
+
+  async function handleBatchMove() {
+    if (selectedItemIds.size === 0 || !batchMoveTargetId) return;
+    try {
+      await batchMoveItems([...selectedItemIds], batchMoveTargetId);
+      await refreshBox();
+      showConfirmation(`${selectedItemIds.size} Items verschoben.`);
+      exitBatchMode();
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Batch-Verschieben fehlgeschlagen.");
+    }
+  }
+
+  function buildShareText(boxData: BoxRecord): string {
+    const containerLabel = CONTAINER_TYPE_LABELS[boxData.containerType as ContainerType] ?? "Kiste";
+    const lines: string[] = [
+      `📦 ${containerLabel} #${boxData.number} · ${boxData.name}`,
+      `📍 ${boxData.location}`,
+      "",
+      `Inhalt (${boxData.items.length} Items):`,
+    ];
+    for (const item of boxData.items) {
+      const qty = item.quantity > 1 ? ` ×${item.quantity}${item.quantityUnit ? ` ${item.quantityUnit}` : ""}` : "";
+      lines.push(`• ${item.name}${qty}`);
+      if (item.description) {
+        lines.push(`  ${item.description}`);
+      }
+    }
+    return lines.join("\n");
+  }
+
+  async function handleShare() {
+    if (!box) return;
+    const text = buildShareText(box);
+    const containerLabel = CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste";
+    const title = `${containerLabel} #${box.number} · ${box.name}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, text });
+        return;
+      } catch {
+        // User cancelled or share failed — fall through to clipboard
+      }
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      showConfirmation("Packliste in die Zwischenablage kopiert.");
+    } catch {
+      setError("Teilen fehlgeschlagen.");
+    }
+  }
+
 
   const availableMoveTargets = boxes.filter((entry) => entry.id !== box?.id);
   const activeLabelProfile =
@@ -727,6 +819,16 @@ export function BoxDetailPage() {
               >
                 <span className="material-symbols-outlined">print</span>
                 <span className="box-detail-toolbar__text">Label drucken</span>
+              </button>
+              <button
+                aria-label="Packliste teilen"
+                className="button button--ghost box-detail-toolbar__action"
+                onClick={() => void handleShare()}
+                title="Inhalt teilen / Packliste kopieren"
+                type="button"
+              >
+                <span className="material-symbols-outlined">ios_share</span>
+                <span className="box-detail-toolbar__text">Teilen</span>
               </button>
               <Link
                 aria-label="Zurück zu den Kisten"
@@ -1084,7 +1186,76 @@ export function BoxDetailPage() {
                 <p className="section-kicker">Items</p>
                 <h2>Inhalt</h2>
               </div>
+              {box.items.length > 0 ? (
+                <button
+                  className={`button button--ghost${isBatchMode ? " button--active" : ""}`}
+                  onClick={() => isBatchMode ? exitBatchMode() : setIsBatchMode(true)}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">checklist</span>
+                  {isBatchMode ? "Auswahl beenden" : "Mehrfachauswahl"}
+                </button>
+              ) : null}
             </div>
+
+            {isBatchMode && selectedItemIds.size > 0 ? (
+              <div className="batch-action-bar">
+                <span className="batch-action-bar__count">{selectedItemIds.size} ausgewählt</span>
+                {!isBatchMoving ? (
+                  <div className="action-row">
+                    <button
+                      className="button button--ghost"
+                      onClick={() => setIsBatchMoving(true)}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined">drive_file_move</span>
+                      Verschieben
+                    </button>
+                    <button
+                      className="button button--ghost box-detail-toolbar__action--danger"
+                      onClick={() => void handleBatchDelete()}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined">delete</span>
+                      Löschen
+                    </button>
+                  </div>
+                ) : (
+                  <div className="batch-move-row">
+                    <select
+                      className="input"
+                      onChange={(event) => {
+                        const v = Number(event.target.value);
+                        setBatchMoveTargetId(v > 0 ? v : null);
+                      }}
+                      value={batchMoveTargetId ?? ""}
+                    >
+                      <option value="">Ziel wählen…</option>
+                      {availableMoveTargets.map((target) => (
+                        <option key={target.id} value={target.id}>
+                          #{target.number} · {target.name}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className="button button--primary"
+                      disabled={!batchMoveTargetId}
+                      onClick={() => void handleBatchMove()}
+                      type="button"
+                    >
+                      Bestätigen
+                    </button>
+                    <button
+                      className="button button--ghost"
+                      onClick={() => setIsBatchMoving(false)}
+                      type="button"
+                    >
+                      Abbrechen
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : null}
 
             <div className="review-list">
               {box.items.map((item) => {
@@ -1093,9 +1264,19 @@ export function BoxDetailPage() {
 
                 return (
                   <article
-                    className={`review-card review-card--detail${isEditing ? " review-card--editing" : ""}${isMoving ? " review-card--moving" : ""}`}
+                    className={`review-card review-card--detail${isEditing ? " review-card--editing" : ""}${isMoving ? " review-card--moving" : ""}${isBatchMode && selectedItemIds.has(item.id) ? " review-card--selected" : ""}`}
                     key={item.id}
+                    onClick={isBatchMode ? () => toggleBatchSelect(item.id) : undefined}
                   >
+                    {isBatchMode ? (
+                      <div className="batch-checkbox">
+                        <input
+                          checked={selectedItemIds.has(item.id)}
+                          onChange={() => toggleBatchSelect(item.id)}
+                          type="checkbox"
+                        />
+                      </div>
+                    ) : null}
                     <div className="review-card__media">
                       {(item.quantity && item.quantity > 1) ? (
                         <div className="card-badge">
@@ -1207,7 +1388,7 @@ export function BoxDetailPage() {
                       )}
                     </div>
 
-                    {!isEditing ? (
+                    {!isEditing && !isBatchMode ? (
                       <div className="review-card__actions">
                         <button
                           className="icon-btn"
