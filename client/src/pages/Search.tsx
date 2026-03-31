@@ -2,7 +2,14 @@ import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { PageHeader } from "../components/PageHeader";
-import { resolveAssetUrl, searchInventory, type SearchResult } from "../lib/api";
+import {
+  resolveAssetUrl,
+  searchInventory,
+  smartSearch,
+  visualSearch,
+  type SearchResult,
+  type SmartSearchResult,
+} from "../lib/api";
 
 const MIN_QUERY_LENGTH = 2;
 
@@ -14,6 +21,11 @@ export function SearchPage() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAiSearching, setIsAiSearching] = useState(false);
+  const [aiResults, setAiResults] = useState<SmartSearchResult[]>([]);
+  const [isVisualSearching, setIsVisualSearching] = useState(false);
+  const [visualResults, setVisualResults] = useState<SmartSearchResult[]>([]);
+  const [visualPreviewUrl, setVisualPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -47,7 +59,45 @@ export function SearchPage() {
   }, [deferredQuery]);
 
   const showHint = query.trim().length < MIN_QUERY_LENGTH;
-  const showEmptyState = !showHint && !isLoading && !error && results.length === 0;
+  const showEmptyState = !showHint && !isLoading && !error && results.length === 0 && aiResults.length === 0;
+
+  async function handleAiSearch() {
+    if (query.trim().length < MIN_QUERY_LENGTH) return;
+    setIsAiSearching(true);
+    setError(null);
+    try {
+      const aiHits = await smartSearch(query.trim());
+      setAiResults(aiHits);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "KI-Suche fehlgeschlagen.");
+    } finally {
+      setIsAiSearching(false);
+    }
+  }
+
+  async function handleVisualSearch(file: File | null) {
+    if (!file) return;
+    const previewUrl = URL.createObjectURL(file);
+    setVisualPreviewUrl(previewUrl);
+    setIsVisualSearching(true);
+    setError(null);
+    try {
+      const hits = await visualSearch([file]);
+      setVisualResults(hits);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Foto-Suche fehlgeschlagen.");
+    } finally {
+      setIsVisualSearching(false);
+    }
+  }
+
+  function clearVisualSearch() {
+    setVisualResults([]);
+    if (visualPreviewUrl) {
+      URL.revokeObjectURL(visualPreviewUrl);
+    }
+    setVisualPreviewUrl(null);
+  }
 
   return (
     <div className="page-stack">
@@ -61,7 +111,7 @@ export function SearchPage() {
               autoComplete="off"
               className="input search-input"
               inputMode="search"
-              onChange={(event) => setQuery(event.target.value)}
+              onChange={(event) => { setQuery(event.target.value); setAiResults([]); }}
               placeholder="Item oder Kiste suchen…"
               ref={inputRef}
               type="text"
@@ -69,12 +119,35 @@ export function SearchPage() {
             />
           </div>
           <button
+            className="button button--ghost search-input-wrap__button"
+            disabled={query.trim().length < MIN_QUERY_LENGTH || isAiSearching}
+            onClick={() => void handleAiSearch()}
+            title="KI-Suche"
+            type="button"
+          >
+            <span className="material-symbols-outlined">{isAiSearching ? "progress_activity" : "auto_awesome"}</span>
+          </button>
+          <button
             className="button button--primary search-input-wrap__button"
             onClick={() => navigate("/scan")}
             type="button"
           >
             <span className="material-symbols-outlined">qr_code_scanner</span>
           </button>
+        </div>
+
+        <div className="search-extras">
+          <label className="button button--ghost search-visual-btn" htmlFor="visual-search-input">
+            <span className="material-symbols-outlined">photo_camera</span>
+            Foto-Suche
+          </label>
+          <input
+            accept="image/*"
+            className="sr-only"
+            id="visual-search-input"
+            onChange={(event) => void handleVisualSearch(event.target.files?.[0] ?? null)}
+            type="file"
+          />
         </div>
       </section>
 
@@ -128,6 +201,88 @@ export function SearchPage() {
           </Link>
         ))}
       </section>
+
+      {aiResults.length > 0 ? (
+        <section className="search-results">
+          <div className="section-kicker ai-results-label">
+            <span className="material-symbols-outlined">auto_awesome</span>
+            KI-Ergebnisse
+          </div>
+          {aiResults.map((result) => (
+            <Link className="search-result panel" key={`ai-${result.id}`} to={`/boxes/${result.boxId}`}>
+              <div className="search-result__media">
+                {resolveAssetUrl(result.thumbnailPath) ? (
+                  <img alt={result.name} src={resolveAssetUrl(result.thumbnailPath) ?? undefined} />
+                ) : (
+                  <div className="box-card__placeholder">
+                    <span className="material-symbols-outlined">inventory_2</span>
+                  </div>
+                )}
+              </div>
+              <div className="search-result__body">
+                <div className="search-result__headline">
+                  <h2>{result.name}</h2>
+                </div>
+                <p>{result.description ?? result.detail ?? "Keine Beschreibung."}</p>
+                <div className="search-result__meta">
+                  <span className="material-symbols-outlined">package_2</span>
+                  <span>{result.boxName}</span>
+                </div>
+                <div className="search-result__meta">
+                  <span className="material-symbols-outlined">location_on</span>
+                  <span>{result.boxLocation}</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </section>
+      ) : null}
+
+      {visualPreviewUrl ? (
+        <section className="panel visual-search-panel">
+          <div className="panel-header">
+            <div>
+              <p className="section-kicker">
+                <span className="material-symbols-outlined">photo_camera</span>
+                Foto-Suche
+              </p>
+              <h2>{isVisualSearching ? "Suche läuft…" : `${visualResults.length} Treffer`}</h2>
+            </div>
+            <button className="button button--ghost" onClick={clearVisualSearch} type="button">
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div className="visual-search-preview">
+            <img alt="Suchfoto" src={visualPreviewUrl} />
+          </div>
+          {isVisualSearching ? <div className="feedback">KI analysiert das Foto…</div> : null}
+          <div className="search-results">
+            {visualResults.map((result) => (
+              <Link className="search-result panel" key={`visual-${result.id}`} to={`/boxes/${result.boxId}`}>
+                <div className="search-result__media">
+                  {resolveAssetUrl(result.thumbnailPath) ? (
+                    <img alt={result.name} src={resolveAssetUrl(result.thumbnailPath) ?? undefined} />
+                  ) : (
+                    <div className="box-card__placeholder">
+                      <span className="material-symbols-outlined">inventory_2</span>
+                    </div>
+                  )}
+                </div>
+                <div className="search-result__body">
+                  <div className="search-result__headline">
+                    <h2>{result.name}</h2>
+                  </div>
+                  <p>{result.description ?? "Keine Beschreibung."}</p>
+                  <div className="search-result__meta">
+                    <span className="material-symbols-outlined">package_2</span>
+                    <span>{result.boxName}</span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

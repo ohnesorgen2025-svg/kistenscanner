@@ -683,3 +683,136 @@ export function setTitleImage(itemImageId: number): ItemRecord {
   update();
   return requireItemRecord(row.itemId);
 }
+
+export type FlatItem = {
+  id: number;
+  name: string;
+  description: string | null;
+  detail: string | null;
+  boxId: number;
+  boxName: string;
+  boxLocation: string;
+  thumbnailPath: string | null;
+};
+
+export function listAllItemsFlat(): FlatItem[] {
+  const rows = database
+    .prepare(
+      `
+        SELECT
+          i.id,
+          i.name,
+          i.description,
+          i.detail,
+          b.id AS boxId,
+          b.name AS boxName,
+          b.location AS boxLocation,
+          ti.path AS thumbnailPath
+        FROM items i
+        JOIN boxes b ON b.id = i.box_id
+        LEFT JOIN item_images ti ON ti.id = i.title_image_id
+        ORDER BY b.number DESC, i.id ASC
+      `,
+    )
+    .all() as FlatItem[];
+
+  return rows;
+}
+
+export type BoxWithItems = {
+  id: number;
+  number: number;
+  name: string;
+  location: string;
+  items: Array<{ name: string; description: string | null }>;
+};
+
+export function listBoxesWithItems(): BoxWithItems[] {
+  const boxes = listBoxes();
+
+  return boxes.map((box) => {
+    const items = database
+      .prepare("SELECT name, description FROM items WHERE box_id = ? ORDER BY id ASC")
+      .all(box.id) as Array<{ name: string; description: string | null }>;
+
+    return {
+      id: box.id,
+      number: box.number,
+      name: box.name,
+      location: box.location,
+      items,
+    };
+  });
+}
+
+export type InventoryStats = {
+  totalBoxes: number;
+  totalItems: number;
+  totalImages: number;
+  recentBoxes: BoxSummary[];
+  boxesWithoutItems: number;
+  itemsWithoutImage: number;
+  locationBreakdown: Array<{ location: string; boxCount: number }>;
+};
+
+export function getInventoryStats(): InventoryStats {
+  const totalBoxes = (
+    database.prepare("SELECT COUNT(*) AS count FROM boxes").get() as { count: number }
+  ).count;
+
+  const totalItems = (
+    database.prepare("SELECT COUNT(*) AS count FROM items").get() as { count: number }
+  ).count;
+
+  const totalImages = (
+    database.prepare("SELECT COUNT(*) AS count FROM item_images").get() as { count: number }
+  ).count;
+
+  const boxesWithoutItems = (
+    database
+      .prepare(
+        "SELECT COUNT(*) AS count FROM boxes WHERE id NOT IN (SELECT DISTINCT box_id FROM items)",
+      )
+      .get() as { count: number }
+  ).count;
+
+  const itemsWithoutImage = (
+    database
+      .prepare("SELECT COUNT(*) AS count FROM items WHERE title_image_id IS NULL")
+      .get() as { count: number }
+  ).count;
+
+  const recentBoxes = database
+    .prepare(
+      `
+        SELECT ${BOX_SUMMARY_COLUMNS}
+        FROM boxes b
+        LEFT JOIN items i ON i.box_id = b.id
+        GROUP BY b.id
+        ORDER BY b.updated_at DESC
+        LIMIT 5
+      `,
+    )
+    .all() as BoxRow[];
+
+  const locationRows = database
+    .prepare(
+      `
+        SELECT location, COUNT(*) AS boxCount
+        FROM boxes
+        GROUP BY location
+        ORDER BY boxCount DESC
+      `,
+    )
+    .all() as Array<{ location: string; boxCount: number }>;
+
+  return {
+    totalBoxes,
+    totalItems,
+    totalImages,
+    recentBoxes: recentBoxes.map(toBoxSummary),
+    boxesWithoutItems,
+    itemsWithoutImage,
+    locationBreakdown: locationRows,
+  };
+}

@@ -259,3 +259,102 @@ export async function setItemImageAsTitle(itemImageId: number): Promise<ItemReco
     method: "PATCH",
   });
 }
+
+// --- AI Features ---
+
+export type RescanResult = {
+  added: Array<{
+    name: string;
+    description: string;
+    quantity?: number;
+    sourceImageIndex?: number;
+    bbox?: { x: number; y: number; width: number; height: number } | null;
+  }>;
+  improved: Array<{
+    name: string;
+    description: string;
+    sourceImageIndex?: number;
+    bbox?: { x: number; y: number; width: number; height: number } | null;
+  }>;
+  removed: Array<{ name: string }>;
+};
+
+export async function rescanBox(boxId: number, modelId: string, files: File[]): Promise<RescanResult> {
+  const formData = new FormData();
+  formData.append("modelId", modelId);
+  for (const file of files) {
+    formData.append("images[]", file);
+  }
+  return requestJson<RescanResult>(`/api/ai/rescan/${boxId}`, {
+    method: "POST",
+    rawBody: formData,
+  });
+}
+
+export type SmartSearchResult = {
+  id: number;
+  name: string;
+  description: string | null;
+  detail: string | null;
+  boxId: number;
+  boxName: string;
+  boxLocation: string;
+  thumbnailPath: string | null;
+};
+
+export async function smartSearch(query: string): Promise<SmartSearchResult[]> {
+  return requestJson<SmartSearchResult[]>("/api/ai/smart-search", {
+    method: "POST",
+    body: JSON.stringify({ query }),
+  });
+}
+
+export async function visualSearch(files: File[]): Promise<SmartSearchResult[]> {
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append("images[]", file);
+  }
+  return requestJson<SmartSearchResult[]>("/api/ai/visual-search", {
+    method: "POST",
+    rawBody: formData,
+  });
+}
+
+export type DuplicateGroup = {
+  items: Array<{ id: number; boxId: number }>;
+  reason: string;
+};
+
+export async function detectDuplicates(): Promise<DuplicateGroup[]> {
+  return requestJson<DuplicateGroup[]>("/api/ai/duplicates", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
+
+export type ReorganizationSuggestion = {
+  type: "merge" | "move" | "split";
+  description: string;
+  involvedBoxIds: number[];
+};
+
+export async function getReorganizationSuggestions(): Promise<ReorganizationSuggestion[]> {
+  return requestJson<ReorganizationSuggestion[]>("/api/ai/reorganize", {
+    method: "POST",
+    body: JSON.stringify({}),
+  });
+}
+
+export type InventoryStats = {
+  totalBoxes: number;
+  totalItems: number;
+  totalImages: number;
+  recentBoxes: BoxSummary[];
+  boxesWithoutItems: number;
+  itemsWithoutImage: number;
+  locationBreakdown: Array<{ location: string; boxCount: number }>;
+};
+
+export async function getInventoryStats(): Promise<InventoryStats> {
+  return requestJson<InventoryStats>("/api/ai/stats");
+}

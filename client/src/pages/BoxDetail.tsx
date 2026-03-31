@@ -3,14 +3,20 @@ import QRCode from "qrcode";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
+  createItem,
   deleteBox,
   getBox,
+  getSettings,
   listBoxes,
+  listModels,
   moveItem,
+  rescanBox,
   resolveAssetUrl,
   type BoxRecord,
   type BoxSummary,
   type ItemRecord,
+  type ModelSummary,
+  type RescanResult,
   updateItem,
   uploadItemImage,
 } from "../lib/api";
@@ -202,6 +208,13 @@ export function BoxDetailPage() {
   const [labelProfileId, setLabelProfileId] = useState<string>(labelProfiles[0].id);
   const [selectedLabelSlotIndices, setSelectedLabelSlotIndices] = useState<number[]>([0]);
   const [isLabelPanelOpen, setIsLabelPanelOpen] = useState(false);
+  const [isRescanOpen, setIsRescanOpen] = useState(false);
+  const [rescanFiles, setRescanFiles] = useState<File[]>([]);
+  const [rescanPreviewUrls, setRescanPreviewUrls] = useState<string[]>([]);
+  const [isRescanAnalyzing, setIsRescanAnalyzing] = useState(false);
+  const [rescanResult, setRescanResult] = useState<RescanResult | null>(null);
+  const [models, setModels] = useState<ModelSummary[]>([]);
+  const [rescanModelId, setRescanModelId] = useState("");
   const confirmationTimeoutRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -229,13 +242,24 @@ export function BoxDetailPage() {
 
     async function load() {
       try {
-        const [boxData, boxSummaries] = await Promise.all([getBox(boxId), listBoxes()]);
+        const [boxData, boxSummaries, loadedModels, settings] = await Promise.all([
+          getBox(boxId),
+          listBoxes(),
+          listModels(),
+          getSettings(),
+        ]);
         if (!isMounted) {
           return;
         }
 
         setBox(boxData);
         setBoxes(boxSummaries);
+        setModels(loadedModels);
+        if (settings.activeModelId) {
+          setRescanModelId(settings.activeModelId);
+        } else if (loadedModels.length > 0) {
+          setRescanModelId(loadedModels[0].id);
+        }
         setError(null);
       } catch (requestError) {
         if (!isMounted) {
@@ -306,9 +330,82 @@ export function BoxDetailPage() {
     });
   }, [isLabelPanelOpen]);
 
+  useEffect(() => {
+    const urls = rescanFiles.map((file) => URL.createObjectURL(file));
+    setRescanPreviewUrls(urls);
+    return () => {
+      for (const url of urls) {
+        URL.revokeObjectURL(url);
+      }
+    };
+  }, [rescanFiles]);
+
   async function refreshBox() {
     const freshBox = await getBox(boxId);
     setBox(freshBox);
+  }
+
+  function openRescan() {
+    setIsRescanOpen(true);
+    setRescanFiles([]);
+    setRescanResult(null);
+    setError(null);
+  }
+
+  function closeRescan() {
+    setIsRescanOpen(false);
+    setRescanFiles([]);
+    setRescanResult(null);
+  }
+
+  function appendRescanFiles(nextFiles: FileList | null) {
+    if (!nextFiles || nextFiles.length === 0) return;
+    setRescanFiles((current) => [...current, ...Array.from(nextFiles)]);
+  }
+
+  async function handleRescanAnalyze() {
+    if (!box || rescanFiles.length === 0) return;
+    setIsRescanAnalyzing(true);
+    setError(null);
+    try {
+      const result = await rescanBox(box.id, rescanModelId, rescanFiles);
+      setRescanResult(result);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Re-Scan fehlgeschlagen.");
+    } finally {
+      setIsRescanAnalyzing(false);
+    }
+  }
+
+  async function applyRescanChanges() {
+    if (!box || !rescanResult) return;
+    setError(null);
+    try {
+      for (const added of rescanResult.added) {
+        await createItem(box.id, {
+          name: added.name,
+          description: added.description,
+          detail: "",
+        });
+      }
+      for (const improved of rescanResult.improved) {
+        const matchingItem = box.items.find(
+          (item) => item.name.toLowerCase() === improved.name.toLowerCase(),
+        );
+        if (matchingItem) {
+          await updateItem(matchingItem.id, { description: improved.description });
+        }
+      }
+      await refreshBox();
+      closeRescan();
+      setConfirmation("Änderungen wurden übernommen.");
+      if (confirmationTimeoutRef.current) {
+        window.clearTimeout(confirmationTimeoutRef.current);
+      }
+      confirmationTimeoutRef.current = window.setTimeout(() => setConfirmation(null), 3000);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Änderungen konnten nicht gespeichert werden.");
+    }
   }
 
   function handlePrintLabel() {
@@ -500,11 +597,12 @@ export function BoxDetailPage() {
               <button
                 aria-label="Foto hinzufügen"
                 className="button button--ghost box-detail-toolbar__action"
-                title="Foto hinzufügen"
+                onClick={openRescan}
+                title="Re-Scan: Neue Fotos analysieren"
                 type="button"
               >
                 <span className="material-symbols-outlined">add_a_photo</span>
-                <span className="box-detail-toolbar__text">Foto hinzufügen</span>
+                <span className="box-detail-toolbar__text">Re-Scan</span>
               </button>
               <button
                 aria-label="Label drucken"
@@ -694,6 +792,152 @@ export function BoxDetailPage() {
               })}
             </div>
           </section>
+
+          {isRescanOpen ? (
+            <section className="panel rescan-panel">
+              <div className="panel-header">
+                <div>
+                  <p className="section-kicker">Re-Scan</p>
+                  <h2>Neue Fotos analysieren</h2>
+                </div>
+                <button className="button button--ghost" onClick={closeRescan} type="button">
+                  <span className="material-symbols-outlined">close</span>
+                  Schließen
+                </button>
+              </div>
+
+              {!rescanResult ? (
+                <>
+                  <div className="form-grid">
+                    <div className="field">
+                      <label htmlFor="rescan-model">KI-Modell</label>
+                      <select
+                        className="input"
+                        id="rescan-model"
+                        onChange={(event) => setRescanModelId(event.target.value)}
+                        value={rescanModelId}
+                      >
+                        {models.map((model) => (
+                          <option key={model.id} value={model.id}>
+                            {model.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="preview-grid">
+                    {rescanPreviewUrls.map((url, index) => (
+                      <div className="preview-card" key={url}>
+                        <img alt={`Upload ${index + 1}`} src={url} />
+                      </div>
+                    ))}
+                    {rescanPreviewUrls.length === 0 ? (
+                      <div className="empty-dropzone">
+                        <span className="material-symbols-outlined">add_a_photo</span>
+                        <p>Fotos der Kiste hinzufügen</p>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <div className="action-row action-row--wrap">
+                    <label className="button button--ghost" htmlFor="rescan-upload">
+                      <span className="material-symbols-outlined">upload</span>
+                      Fotos wählen
+                    </label>
+                    <input
+                      accept="image/*"
+                      className="sr-only"
+                      id="rescan-upload"
+                      multiple
+                      onChange={(event) => appendRescanFiles(event.target.files)}
+                      type="file"
+                    />
+                    <button
+                      className="button button--primary"
+                      disabled={rescanFiles.length === 0 || isRescanAnalyzing}
+                      onClick={() => void handleRescanAnalyze()}
+                      type="button"
+                    >
+                      {isRescanAnalyzing ? (
+                        <>
+                          <span className="material-symbols-outlined spin">progress_activity</span>
+                          Analysiere…
+                        </>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined">auto_awesome</span>
+                          Re-Scan starten
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="rescan-results">
+                  {rescanResult.added.length > 0 ? (
+                    <div className="rescan-group">
+                      <h3><span className="material-symbols-outlined">add_circle</span> Neu erkannt ({rescanResult.added.length})</h3>
+                      <ul className="rescan-list">
+                        {rescanResult.added.map((item, i) => (
+                          <li key={`added-${i}`} className="rescan-item rescan-item--added">
+                            <strong>{item.name}</strong>
+                            <span>{item.description}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {rescanResult.improved.length > 0 ? (
+                    <div className="rescan-group">
+                      <h3><span className="material-symbols-outlined">auto_fix_high</span> Verbessert ({rescanResult.improved.length})</h3>
+                      <ul className="rescan-list">
+                        {rescanResult.improved.map((item, i) => (
+                          <li key={`improved-${i}`} className="rescan-item rescan-item--improved">
+                            <strong>{item.name}</strong>
+                            <span>{item.description}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {rescanResult.removed.length > 0 ? (
+                    <div className="rescan-group">
+                      <h3><span className="material-symbols-outlined">remove_circle</span> Nicht mehr sichtbar ({rescanResult.removed.length})</h3>
+                      <ul className="rescan-list">
+                        {rescanResult.removed.map((item, i) => (
+                          <li key={`removed-${i}`} className="rescan-item rescan-item--removed">
+                            <strong>{item.name}</strong>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {rescanResult.added.length === 0 && rescanResult.improved.length === 0 && rescanResult.removed.length === 0 ? (
+                    <p className="feedback">Keine Änderungen erkannt. Die Kiste sieht gleich aus!</p>
+                  ) : null}
+
+                  <div className="action-row action-row--wrap">
+                    <button
+                      className="button button--primary"
+                      disabled={rescanResult.added.length === 0 && rescanResult.improved.length === 0}
+                      onClick={() => void applyRescanChanges()}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined">check</span>
+                      Änderungen übernehmen
+                    </button>
+                    <button className="button button--ghost" onClick={closeRescan} type="button">
+                      Verwerfen
+                    </button>
+                  </div>
+                </div>
+              )}
+            </section>
+          ) : null}
 
           <section className="panel">
             <div className="panel-header">

@@ -4,6 +4,7 @@ import "./App.css";
 import { AddBoxPage } from "./pages/AddBox";
 import { BoxDetailPage } from "./pages/BoxDetail";
 import { BoxesPage } from "./pages/Boxes";
+import { DashboardPage } from "./pages/Dashboard";
 import { ScanPage } from "./pages/Scan";
 import { SearchPage } from "./pages/Search";
 import { SettingsPage } from "./pages/Settings";
@@ -19,6 +20,7 @@ const navigationLinks: NavigationLink[] = [
   { label: "Scannen", icon: "qr_code_scanner", to: "/scan" },
   { label: "Hinzufügen", icon: "add_box", to: "/boxes/add" },
   { label: "Kisten", icon: "inventory_2", to: "/boxes" },
+  { label: "Dashboard", icon: "dashboard", to: "/dashboard" },
   { label: "Einstellungen", icon: "settings", to: "/settings" },
 ];
 
@@ -74,6 +76,7 @@ function App() {
             <Route element={<BoxesPage />} path="/boxes" />
             <Route element={<AddBoxPage />} path="/boxes/add" />
             <Route element={<BoxDetailPage />} path="/boxes/:id" />
+            <Route element={<DashboardPage />} path="/dashboard" />
           </Routes>
         </div>
       </main>
