@@ -859,7 +859,9 @@ html {
 }
 
 .box-card__media img {
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   border-radius: 0.35rem;
 }
 
@@ -980,8 +982,7 @@ html {
 
 .box-detail-toolbar__action {
   flex: 1;
-  min-width: 8rem;
-  width: 100%;
+  min-width: 3.5rem;
   justify-content: center;
   min-height: 3rem;
   padding-inline: 0.8rem;
@@ -1213,6 +1214,9 @@ html {
 .nav-link span:last-child {
   display: block;
   max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nav-link--active {
@@ -1249,6 +1253,8 @@ html {
 
   .search-input-wrap__button {
     width: 100%;
+    min-height: 3rem;
+    padding-block: 0.5rem;
   }
 
   .page-header__actions {
