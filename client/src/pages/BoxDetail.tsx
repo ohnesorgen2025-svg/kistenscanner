@@ -3,19 +3,28 @@ import QRCode from "qrcode";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
+  CONTAINER_TYPE_ICONS,
+  CONTAINER_TYPE_LABELS,
   createItem,
+  createLoan,
   deleteBox,
   getBox,
+  getLoansForItem,
   getSettings,
   listBoxes,
   listModels,
   moveItem,
   rescanBox,
   resolveAssetUrl,
+  returnLoan,
+  updateItemQuantity,
   type BoxRecord,
   type BoxSummary,
+  type ContainerType,
   type ItemRecord,
+  type LoanRecord,
   type ModelSummary,
+  type PathSegment,
   type RescanResult,
   updateItem,
   uploadItemImage,
@@ -216,6 +225,11 @@ export function BoxDetailPage() {
   const [models, setModels] = useState<ModelSummary[]>([]);
   const [rescanModelId, setRescanModelId] = useState("");
   const confirmationTimeoutRef = useRef<number | null>(null);
+  const [lendingItemId, setLendingItemId] = useState<number | null>(null);
+  const [lendingBorrower, setLendingBorrower] = useState("");
+  const [lendingDueDate, setLendingDueDate] = useState("");
+  const [lendingNotes, setLendingNotes] = useState("");
+  const [itemLoans, setItemLoans] = useState<Record<number, LoanRecord[]>>({});
 
   useEffect(() => {
     function clearPrintMode() {
@@ -288,6 +302,12 @@ export function BoxDetailPage() {
       isMounted = false;
     };
   }, [boxId]);
+
+  useEffect(() => {
+    if (box && box.items.length > 0) {
+      void loadItemLoans();
+    }
+  }, [box?.id, box?.items.length]);
 
   useEffect(() => {
     let isMounted = true;
@@ -518,8 +538,9 @@ export function BoxDetailPage() {
       return;
     }
 
+    const containerLabel = CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste";
     const confirmed = window.confirm(
-      `Kiste #${box.number} wirklich löschen?\n\nAlle enthaltenen Items und Bilder werden ebenfalls entfernt.`,
+      `${containerLabel} #${box.number} wirklich löschen?\n\nAlle enthaltenen Items und Bilder werden ebenfalls entfernt.`,
     );
 
     if (!confirmed) {
@@ -531,8 +552,82 @@ export function BoxDetailPage() {
       setError(null);
       void navigate("/boxes");
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Kiste konnte nicht gelöscht werden.");
+      setError(requestError instanceof Error ? requestError.message : "Behälter konnte nicht gelöscht werden.");
     }
+  }
+
+  async function handleQuantityChange(itemId: number, delta: number) {
+    const item = box?.items.find((i) => i.id === itemId);
+    if (!item) return;
+    const newQuantity = Math.max(1, (item.quantity ?? 1) + delta);
+    try {
+      await updateItemQuantity(itemId, newQuantity);
+      await refreshBox();
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Menge konnte nicht geändert werden.");
+    }
+  }
+
+  function openLendDialog(itemId: number) {
+    setLendingItemId(itemId);
+    setLendingBorrower("");
+    setLendingDueDate("");
+    setLendingNotes("");
+  }
+
+  function closeLendDialog() {
+    setLendingItemId(null);
+    setLendingBorrower("");
+    setLendingDueDate("");
+    setLendingNotes("");
+  }
+
+  async function handleCreateLoan() {
+    if (!lendingItemId || !lendingBorrower.trim()) {
+      setError("Bitte einen Namen angeben.");
+      return;
+    }
+    try {
+      await createLoan(lendingItemId, lendingBorrower.trim(), lendingDueDate || undefined, lendingNotes || undefined);
+      closeLendDialog();
+      await refreshBox();
+      await loadItemLoans();
+      showConfirmation("Ausleihe gespeichert.");
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Ausleihe konnte nicht gespeichert werden.");
+    }
+  }
+
+  async function handleReturnLoan(loanId: number) {
+    try {
+      await returnLoan(loanId);
+      await loadItemLoans();
+      showConfirmation("Rückgabe vermerkt.");
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Rückgabe konnte nicht gespeichert werden.");
+    }
+  }
+
+  async function loadItemLoans() {
+    if (!box) return;
+    const loanMap: Record<number, LoanRecord[]> = {};
+    for (const item of box.items) {
+      try {
+        const loans = await getLoansForItem(item.id);
+        if (loans.length > 0) loanMap[item.id] = loans;
+      } catch {
+        // ignore
+      }
+    }
+    setItemLoans(loanMap);
+  }
+
+  function showConfirmation(message: string) {
+    setConfirmation(message);
+    if (confirmationTimeoutRef.current) {
+      window.clearTimeout(confirmationTimeoutRef.current);
+    }
+    confirmationTimeoutRef.current = window.setTimeout(() => setConfirmation(null), 3000);
   }
 
 
@@ -556,11 +651,25 @@ export function BoxDetailPage() {
 
       {box ? (
         <>
+          {box.path && box.path.length > 0 ? (
+            <nav className="breadcrumb-path" aria-label="Pfad">
+              {box.path.map((seg: PathSegment, idx: number) => (
+                <span key={seg.id} className="breadcrumb-path__segment">
+                  {idx > 0 ? <span className="breadcrumb-path__separator"> › </span> : null}
+                  <Link to={`/boxes/${seg.id}`} className="breadcrumb-path__link">
+                    <span className="material-symbols-outlined breadcrumb-path__icon">{CONTAINER_TYPE_ICONS[seg.containerType] || "inventory_2"}</span>
+                    {seg.name}
+                  </Link>
+                </span>
+              ))}
+            </nav>
+          ) : null}
+
           <section className="panel box-detail-header">
             <div className="box-detail-header__identity">
               <div className="box-detail-header__code">
                 <div className="qr-panel box-detail-header__qr-panel">
-                  {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
+                  {qrCodeDataUrl ? <img alt={`QR-Code für ${CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} ${box.number}`} src={qrCodeDataUrl} /> : null}
                 </div>
               </div>
 
@@ -569,7 +678,7 @@ export function BoxDetailPage() {
                 <h1 className="box-detail-header__location">{box.location}</h1>
                 <div className="box-detail-header__facts">
                   <div className="box-detail-header__fact">
-                    <span className="box-detail-header__fact-label">Kiste</span>
+                    <span className="box-detail-header__fact-label">{CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"}</span>
                     <strong className="box-detail-header__fact-value">#{box.number}</strong>
                   </div>
                   <div className="box-detail-header__fact">
@@ -939,11 +1048,36 @@ export function BoxDetailPage() {
             </section>
           ) : null}
 
+          {box.children && box.children.length > 0 ? (
+            <section className="panel">
+              <div className="panel-header">
+                <div>
+                  <p className="section-kicker">Enthaltene Behälter</p>
+                  <h2>Unterbehälter</h2>
+                </div>
+              </div>
+              <div className="children-grid">
+                {box.children.map((child) => (
+                  <Link className="child-card panel" key={child.id} to={`/boxes/${child.id}`}>
+                    <span className="material-symbols-outlined child-card__icon">
+                      {CONTAINER_TYPE_ICONS[child.containerType] ?? "inventory_2"}
+                    </span>
+                    <div className="child-card__body">
+                      <span className="section-kicker">{CONTAINER_TYPE_LABELS[child.containerType] ?? "Kiste"} #{child.number}</span>
+                      <strong>{child.name}</strong>
+                    </div>
+                    <span className="chip">{child.itemCount} Items</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
           <section className="panel">
             <div className="panel-header">
               <div>
                 <p className="section-kicker">Items</p>
-                <h2>Kisteninhalt</h2>
+                <h2>Inhalt</h2>
               </div>
             </div>
 
@@ -958,9 +1092,9 @@ export function BoxDetailPage() {
                     key={item.id}
                   >
                     <div className="review-card__media">
-                      {(item.quantity && item.quantity > 0) ? (
+                      {(item.quantity && item.quantity > 1) ? (
                         <div className="card-badge">
-                          x{item.quantity}
+                          ×{item.quantity}
                         </div>
                       ) : null}
                       {getItemImageUrl(item) ? (
@@ -1050,6 +1184,20 @@ export function BoxDetailPage() {
                         <div className="review-card__body">
                           <p className="review-card__name">{item.name}</p>
                           {item.description ? <p className="review-card__desc">{item.description}</p> : null}
+                          <div className="item-meta-row">
+                            <div className="quantity-control">
+                              <button className="quantity-control__btn" onClick={() => void handleQuantityChange(item.id, -1)} type="button" title="Menge verringern">−</button>
+                              <span className="quantity-control__value">{item.quantity ?? 1}{item.quantityUnit ? ` ${item.quantityUnit}` : ""}</span>
+                              <button className="quantity-control__btn" onClick={() => void handleQuantityChange(item.id, 1)} type="button" title="Menge erhöhen">+</button>
+                            </div>
+                            {itemLoans[item.id]?.filter((l) => !l.returnedDate).map((loan) => (
+                              <span key={loan.id} className="chip chip--loan" title={`Verliehen an ${loan.borrowerName}`}>
+                                <span className="material-symbols-outlined">person</span>
+                                {loan.borrowerName}
+                                <button className="chip__close" onClick={() => void handleReturnLoan(loan.id)} type="button" title="Rückgabe">✓</button>
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1084,6 +1232,14 @@ export function BoxDetailPage() {
                           type="button"
                         >
                           <span className="material-symbols-outlined">drive_file_move</span>
+                        </button>
+                        <button
+                          className="icon-btn"
+                          onClick={() => openLendDialog(item.id)}
+                          title="Verleihen"
+                          type="button"
+                        >
+                          <span className="material-symbols-outlined">share</span>
                         </button>
                       </div>
                     ) : null}
@@ -1123,6 +1279,54 @@ export function BoxDetailPage() {
                           </div>
                         </div>
                       ) : null}
+
+                    {lendingItemId === item.id ? (
+                      <div className="move-panel">
+                        <div className="field">
+                          <label htmlFor={`lend-borrower-${item.id}`}>An wen verleihen?</label>
+                          <input
+                            className="input"
+                            id={`lend-borrower-${item.id}`}
+                            onChange={(event) => setLendingBorrower(event.target.value)}
+                            placeholder="Name"
+                            value={lendingBorrower}
+                          />
+                        </div>
+                        <div className="field">
+                          <label htmlFor={`lend-due-${item.id}`}>Rückgabe bis (optional)</label>
+                          <input
+                            className="input"
+                            id={`lend-due-${item.id}`}
+                            onChange={(event) => setLendingDueDate(event.target.value)}
+                            type="date"
+                            value={lendingDueDate}
+                          />
+                        </div>
+                        <div className="field">
+                          <label htmlFor={`lend-notes-${item.id}`}>Notiz (optional)</label>
+                          <input
+                            className="input"
+                            id={`lend-notes-${item.id}`}
+                            onChange={(event) => setLendingNotes(event.target.value)}
+                            placeholder="z.B. Grund"
+                            value={lendingNotes}
+                          />
+                        </div>
+                        <div className="move-panel__actions">
+                          <button
+                            className="button button--primary"
+                            disabled={!lendingBorrower.trim()}
+                            onClick={() => void handleCreateLoan()}
+                            type="button"
+                          >
+                            Verleihen
+                          </button>
+                          <button className="button button--ghost" onClick={closeLendDialog} type="button">
+                            Abbrechen
+                          </button>
+                        </div>
+                      </div>
+                    ) : null}
                   </article>
                 );
               })}

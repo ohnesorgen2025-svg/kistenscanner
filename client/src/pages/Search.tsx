@@ -3,12 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { PageHeader } from "../components/PageHeader";
 import {
+  CONTAINER_TYPE_ICONS,
   resolveAssetUrl,
   searchInventory,
   smartSearch,
   visualSearch,
   type SearchResult,
   type SmartSearchResult,
+  type PathSegment,
 } from "../lib/api";
 
 const MIN_QUERY_LENGTH = 2;
@@ -101,7 +103,7 @@ export function SearchPage() {
 
   return (
     <div className="page-stack">
-      <PageHeader kicker="Suchen" title="Suchen" />
+      <PageHeader kicker="Inventar" title="Wo ist mein…?" />
 
       <section className="panel search-panel">
         <div className="search-input-wrap">
@@ -112,7 +114,7 @@ export function SearchPage() {
               className="input search-input"
               inputMode="search"
               onChange={(event) => { setQuery(event.target.value); setAiResults([]); }}
-              placeholder="Item oder Kiste suchen…"
+              placeholder="Bohrmaschine, Batterien, Kabel…"
               ref={inputRef}
               type="text"
               value={query}
@@ -197,6 +199,20 @@ export function SearchPage() {
                 <span className="material-symbols-outlined">location_on</span>
                 <span>{result.box.location}</span>
               </div>
+              {result.path && result.path.length > 0 ? (
+                <div className="search-result__path">
+                  {result.path.map((seg: PathSegment, idx: number) => (
+                    <span key={seg.id}>
+                      {idx > 0 ? <span className="path-separator"> › </span> : null}
+                      <span className="material-symbols-outlined path-icon">{CONTAINER_TYPE_ICONS[seg.containerType] || "inventory_2"}</span>
+                      {seg.name}
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+              {result.item.quantity > 1 ? (
+                <span className="chip chip--quantity">{result.item.quantity}× {result.item.quantityUnit || "Stück"}</span>
+              ) : null}
             </div>
           </Link>
         ))}

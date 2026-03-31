@@ -1,10 +1,17 @@
 import { database } from "../db/index.js";
 
+export const CONTAINER_TYPES = [
+  "box", "cabinet", "drawer", "shelf", "bag", "room",
+] as const;
+export type ContainerType = (typeof CONTAINER_TYPES)[number];
+
 type BoxRow = {
   id: number;
   number: number;
   name: string;
   location: string;
+  containerType: string;
+  parentId: number | null;
   createdAt: string;
   updatedAt: string;
   itemCount?: number;
@@ -24,6 +31,8 @@ type ItemRow = {
   name: string;
   description: string | null;
   detail: string | null;
+  quantity: number;
+  quantityUnit: string | null;
   titleImageId: number | null;
   createdAt: string;
   updatedAt: string;
@@ -50,6 +59,8 @@ export type ItemRecord = {
   name: string;
   description: string | null;
   detail: string | null;
+  quantity: number;
+  quantityUnit: string | null;
   titleImageId: number | null;
   thumbnailPath: string | null;
   createdAt: string;
@@ -69,6 +80,8 @@ export type BoxSummary = {
   number: number;
   name: string;
   location: string;
+  containerType: ContainerType;
+  parentId: number | null;
   createdAt: string;
   updatedAt: string;
   itemCount: number;
@@ -78,6 +91,14 @@ export type BoxSummary = {
 export type BoxRecord = BoxSummary & {
   images: BoxImageRecord[];
   items: ItemRecord[];
+  children: BoxSummary[];
+  path: PathSegment[];
+};
+
+export type PathSegment = {
+  id: number;
+  name: string;
+  containerType: ContainerType;
 };
 
 export type SearchResult = {
@@ -86,6 +107,8 @@ export type SearchResult = {
     name: string;
     description: string | null;
     detail: string | null;
+    quantity: number;
+    quantityUnit: string | null;
     thumbnailPath: string | null;
   };
   box: {
@@ -94,23 +117,30 @@ export type SearchResult = {
     name: string;
     location: string;
   };
+  path: PathSegment[];
 };
 
 type CreateBoxInput = {
   name: string;
   location: string;
+  containerType?: ContainerType;
+  parentId?: number | null;
   imagePaths?: string[];
 };
 
 type UpdateBoxInput = {
   name?: string;
   location?: string;
+  containerType?: ContainerType;
+  parentId?: number | null;
 };
 
 type CreateItemInput = {
   name: string;
   description?: string | null;
   detail?: string | null;
+  quantity?: number;
+  quantityUnit?: string | null;
   thumbnailPath?: string | null;
 };
 
@@ -185,6 +215,8 @@ function toItemRecord(row: ItemRow): ItemRecord {
     name: row.name,
     description: row.description,
     detail: row.detail,
+    quantity: row.quantity ?? 1,
+    quantityUnit: row.quantityUnit ?? null,
     titleImageId: row.titleImageId,
     thumbnailPath: row.thumbnailPath,
     createdAt: row.createdAt,
@@ -203,6 +235,8 @@ function getItemRecordById(itemId: number): ItemRecord | null {
           i.name,
           i.description,
           i.detail,
+          i.quantity,
+          i.quantity_unit AS quantityUnit,
           i.title_image_id AS titleImageId,
           i.created_at AS createdAt,
           i.updated_at AS updatedAt,
@@ -223,6 +257,8 @@ function toBoxSummary(row: BoxRow): BoxSummary {
     number: row.number,
     name: row.name,
     location: row.location,
+    containerType: (row.containerType || "box") as ContainerType,
+    parentId: row.parentId ?? null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     itemCount: row.itemCount ?? 0,
@@ -235,6 +271,8 @@ const BOX_SUMMARY_COLUMNS = `
   b.number,
   b.name,
   b.location,
+  b.container_type AS containerType,
+  b.parent_id AS parentId,
   b.created_at AS createdAt,
   b.updated_at AS updatedAt,
   COUNT(DISTINCT i.id) AS itemCount,
@@ -327,6 +365,45 @@ export function getBoxByNumber(boxNumber: number): BoxSummary | null {
   return getBoxSummaryByNumber(boxNumber);
 }
 
+/** Build the ancestor path for a container (walks parent_id up to root). */
+export function getContainerPath(boxId: number): PathSegment[] {
+  const path: PathSegment[] = [];
+  let currentId: number | null = boxId;
+
+  while (currentId !== null) {
+    const row = database
+      .prepare("SELECT id, name, container_type AS containerType, parent_id AS parentId FROM boxes WHERE id = ?")
+      .get(currentId) as { id: number; name: string; containerType: string; parentId: number | null } | undefined;
+
+    if (!row) break;
+    path.unshift({ id: row.id, name: row.name, containerType: (row.containerType || "box") as ContainerType });
+    currentId = row.parentId;
+
+    // Safety: prevent infinite loops
+    if (path.length > 20) break;
+  }
+
+  return path;
+}
+
+/** Get direct children of a container. */
+function getChildren(boxId: number): BoxSummary[] {
+  const rows = database
+    .prepare(
+      `
+        SELECT ${BOX_SUMMARY_COLUMNS}
+        FROM boxes b
+        LEFT JOIN items i ON i.box_id = b.id
+        WHERE b.parent_id = ?
+        GROUP BY b.id
+        ORDER BY b.name ASC
+      `,
+    )
+    .all(boxId) as BoxRow[];
+
+  return rows.map(toBoxSummary);
+}
+
 export function searchItems(query: string): SearchResult[] {
   const normalizedQuery = query.trim();
   if (normalizedQuery.length < 2) {
@@ -342,6 +419,8 @@ export function searchItems(query: string): SearchResult[] {
           i.name AS itemName,
           i.description AS itemDescription,
           i.detail AS itemDetail,
+          i.quantity AS itemQuantity,
+          i.quantity_unit AS itemQuantityUnit,
           ti.path AS thumbnailPath,
           b.id AS boxId,
           b.number AS boxNumber,
@@ -362,6 +441,8 @@ export function searchItems(query: string): SearchResult[] {
       itemName: string;
       itemDescription: string | null;
       itemDetail: string | null;
+      itemQuantity: number;
+      itemQuantityUnit: string | null;
       thumbnailPath: string | null;
       boxId: number;
       boxNumber: number;
@@ -375,6 +456,8 @@ export function searchItems(query: string): SearchResult[] {
       name: row.itemName,
       description: row.itemDescription,
       detail: row.itemDetail,
+      quantity: row.itemQuantity ?? 1,
+      quantityUnit: row.itemQuantityUnit ?? null,
       thumbnailPath: row.thumbnailPath,
     },
     box: {
@@ -383,6 +466,7 @@ export function searchItems(query: string): SearchResult[] {
       name: row.boxName,
       location: row.boxLocation,
     },
+    path: getContainerPath(row.boxId),
   }));
 }
 
@@ -416,6 +500,8 @@ export function getBoxById(boxId: number): BoxRecord | null {
           i.name,
           i.description,
           i.detail,
+          i.quantity,
+          i.quantity_unit AS quantityUnit,
           i.title_image_id AS titleImageId,
           i.created_at AS createdAt,
           i.updated_at AS updatedAt,
@@ -437,6 +523,8 @@ export function getBoxById(boxId: number): BoxRecord | null {
       takenAt: row.takenAt,
     })),
     items: itemRows.map(toItemRecord),
+    children: getChildren(boxId),
+    path: getContainerPath(boxId),
   };
 }
 
@@ -454,11 +542,11 @@ export function createBox(input: CreateBoxInput): BoxRecord {
     const insertResult = database
       .prepare(
         `
-          INSERT INTO boxes (number, name, location, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?)
+          INSERT INTO boxes (number, name, location, container_type, parent_id, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
       )
-      .run(nextNumberRow.nextNumber, normalizedName, normalizedLocation, now, now);
+      .run(nextNumberRow.nextNumber, normalizedName, normalizedLocation, input.containerType ?? "box", input.parentId ?? null, now, now);
 
     const boxId = Number(insertResult.lastInsertRowid);
 
@@ -498,6 +586,16 @@ export function updateBox(boxId: number, input: UpdateBoxInput): BoxRecord {
     values.push(normalizeRequiredText(input.location, "location"));
   }
 
+  if (typeof input.containerType === "string") {
+    updates.push("container_type = ?");
+    values.push(input.containerType);
+  }
+
+  if ("parentId" in input) {
+    updates.push("parent_id = ?");
+    values.push(input.parentId ?? null);
+  }
+
   if (updates.length === 0) {
     return getBoxById(boxId) as BoxRecord;
   }
@@ -516,13 +614,18 @@ export function deleteBox(boxId: number): void {
   requireBoxSummary(boxId);
 
   const remove = database.transaction(() => {
+    // Detach child containers
+    database.prepare("UPDATE boxes SET parent_id = NULL WHERE parent_id = ?").run(boxId);
+
     const itemIds = database
       .prepare("SELECT id FROM items WHERE box_id = ?")
       .all(boxId) as Array<{ id: number }>;
 
     const deleteItemImages = database.prepare("DELETE FROM item_images WHERE item_id = ?");
+    const deleteLoans = database.prepare("DELETE FROM loans WHERE item_id = ?");
     for (const item of itemIds) {
       deleteItemImages.run(item.id);
+      deleteLoans.run(item.id);
     }
 
     database.prepare("DELETE FROM items WHERE box_id = ?").run(boxId);
@@ -543,14 +646,17 @@ export function createItem(boxId: number, input: CreateItemInput): ItemRecord {
   const thumbnailPath = normalizeOptionalText(input.thumbnailPath);
 
   const create = database.transaction(() => {
+    const quantity = typeof input.quantity === "number" && input.quantity >= 1 ? Math.floor(input.quantity) : 1;
+    const quantityUnit = normalizeOptionalText(input.quantityUnit);
+
     const insertItem = database
       .prepare(
         `
-          INSERT INTO items (box_id, name, description, detail, title_image_id, created_at, updated_at)
-          VALUES (?, ?, ?, ?, NULL, ?, ?)
+          INSERT INTO items (box_id, name, description, detail, quantity, quantity_unit, title_image_id, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?)
         `,
       )
-      .run(boxId, normalizedName, description, detail, now, now);
+      .run(boxId, normalizedName, description, detail, quantity, quantityUnit, now, now);
 
     const itemId = Number(insertItem.lastInsertRowid);
 
@@ -815,4 +921,175 @@ export function getInventoryStats(): InventoryStats {
     itemsWithoutImage,
     locationBreakdown: locationRows,
   };
+}
+
+// ─── Quantity Tracking ───
+
+export function updateItemQuantity(
+  itemId: number,
+  quantity: number,
+  quantityUnit?: string | null,
+): ItemRecord {
+  requireItemRecord(itemId);
+
+  const safeQuantity = Math.max(0, Math.floor(quantity));
+  const updates = ["quantity = ?", "updated_at = ?"];
+  const values: Array<number | string | null> = [safeQuantity, nowIso()];
+
+  if (quantityUnit !== undefined) {
+    updates.push("quantity_unit = ?");
+    values.push(normalizeOptionalText(quantityUnit));
+  }
+
+  values.push(itemId);
+  database
+    .prepare(`UPDATE items SET ${updates.join(", ")} WHERE id = ?`)
+    .run(...values);
+
+  return requireItemRecord(itemId);
+}
+
+// ─── Loan Tracking ───
+
+export type LoanRecord = {
+  id: number;
+  itemId: number;
+  itemName: string;
+  boxId: number;
+  boxName: string;
+  borrowerName: string;
+  lentDate: string;
+  dueDate: string | null;
+  returnedDate: string | null;
+  notes: string | null;
+};
+
+type LoanRow = {
+  id: number;
+  itemId: number;
+  itemName: string;
+  boxId: number;
+  boxName: string;
+  borrowerName: string;
+  lentDate: string;
+  dueDate: string | null;
+  returnedDate: string | null;
+  notes: string | null;
+};
+
+const LOAN_COLUMNS = `
+  l.id,
+  l.item_id AS itemId,
+  i.name AS itemName,
+  b.id AS boxId,
+  b.name AS boxName,
+  l.borrower_name AS borrowerName,
+  l.lent_date AS lentDate,
+  l.due_date AS dueDate,
+  l.returned_date AS returnedDate,
+  l.notes
+`;
+
+function toLoanRecord(row: LoanRow): LoanRecord {
+  return { ...row };
+}
+
+export function createLoan(input: {
+  itemId: number;
+  borrowerName: string;
+  dueDate?: string | null;
+  notes?: string | null;
+}): LoanRecord {
+  requireItemRecord(input.itemId);
+  const borrower = normalizeRequiredText(input.borrowerName, "borrowerName");
+  const now = nowIso();
+
+  const result = database
+    .prepare(
+      `INSERT INTO loans (item_id, borrower_name, lent_date, due_date, notes, created_at)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+    )
+    .run(
+      input.itemId,
+      borrower,
+      now,
+      normalizeOptionalText(input.dueDate),
+      normalizeOptionalText(input.notes),
+      now,
+    );
+
+  const loanId = Number(result.lastInsertRowid);
+  return getLoanById(loanId)!;
+}
+
+function getLoanById(loanId: number): LoanRecord | null {
+  const row = database
+    .prepare(
+      `SELECT ${LOAN_COLUMNS}
+       FROM loans l
+       JOIN items i ON i.id = l.item_id
+       JOIN boxes b ON b.id = i.box_id
+       WHERE l.id = ?`,
+    )
+    .get(loanId) as LoanRow | undefined;
+
+  return row ? toLoanRecord(row) : null;
+}
+
+export function returnLoan(loanId: number): LoanRecord {
+  const loan = getLoanById(loanId);
+  if (!loan) throw new Error("Ausleihe nicht gefunden.");
+  if (loan.returnedDate) throw new Error("Bereits zurückgegeben.");
+
+  database
+    .prepare("UPDATE loans SET returned_date = ? WHERE id = ?")
+    .run(nowIso(), loanId);
+
+  return getLoanById(loanId)!;
+}
+
+export function listActiveLoans(): LoanRecord[] {
+  const rows = database
+    .prepare(
+      `SELECT ${LOAN_COLUMNS}
+       FROM loans l
+       JOIN items i ON i.id = l.item_id
+       JOIN boxes b ON b.id = i.box_id
+       WHERE l.returned_date IS NULL
+       ORDER BY l.lent_date DESC`,
+    )
+    .all() as LoanRow[];
+
+  return rows.map(toLoanRecord);
+}
+
+export function getActiveLoansForItem(itemId: number): LoanRecord[] {
+  const rows = database
+    .prepare(
+      `SELECT ${LOAN_COLUMNS}
+       FROM loans l
+       JOIN items i ON i.id = l.item_id
+       JOIN boxes b ON b.id = i.box_id
+       WHERE l.item_id = ? AND l.returned_date IS NULL
+       ORDER BY l.lent_date DESC`,
+    )
+    .all(itemId) as LoanRow[];
+
+  return rows.map(toLoanRecord);
+}
+
+/** List all containers that have no parent (root level). */
+export function listRootContainers(): BoxSummary[] {
+  const rows = database
+    .prepare(
+      `SELECT ${BOX_SUMMARY_COLUMNS}
+       FROM boxes b
+       LEFT JOIN items i ON i.box_id = b.id
+       WHERE b.parent_id IS NULL
+       GROUP BY b.id
+       ORDER BY b.name ASC`,
+    )
+    .all() as BoxRow[];
+
+  return rows.map(toBoxSummary);
 }

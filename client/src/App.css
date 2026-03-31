@@ -1825,3 +1825,234 @@ html {
 .chip--merge { background: #2196f3; color: #fff; }
 .chip--move { background: #ff9800; color: #fff; }
 .chip--split { background: #9c27b0; color: #fff; }
+
+/* ─── Breadcrumb path ─── */
+.breadcrumb-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  padding: 0.5rem 0;
+}
+
+.breadcrumb-path__segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.breadcrumb-path__separator {
+  color: var(--muted);
+  margin: 0 0.15rem;
+}
+
+.breadcrumb-path__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--fg);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.breadcrumb-path__link:hover {
+  color: var(--accent);
+}
+
+.breadcrumb-path__icon {
+  font-size: 1rem;
+  opacity: 0.6;
+}
+
+/* ─── Search result path ─── */
+.search-result__path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 0.25rem;
+}
+
+.path-separator {
+  color: var(--muted);
+  margin: 0 0.1rem;
+}
+
+.path-icon {
+  font-size: 0.85rem;
+  vertical-align: middle;
+  opacity: 0.6;
+}
+
+/* ─── Quantity chip ─── */
+.chip--quantity {
+  background: #4caf50;
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+/* ─── Quantity control ─── */
+.quantity-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.quantity-control__btn {
+  background: transparent;
+  border: none;
+  color: var(--fg);
+  font-size: 1rem;
+  padding: 0.2rem 0.5rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.quantity-control__btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.quantity-control__value {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.85rem;
+  min-width: 2rem;
+  text-align: center;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+/* ─── Item meta row ─── */
+.item-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* ─── Loan chip ─── */
+.chip--loan {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #ff9800;
+  color: #fff;
+  font-size: 0.78rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+}
+
+.chip--loan .material-symbols-outlined {
+  font-size: 0.9rem;
+}
+
+.chip__close {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0 0.15rem;
+  line-height: 1;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+}
+
+.chip__close:hover {
+  opacity: 1;
+}
+
+/* ─── Children grid ─── */
+.children-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.child-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem !important;
+  text-decoration: none;
+  color: var(--fg);
+  transition: border-color 0.15s;
+}
+
+.child-card:hover {
+  border-color: var(--accent);
+}
+
+.child-card__icon {
+  font-size: 1.5rem;
+  opacity: 0.6;
+}
+
+.child-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.child-card__body .section-kicker {
+  font-size: 0.7rem;
+}
+
+.child-card__body strong {
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─── Loan list (Dashboard) ─── */
+.loan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.loan-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.loan-row:last-child {
+  border-bottom: none;
+}
+
+.loan-row__info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.loan-row__detail {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.chip--small {
+  font-size: 0.7rem;
+  padding: 0.12rem 0.4rem;
+}
+
+.chip--overdue {
+  background: #f44336;
+  color: #fff;
+}

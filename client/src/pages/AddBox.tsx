@@ -4,14 +4,18 @@ import { Link } from "react-router-dom";
 
 import {
   analyzeBoxImages,
+  CONTAINER_TYPE_LABELS,
   createBox,
   createItem,
   getBox,
   getSettings,
+  listBoxes,
   listModels,
   resolveAssetUrl,
   type AnalysisItem,
   type BoxRecord,
+  type BoxSummary,
+  type ContainerType,
   type ModelSummary,
 } from "../lib/api";
 import { PageHeader } from "../components/PageHeader";
@@ -68,6 +72,9 @@ export function AddBoxPage() {
   const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
   const [boxName, setBoxName] = useState("");
   const [location, setLocation] = useState("");
+  const [containerType, setContainerType] = useState<ContainerType>("box");
+  const [parentId, setParentId] = useState<number | null>(null);
+  const [allBoxes, setAllBoxes] = useState<BoxSummary[]>([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,13 +122,14 @@ export function AddBoxPage() {
   useEffect(() => {
     let isMounted = true;
 
-    void Promise.all([listModels(), getSettings()])
-      .then(([loadedModels, settings]) => {
+    void Promise.all([listModels(), getSettings(), listBoxes()])
+      .then(([loadedModels, settings, boxes]) => {
         if (!isMounted) {
           return;
         }
 
         setModels(loadedModels);
+        setAllBoxes(boxes);
         const activeModelId = settings.activeModelId;
         if (activeModelId && loadedModels.some((model) => model.id === activeModelId)) {
           setModelId(activeModelId);
@@ -339,7 +347,7 @@ export function AddBoxPage() {
 
   async function handleSave() {
     if (!boxName.trim() || !location.trim()) {
-      setError("Kistenname und Standort sind erforderlich.");
+      setError("Name und Standort sind erforderlich.");
       return;
     }
 
@@ -364,6 +372,8 @@ export function AddBoxPage() {
         name: boxName,
         location,
         imagePaths,
+        containerType,
+        parentId: parentId ?? undefined,
       });
 
       await Promise.all(
@@ -388,7 +398,7 @@ export function AddBoxPage() {
 
   return (
     <div className="page-stack">
-      <PageHeader kicker="Speicher-Workflow" title="Kiste hinzufügen" />
+      <PageHeader kicker="Speicher-Workflow" title="Behälter hinzufügen" />
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
@@ -608,13 +618,45 @@ export function AddBoxPage() {
         <div className="panel-header">
           <div>
             <p className="section-kicker">Schritt 4</p>
-            <h2>Kiste speichern</h2>
+            <h2>Behälter speichern</h2>
           </div>
         </div>
 
         <div className="form-grid">
           <div className="field">
-            <label htmlFor="box-name">Kistenname</label>
+            <label htmlFor="container-type">Behältertyp</label>
+            <select
+              className="input"
+              id="container-type"
+              onChange={(event) => setContainerType(event.target.value as ContainerType)}
+              value={containerType}
+            >
+              {(Object.entries(CONTAINER_TYPE_LABELS) as [ContainerType, string][]).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="parent-container">Übergeordneter Behälter (optional)</label>
+            <select
+              className="input"
+              id="parent-container"
+              onChange={(event) => {
+                const v = Number(event.target.value);
+                setParentId(v > 0 ? v : null);
+              }}
+              value={parentId ?? ""}
+            >
+              <option value="">– Kein übergeordneter Behälter –</option>
+              {allBoxes.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {CONTAINER_TYPE_LABELS[b.containerType] ?? "Kiste"} #{b.number} · {b.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="box-name">Name</label>
             <input
               className="input"
               id="box-name"
@@ -641,7 +683,7 @@ export function AddBoxPage() {
           onClick={() => void handleSave()}
           type="button"
         >
-          {isSaving ? "Speichere…" : "Kiste anlegen und Items speichern"}
+          {isSaving ? "Speichere…" : "Behälter anlegen und Items speichern"}
         </button>
       </section>
 
@@ -660,7 +702,7 @@ export function AddBoxPage() {
           <div className="saved-box-grid">
             <div className="saved-box-copy">
               <h3>
-                Box #{savedBox.number} · {savedBox.name}
+                {CONTAINER_TYPE_LABELS[savedBox.containerType] ?? "Kiste"} #{savedBox.number} · {savedBox.name}
               </h3>
               <p>{savedBox.location}</p>
               <div className="chip-row">

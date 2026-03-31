@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { PageHeader } from "../components/PageHeader";
-import { listBoxes, resolveAssetUrl, type BoxSummary } from "../lib/api";
+import { CONTAINER_TYPE_ICONS, CONTAINER_TYPE_LABELS, listBoxes, resolveAssetUrl, type BoxSummary } from "../lib/api";
 
 export function BoxesPage() {
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
@@ -44,11 +44,11 @@ export function BoxesPage() {
       <PageHeader
         actions={(
           <Link className="button button--primary" to="/boxes/add">
-            Kiste hinzufügen
+            Behälter hinzufügen
           </Link>
         )}
         kicker="Inventar"
-        title="Kisten"
+        title="Behälter"
       />
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
@@ -57,8 +57,8 @@ export function BoxesPage() {
 
       {!isLoading && boxes.length === 0 ? (
         <section className="panel empty-state">
-          <p className="section-kicker">Noch keine Kisten</p>
-          <h2>Lege die erste gespeicherte Kiste an.</h2>
+          <p className="section-kicker">Noch keine Behälter</p>
+          <h2>Lege den ersten Behälter an.</h2>
           <Link className="button button--primary" to="/boxes/add">
             Speicher-Workflow öffnen
           </Link>
@@ -73,13 +73,13 @@ export function BoxesPage() {
                 <img alt={box.name} src={resolveAssetUrl(box.thumbnailPath) ?? undefined} />
               ) : (
                 <div className="box-card__placeholder">
-                  <span className="material-symbols-outlined">inventory_2</span>
+                  <span className="material-symbols-outlined">{CONTAINER_TYPE_ICONS[box.containerType] ?? "inventory_2"}</span>
                 </div>
               )}
             </div>
             <div className="box-card__body">
               <div className="box-card__topline">
-                <span className="section-kicker">Kiste #{box.number}</span>
+                <span className="section-kicker">{CONTAINER_TYPE_LABELS[box.containerType] ?? "Kiste"} #{box.number}</span>
                 <span className="chip">{box.itemCount} Items</span>
               </div>
               <h2>{box.name}</h2>

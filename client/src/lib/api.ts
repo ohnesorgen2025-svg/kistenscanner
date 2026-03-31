@@ -15,6 +15,26 @@ export type AnalysisItem = {
   sourceImagePath: string | null;
 };
 
+export type ContainerType = "box" | "cabinet" | "drawer" | "shelf" | "bag" | "room";
+
+export const CONTAINER_TYPE_LABELS: Record<ContainerType, string> = {
+  box: "Kiste",
+  cabinet: "Schrank",
+  drawer: "Schublade",
+  shelf: "Regal",
+  bag: "Tasche",
+  room: "Raum",
+};
+
+export const CONTAINER_TYPE_ICONS: Record<ContainerType, string> = {
+  box: "inventory_2",
+  cabinet: "door_sliding",
+  drawer: "draft",
+  shelf: "shelves",
+  bag: "shopping_bag",
+  room: "door_open",
+};
+
 export type ItemImageRecord = {
   id: number;
   itemId: number;
@@ -27,7 +47,8 @@ export type ItemRecord = {
   boxId: number;
   name: string;
   description: string | null;
-  quantity?: number;
+  quantity: number;
+  quantityUnit: string | null;
   detail: string | null;
   titleImageId: number | null;
   thumbnailPath: string | null;
@@ -43,11 +64,19 @@ export type BoxImageRecord = {
   takenAt: string;
 };
 
+export type PathSegment = {
+  id: number;
+  name: string;
+  containerType: ContainerType;
+};
+
 export type BoxSummary = {
   id: number;
   number: number;
   name: string;
   location: string;
+  containerType: ContainerType;
+  parentId: number | null;
   createdAt: string;
   updatedAt: string;
   itemCount: number;
@@ -57,6 +86,8 @@ export type BoxSummary = {
 export type BoxRecord = BoxSummary & {
   images: BoxImageRecord[];
   items: ItemRecord[];
+  children: BoxSummary[];
+  path: PathSegment[];
 };
 
 export type SearchResult = {
@@ -65,6 +96,8 @@ export type SearchResult = {
     name: string;
     description: string | null;
     detail: string | null;
+    quantity: number;
+    quantityUnit: string | null;
     thumbnailPath: string | null;
   };
   box: {
@@ -73,6 +106,7 @@ export type SearchResult = {
     name: string;
     location: string;
   };
+  path: PathSegment[];
 };
 
 export type ModelSummary = {
@@ -203,6 +237,8 @@ export async function testModelConnection(modelId: string): Promise<{ ok: true }
 export async function createBox(payload: {
   name: string;
   location: string;
+  containerType?: ContainerType;
+  parentId?: number | null;
   imagePaths?: string[];
 }): Promise<BoxRecord> {
   return requestJson<BoxRecord>("/api/boxes", {
@@ -215,6 +251,8 @@ export async function createItem(boxId: number, payload: {
   name: string;
   description: string;
   detail: string;
+  quantity?: number;
+  quantityUnit?: string | null;
   thumbnailPath?: string | null;
 }): Promise<ItemRecord> {
   return requestJson<ItemRecord>(`/api/boxes/${boxId}/items`, {
@@ -357,4 +395,70 @@ export type InventoryStats = {
 
 export async function getInventoryStats(): Promise<InventoryStats> {
   return requestJson<InventoryStats>("/api/ai/stats");
+}
+
+// --- Quantity ---
+
+export async function updateItemQuantity(
+  itemId: number,
+  quantity: number,
+  quantityUnit?: string,
+): Promise<ItemRecord> {
+  return requestJson<ItemRecord>(`/api/items/${itemId}/quantity`, {
+    method: "PATCH",
+    body: JSON.stringify({ quantity, quantityUnit }),
+  });
+}
+
+// --- Loans ---
+
+export type LoanRecord = {
+  id: number;
+  itemId: number;
+  itemName: string;
+  boxId: number;
+  boxName: string;
+  borrowerName: string;
+  lentDate: string;
+  dueDate: string | null;
+  returnedDate: string | null;
+  notes: string | null;
+};
+
+export async function listActiveLoans(): Promise<LoanRecord[]> {
+  return requestJson<LoanRecord[]>("/api/loans");
+}
+
+export async function getLoansForItem(itemId: number): Promise<LoanRecord[]> {
+  return requestJson<LoanRecord[]>(`/api/loans/item/${itemId}`);
+}
+
+export async function createLoan(payload: {
+  itemId: number;
+  borrowerName: string;
+  dueDate?: string;
+  notes?: string;
+}): Promise<LoanRecord> {
+  return requestJson<LoanRecord>("/api/loans", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function returnLoan(loanId: number): Promise<LoanRecord> {
+  return requestJson<LoanRecord>(`/api/loans/${loanId}/return`, {
+    method: "PATCH",
+  });
+}
+
+// --- Box Update ---
+
+export async function updateBox(
+  boxId: number,
+  payload: { name?: string; location?: string; containerType?: ContainerType; parentId?: number | null },
+): Promise<BoxRecord> {
+  return requestJson<BoxRecord>(`/api/boxes/${boxId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
 }

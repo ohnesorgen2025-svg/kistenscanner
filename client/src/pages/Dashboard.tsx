@@ -3,12 +3,17 @@ import { Link } from "react-router-dom";
 
 import { PageHeader } from "../components/PageHeader";
 import {
+  CONTAINER_TYPE_ICONS,
+  CONTAINER_TYPE_LABELS,
   detectDuplicates,
   getInventoryStats,
   getReorganizationSuggestions,
+  listActiveLoans,
   resolveAssetUrl,
+  returnLoan,
   type DuplicateGroup,
   type InventoryStats,
+  type LoanRecord,
   type ReorganizationSuggestion,
 } from "../lib/api";
 
@@ -27,6 +32,9 @@ export function DashboardPage() {
   const [suggestionError, setSuggestionError] = useState<string | null>(null);
   const [hasSuggestionRun, setHasSuggestionRun] = useState(false);
 
+  const [activeLoans, setActiveLoans] = useState<LoanRecord[]>([]);
+  const [isLoansLoading, setIsLoansLoading] = useState(false);
+
   useEffect(() => {
     let isMounted = true;
     void getInventoryStats()
@@ -44,6 +52,25 @@ export function DashboardPage() {
       });
     return () => { isMounted = false; };
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoansLoading(true);
+    void listActiveLoans()
+      .then((data) => { if (isMounted) setActiveLoans(data); })
+      .catch(() => {})
+      .finally(() => { if (isMounted) setIsLoansLoading(false); });
+    return () => { isMounted = false; };
+  }, []);
+
+  async function handleReturnLoan(loanId: number) {
+    try {
+      await returnLoan(loanId);
+      setActiveLoans((current) => current.filter((l) => l.id !== loanId));
+    } catch {
+      setError("Rückgabe fehlgeschlagen.");
+    }
+  }
 
   async function handleDuplicateCheck() {
     setIsDuplicateLoading(true);
@@ -86,7 +113,7 @@ export function DashboardPage() {
             <div className="stat-card panel">
               <span className="material-symbols-outlined stat-card__icon">inventory_2</span>
               <div className="stat-card__value">{stats.totalBoxes}</div>
-              <div className="stat-card__label">Kisten</div>
+              <div className="stat-card__label">Behälter</div>
             </div>
             <div className="stat-card panel">
               <span className="material-symbols-outlined stat-card__icon">category</span>
@@ -106,7 +133,7 @@ export function DashboardPage() {
               {stats.boxesWithoutItems > 0 ? (
                 <div className="dashboard-alert">
                   <span className="material-symbols-outlined">warning</span>
-                  <span>{stats.boxesWithoutItems} Kiste{stats.boxesWithoutItems > 1 ? "n" : ""} ohne Items</span>
+                  <span>{stats.boxesWithoutItems} Behälter ohne Items</span>
                 </div>
               ) : null}
               {stats.itemsWithoutImage > 0 ? (
@@ -118,11 +145,47 @@ export function DashboardPage() {
             </section>
           ) : null}
 
+          {activeLoans.length > 0 ? (
+            <section className="panel">
+              <div className="panel-header">
+                <div>
+                  <p className="section-kicker">Verleih</p>
+                  <h2>Aktive Ausleihen ({activeLoans.length})</h2>
+                </div>
+              </div>
+              <div className="loan-list">
+                {activeLoans.map((loan) => (
+                  <div className="loan-row" key={loan.id}>
+                    <div className="loan-row__info">
+                      <strong>{loan.borrowerName}</strong>
+                      <span className="loan-row__detail">Item #{loan.itemId} · seit {new Date(loan.lentDate).toLocaleDateString("de-DE")}</span>
+                      {loan.dueDate ? (
+                        <span className={`chip chip--small${new Date(loan.dueDate) < new Date() ? " chip--overdue" : ""}`}>
+                          {new Date(loan.dueDate) < new Date() ? "Überfällig" : `bis ${new Date(loan.dueDate).toLocaleDateString("de-DE")}`}
+                        </span>
+                      ) : null}
+                    </div>
+                    <button
+                      className="button button--ghost"
+                      onClick={() => void handleReturnLoan(loan.id)}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined">check</span>
+                      Zurück
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {isLoansLoading ? null : activeLoans.length === 0 ? null : null}
+
           <section className="panel">
             <div className="panel-header">
               <div>
                 <p className="section-kicker">Zuletzt bearbeitet</p>
-                <h2>Letzte Kisten</h2>
+                <h2>Letzte Behälter</h2>
               </div>
             </div>
             <div className="box-grid box-grid--compact">
@@ -133,13 +196,13 @@ export function DashboardPage() {
                       <img alt={box.name} src={resolveAssetUrl(box.thumbnailPath) ?? undefined} />
                     ) : (
                       <div className="box-card__placeholder">
-                        <span className="material-symbols-outlined">inventory_2</span>
+                        <span className="material-symbols-outlined">{CONTAINER_TYPE_ICONS[box.containerType] ?? "inventory_2"}</span>
                       </div>
                     )}
                   </div>
                   <div className="box-card__body">
                     <div className="box-card__topline">
-                      <span className="section-kicker">Kiste #{box.number}</span>
+                      <span className="section-kicker">{CONTAINER_TYPE_LABELS[box.containerType] ?? "Kiste"} #{box.number}</span>
                       <span className="chip">{box.itemCount} Items</span>
                     </div>
                     <h2>{box.name}</h2>

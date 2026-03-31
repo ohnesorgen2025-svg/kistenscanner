@@ -1,12 +1,15 @@
 import { Router } from "express";
 
 import {
+  CONTAINER_TYPES,
   createBox,
   deleteBox,
   getBoxById,
   getBoxByNumber,
   listBoxes,
+  listRootContainers,
   updateBox,
+  type ContainerType,
 } from "../services/inventory.js";
 
 function parseRouteId(value: string): number {
@@ -20,15 +23,35 @@ function parseRouteId(value: string): number {
 
 export const boxesRouter = Router();
 
+boxesRouter.get("/root", (_request, response) => {
+  response.json(listRootContainers());
+});
+
+boxesRouter.get("/container-types", (_request, response) => {
+  response.json(CONTAINER_TYPES);
+});
+
 boxesRouter.post("/", (request, response) => {
   try {
     const name = typeof request.body.name === "string" ? request.body.name : "";
     const location = typeof request.body.location === "string" ? request.body.location : "";
+    const containerType = typeof request.body.containerType === "string" && CONTAINER_TYPES.includes(request.body.containerType as ContainerType)
+      ? (request.body.containerType as ContainerType)
+      : undefined;
+    const parentId = typeof request.body.parentId === "number" && request.body.parentId > 0
+      ? request.body.parentId
+      : undefined;
     const imagePaths = Array.isArray(request.body.imagePaths)
       ? request.body.imagePaths.filter((value: unknown): value is string => typeof value === "string")
       : undefined;
 
-    const box = createBox({ name, location, imagePaths });
+    const box = createBox({
+      name,
+      location,
+      ...(containerType ? { containerType } : {}),
+      ...(parentId ? { parentId } : {}),
+      ...(imagePaths ? { imagePaths } : {}),
+    });
     response.status(201).json(box);
   } catch (error) {
     response.status(400).json({
@@ -86,9 +109,17 @@ boxesRouter.get("/:id", (request, response) => {
 boxesRouter.patch("/:id", (request, response) => {
   try {
     const boxId = parseRouteId(request.params.id);
+    const containerType = typeof request.body.containerType === "string" && CONTAINER_TYPES.includes(request.body.containerType as ContainerType)
+      ? (request.body.containerType as ContainerType)
+      : undefined;
+    const parentIdValue = "parentId" in request.body
+      ? (typeof request.body.parentId === "number" && request.body.parentId > 0 ? request.body.parentId : null)
+      : undefined;
     const box = updateBox(boxId, {
-      name: typeof request.body.name === "string" ? request.body.name : undefined,
-      location: typeof request.body.location === "string" ? request.body.location : undefined,
+      ...(typeof request.body.name === "string" ? { name: request.body.name } : {}),
+      ...(typeof request.body.location === "string" ? { location: request.body.location } : {}),
+      ...(containerType ? { containerType } : {}),
+      ...(parentIdValue !== undefined ? { parentId: parentIdValue } : {}),
     });
 
     response.json(box);

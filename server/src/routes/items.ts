@@ -5,6 +5,7 @@ import {
   deleteItem,
   moveItem,
   updateItem,
+  updateItemQuantity,
 } from "../services/inventory.js";
 
 function parseRouteId(value: string): number {
@@ -27,6 +28,8 @@ boxItemsRouter.post("/:id/items", (request, response) => {
       description:
         typeof request.body.description === "string" ? request.body.description : undefined,
       detail: typeof request.body.detail === "string" ? request.body.detail : undefined,
+      quantity: typeof request.body.quantity === "number" ? request.body.quantity : undefined,
+      quantityUnit: typeof request.body.quantityUnit === "string" ? request.body.quantityUnit : undefined,
       thumbnailPath:
         typeof request.body.thumbnailPath === "string" ? request.body.thumbnailPath : undefined,
     });
@@ -81,5 +84,23 @@ itemsRouter.patch("/:id/move", (request, response) => {
     const message = error instanceof Error ? error.message : "Item konnte nicht verschoben werden.";
     const status = message === "Item nicht gefunden." || message === "Box nicht gefunden." ? 404 : 400;
     return response.status(status).json({ error: message });
+  }
+});
+
+itemsRouter.patch("/:id/quantity", (request, response) => {
+  try {
+    const itemId = parseRouteId(request.params.id);
+    const quantity = Number(request.body.quantity);
+
+    if (!Number.isFinite(quantity) || quantity < 0) {
+      return response.status(400).json({ error: "Ungültige Menge." });
+    }
+
+    const quantityUnit = typeof request.body.quantityUnit === "string" ? request.body.quantityUnit : undefined;
+    const item = updateItemQuantity(itemId, quantity, quantityUnit);
+    return response.json(item);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Menge konnte nicht aktualisiert werden.";
+    return response.status(message === "Item nicht gefunden." ? 404 : 400).json({ error: message });
   }
 });
