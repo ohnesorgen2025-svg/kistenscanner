@@ -267,3 +267,7 @@ Reason: Header actions should feel like one stable toolset across desktop and mo
 ## 2026-03-31 — Box deletion is available directly in the detail header
 Deleting a box is now exposed from the box detail action bar and confirms before calling `DELETE /api/boxes/:id`.
 Reason: The backend already supported box deletion, but without a visible UI the action was effectively inaccessible in day-to-day use.
+
+## 2026-03-31 — Review Card Item Actions span edge-to-edge
+The `.review-card__actions` und `.move-panel` in BoxDetail have been moved out of the padded `.review-card__content` container. The `.review-card` container itself was switched from grid to a flex column.
+Reason: To keep the action bar at the very bottom of the card spanning full-width seamlessly, the actions can't sit inside the parent content's left/right padding. The flex column also ensures cards in lists share uniform height without breaking content layouts when `flex: 1` stretches the content node.

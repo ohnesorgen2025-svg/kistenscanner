@@ -102,3 +102,5 @@ Continue the real-world label workflow:
 - Rebuilt the box-detail header into a calmer two-zone layout with the QR block on the left, the location as the main headline and the remaining box facts in one consistent fact row
 - Added a dedicated box action bar with equal-width actions and a mobile icon-only mode so header actions no longer float around the page
 - Exposed box deletion in the detail header and wired it to `DELETE /api/boxes/:id` with confirmation and navigation back to `/boxes`
+- Reworked `.review-card` layout to use flex column instead of grid so the content container can stretch predictably and push actions to the bottom
+- Moved the `.review-card__actions` and `.move-panel` nodes outside of the padded `.review-card__content` wrapper in `BoxDetail.tsx` so the action bar's top border spans seamlessly edge-to-edge
