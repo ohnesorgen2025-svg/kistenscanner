@@ -153,15 +153,6 @@ function StickerArtwork({
       preserveAspectRatio="none"
       viewBox={`0 0 ${profile.labelWidthMm} ${profile.labelHeightMm}`}
     >
-      <line
-        stroke="rgba(0, 218, 243, 0.55)"
-        strokeDasharray={`${profile.labelWidthMm * 0.025} ${profile.labelWidthMm * 0.015}`}
-        strokeWidth={0.3}
-        x1={0}
-        x2={profile.labelWidthMm}
-        y1={profile.labelHeightMm / 2}
-        y2={profile.labelHeightMm / 2}
-      />
       <text
         dominantBaseline="middle"
         fill="#111111"
