@@ -5,7 +5,6 @@ import { PageHeader } from "../components/PageHeader";
 import { resolveAssetUrl, searchInventory, type SearchResult } from "../lib/api";
 
 const MIN_QUERY_LENGTH = 2;
-const SEARCH_DEBOUNCE_MS = 220;
 
 export function SearchPage() {
   const navigate = useNavigate();
@@ -33,24 +32,18 @@ export function SearchPage() {
     setIsLoading(true);
     setError(null);
 
-    const timeout = window.setTimeout(() => {
-      void searchInventory(normalizedQuery)
-        .then((nextResults) => {
-          setResults(nextResults);
-        })
-        .catch((requestError: unknown) => {
-          setError(
-            requestError instanceof Error ? requestError.message : "Suche konnte nicht geladen werden.",
-          );
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }, SEARCH_DEBOUNCE_MS);
-
-    return () => {
-      window.clearTimeout(timeout);
-    };
+    void searchInventory(normalizedQuery)
+      .then((nextResults) => {
+        setResults(nextResults);
+      })
+      .catch((requestError: unknown) => {
+        setError(
+          requestError instanceof Error ? requestError.message : "Suche konnte nicht geladen werden.",
+        );
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [deferredQuery]);
 
   const showHint = query.trim().length < MIN_QUERY_LENGTH;

@@ -594,9 +594,7 @@ html {
   border-color: rgba(255, 255, 255, 0.18);
 }
 
-.review-card--detail {
-  /* removed align-items: start because it breaks flex columns, we let it stretch */
-}
+
 
 .review-card__media {
   position: relative;

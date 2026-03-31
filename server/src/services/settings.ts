@@ -40,6 +40,8 @@ const managedEnvKeys = [
   "VERTEX_REGION",
 ] as const;
 
+let settingsCache: { activeModelId: string; configuredProviders: ProviderStatusMap } | null = null;
+
 async function ensureDataDirectory(): Promise<void> {
   await mkdir(dataDirectory, { recursive: true });
 }
@@ -96,6 +98,10 @@ export async function getSettings(): Promise<{
   activeModelId: string;
   configuredProviders: ProviderStatusMap;
 }> {
+  if (settingsCache) {
+    return settingsCache;
+  }
+
   await ensureDataDirectory();
 
   let activeModelId = DEFAULT_ACTIVE_MODEL_ID;
@@ -115,10 +121,12 @@ export async function getSettings(): Promise<{
   }
 
   const envValues = await readEnvValues();
-  return {
+  const result = {
     activeModelId,
     configuredProviders: buildProviderStatuses(envValues),
   };
+  settingsCache = result;
+  return result;
 }
 
 export async function saveActiveModelId(modelId: string): Promise<StoredSettings> {
@@ -129,6 +137,7 @@ export async function saveActiveModelId(modelId: string): Promise<StoredSettings
   await ensureDataDirectory();
   const payload: StoredSettings = { activeModelId: modelId };
   await writeFile(settingsFilePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
+  settingsCache = null;
   return payload;
 }
 
@@ -171,6 +180,7 @@ export async function saveProviderKeys(
   const managedLines = managedEnvKeys.map((key) => `${key}=${nextManagedValues.get(key) ?? ""}`);
   const nextContent = [...filteredLines.filter(Boolean), ...managedLines].join("\n").trimEnd();
   await writeFile(envFilePath, `${nextContent}\n`, "utf8");
+  settingsCache = null;
 
   for (const key of managedEnvKeys) {
     process.env[key] = nextManagedValues.get(key) ?? "";

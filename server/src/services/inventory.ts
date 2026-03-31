@@ -124,13 +124,21 @@ function nowIso(): string {
   return new Date().toISOString();
 }
 
-function normalizeRequiredText(value: string, fieldName: string): string {
+function normalizeRequiredText(value: string, fieldName: string, maxLength = 255): string {
   const normalized = value.trim();
   if (!normalized) {
     throw new Error(`${fieldName} ist erforderlich.`);
   }
 
+  if (normalized.length > maxLength) {
+    throw new Error(`${fieldName} darf maximal ${maxLength} Zeichen lang sein.`);
+  }
+
   return normalized;
+}
+
+function escapeLikeWildcards(value: string): string {
+  return value.replace(/[%_\\]/g, "\\$&");
 }
 
 function normalizeOptionalText(value: string | null | undefined): string | null {
@@ -222,35 +230,38 @@ function toBoxSummary(row: BoxRow): BoxSummary {
   };
 }
 
+const BOX_SUMMARY_COLUMNS = `
+  b.id,
+  b.number,
+  b.name,
+  b.location,
+  b.created_at AS createdAt,
+  b.updated_at AS updatedAt,
+  COUNT(DISTINCT i.id) AS itemCount,
+  COALESCE(
+    (
+      SELECT ii.path
+      FROM items bi
+      LEFT JOIN item_images ii ON ii.id = bi.title_image_id
+      WHERE bi.box_id = b.id AND ii.path IS NOT NULL
+      LIMIT 1
+    ),
+    (
+      SELECT ii2.path
+      FROM item_images ii2
+      JOIN items bi2 ON bi2.id = ii2.item_id
+      WHERE bi2.box_id = b.id
+      ORDER BY ii2.is_title DESC, ii2.id ASC
+      LIMIT 1
+    )
+  ) AS thumbnailPath
+`;
+
 function getBoxSummaryById(boxId: number): BoxSummary | null {
   const row = database
     .prepare(
       `
-        SELECT
-          b.id,
-          b.number,
-          b.name,
-          b.location,
-          b.created_at AS createdAt,
-          b.updated_at AS updatedAt,
-          COUNT(DISTINCT i.id) AS itemCount,
-          COALESCE(
-            (
-              SELECT ii.path
-              FROM items bi
-              LEFT JOIN item_images ii ON ii.id = bi.title_image_id
-              WHERE bi.box_id = b.id AND ii.path IS NOT NULL
-              LIMIT 1
-            ),
-            (
-              SELECT ii2.path
-              FROM item_images ii2
-              JOIN items bi2 ON bi2.id = ii2.item_id
-              WHERE bi2.box_id = b.id
-              ORDER BY ii2.is_title DESC, ii2.id ASC
-              LIMIT 1
-            )
-          ) AS thumbnailPath
+        SELECT ${BOX_SUMMARY_COLUMNS}
         FROM boxes b
         LEFT JOIN items i ON i.box_id = b.id
         WHERE b.id = ?
@@ -266,31 +277,7 @@ function getBoxSummaryByNumber(boxNumber: number): BoxSummary | null {
   const row = database
     .prepare(
       `
-        SELECT
-          b.id,
-          b.number,
-          b.name,
-          b.location,
-          b.created_at AS createdAt,
-          b.updated_at AS updatedAt,
-          COUNT(DISTINCT i.id) AS itemCount,
-          COALESCE(
-            (
-              SELECT ii.path
-              FROM items bi
-              LEFT JOIN item_images ii ON ii.id = bi.title_image_id
-              WHERE bi.box_id = b.id AND ii.path IS NOT NULL
-              LIMIT 1
-            ),
-            (
-              SELECT ii2.path
-              FROM item_images ii2
-              JOIN items bi2 ON bi2.id = ii2.item_id
-              WHERE bi2.box_id = b.id
-              ORDER BY ii2.is_title DESC, ii2.id ASC
-              LIMIT 1
-            )
-          ) AS thumbnailPath
+        SELECT ${BOX_SUMMARY_COLUMNS}
         FROM boxes b
         LEFT JOIN items i ON i.box_id = b.id
         WHERE b.number = ?
@@ -324,31 +311,7 @@ export function listBoxes(): BoxSummary[] {
   const rows = database
     .prepare(
       `
-        SELECT
-          b.id,
-          b.number,
-          b.name,
-          b.location,
-          b.created_at AS createdAt,
-          b.updated_at AS updatedAt,
-          COUNT(DISTINCT i.id) AS itemCount,
-          COALESCE(
-            (
-              SELECT ii.path
-              FROM items bi
-              LEFT JOIN item_images ii ON ii.id = bi.title_image_id
-              WHERE bi.box_id = b.id AND ii.path IS NOT NULL
-              LIMIT 1
-            ),
-            (
-              SELECT ii2.path
-              FROM item_images ii2
-              JOIN items bi2 ON bi2.id = ii2.item_id
-              WHERE bi2.box_id = b.id
-              ORDER BY ii2.is_title DESC, ii2.id ASC
-              LIMIT 1
-            )
-          ) AS thumbnailPath
+        SELECT ${BOX_SUMMARY_COLUMNS}
         FROM boxes b
         LEFT JOIN items i ON i.box_id = b.id
         GROUP BY b.id
@@ -370,7 +333,7 @@ export function searchItems(query: string): SearchResult[] {
     return [];
   }
 
-  const likeQuery = `%${normalizedQuery}%`;
+  const likeQuery = `%${escapeLikeWildcards(normalizedQuery)}%`;
   const rows = database
     .prepare(
       `
