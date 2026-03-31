@@ -236,6 +236,7 @@ export function BoxDetailPage() {
   const [selectedItemIds, setSelectedItemIds] = useState<Set<number>>(new Set());
   const [batchMoveTargetId, setBatchMoveTargetId] = useState<number | null>(null);
   const [isBatchMoving, setIsBatchMoving] = useState(false);
+  const [isBatchBusy, setIsBatchBusy] = useState(false);
 
   useEffect(() => {
     function clearPrintMode() {
@@ -309,10 +310,12 @@ export function BoxDetailPage() {
     };
   }, [boxId]);
 
+  // Re-fetch loans only when box identity or item count changes, not on every box reference update.
   useEffect(() => {
     if (box && box.items.length > 0) {
       void loadItemLoans();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [box?.id, box?.items.length]);
 
   useEffect(() => {
@@ -661,9 +664,10 @@ export function BoxDetailPage() {
   }
 
   async function handleBatchDelete() {
-    if (selectedItemIds.size === 0) return;
+    if (selectedItemIds.size === 0 || isBatchBusy) return;
     const confirmed = window.confirm(`${selectedItemIds.size} Item(s) wirklich löschen?`);
     if (!confirmed) return;
+    setIsBatchBusy(true);
     try {
       await batchDeleteItems([...selectedItemIds]);
       await refreshBox();
@@ -671,11 +675,14 @@ export function BoxDetailPage() {
       exitBatchMode();
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Batch-Löschen fehlgeschlagen.");
+    } finally {
+      setIsBatchBusy(false);
     }
   }
 
   async function handleBatchMove() {
-    if (selectedItemIds.size === 0 || !batchMoveTargetId) return;
+    if (selectedItemIds.size === 0 || !batchMoveTargetId || isBatchBusy) return;
+    setIsBatchBusy(true);
     try {
       await batchMoveItems([...selectedItemIds], batchMoveTargetId);
       await refreshBox();
@@ -683,6 +690,8 @@ export function BoxDetailPage() {
       exitBatchMode();
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Batch-Verschieben fehlgeschlagen.");
+    } finally {
+      setIsBatchBusy(false);
     }
   }
 
@@ -1213,6 +1222,7 @@ export function BoxDetailPage() {
                     </button>
                     <button
                       className="button button--ghost box-detail-toolbar__action--danger"
+                      disabled={isBatchBusy}
                       onClick={() => void handleBatchDelete()}
                       type="button"
                     >
@@ -1239,7 +1249,7 @@ export function BoxDetailPage() {
                     </select>
                     <button
                       className="button button--primary"
-                      disabled={!batchMoveTargetId}
+                      disabled={!batchMoveTargetId || isBatchBusy}
                       onClick={() => void handleBatchMove()}
                       type="button"
                     >

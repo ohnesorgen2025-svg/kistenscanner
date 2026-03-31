@@ -27,8 +27,8 @@ itemsRouter.post("/batch-move", (request, response) => {
     const itemIds = request.body.itemIds;
     const targetBoxId = Number(request.body.targetBoxId);
 
-    if (!Array.isArray(itemIds) || itemIds.length === 0 || !itemIds.every((id: unknown) => typeof id === "number" && Number.isInteger(id) && id > 0)) {
-      return response.status(400).json({ error: "itemIds muss ein Array von gültigen IDs sein." });
+    if (!Array.isArray(itemIds) || itemIds.length === 0 || itemIds.length > 500 || !itemIds.every((id: unknown) => typeof id === "number" && Number.isInteger(id) && id > 0)) {
+      return response.status(400).json({ error: "itemIds muss ein Array von 1–500 gültigen IDs sein." });
     }
     if (!Number.isInteger(targetBoxId) || targetBoxId <= 0) {
       return response.status(400).json({ error: "targetBoxId ist erforderlich." });
@@ -45,8 +45,8 @@ itemsRouter.post("/batch-delete", (request, response) => {
   try {
     const itemIds = request.body.itemIds;
 
-    if (!Array.isArray(itemIds) || itemIds.length === 0 || !itemIds.every((id: unknown) => typeof id === "number" && Number.isInteger(id) && id > 0)) {
-      return response.status(400).json({ error: "itemIds muss ein Array von gültigen IDs sein." });
+    if (!Array.isArray(itemIds) || itemIds.length === 0 || itemIds.length > 500 || !itemIds.every((id: unknown) => typeof id === "number" && Number.isInteger(id) && id > 0)) {
+      return response.status(400).json({ error: "itemIds muss ein Array von 1–500 gültigen IDs sein." });
     }
 
     batchDeleteItems(itemIds as number[]);

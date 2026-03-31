@@ -209,6 +209,8 @@ export function ScanPage() {
         }
       })();
     };
+  // resolveDecodedText uses refs for mutable state — safe to omit from deps.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   return (
@@ -327,7 +329,7 @@ export function ScanPage() {
               {barcodeResult.category ? <span className="chip chip--quiet">{barcodeResult.category}</span> : null}
             </div>
 
-            {barcodeResult.found && barcodeResult.imageUrl ? (
+            {barcodeResult.found && barcodeResult.imageUrl?.startsWith("https://") ? (
               <img
                 alt={barcodeResult.name}
                 className="barcode-result-image"

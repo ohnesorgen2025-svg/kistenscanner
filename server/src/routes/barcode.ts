@@ -35,6 +35,7 @@ barcodeRouter.get("/:code", async (request, response) => {
     }
 
     const p = data.product;
+    const imageUrl = typeof p.image_url === "string" && p.image_url.startsWith("https://") ? p.image_url : null;
     return response.json({
       found: true,
       code,
@@ -42,7 +43,7 @@ barcodeRouter.get("/:code", async (request, response) => {
       brand: p.brands ?? null,
       category: p.categories ?? null,
       quantity: p.quantity ?? null,
-      imageUrl: p.image_url ?? null,
+      imageUrl,
     });
   } catch {
     return response.json({ found: false, code });
