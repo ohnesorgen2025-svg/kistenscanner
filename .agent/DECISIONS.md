@@ -239,3 +239,7 @@ Reason: A strict geometric split uses the label area more predictably and makes 
 ## 2026-03-31 — Preview and print share one SVG sticker artwork
 The sticker content is now rendered from the same SVG artwork in both the on-screen sheet preview and the actual print layout.
 Reason: Separate CSS layouts for preview and print drifted apart, so the print dialog no longer matched what the user saw before printing.
+
+## 2026-03-31 — Sticker content uses a small optical downward offset
+The shared sticker artwork now nudges the number and QR code slightly downward inside the label.
+Reason: Pure mathematical centering still looked a touch too high in practice, so a small shared optical offset makes the sticker feel visually centered in both preview and print.

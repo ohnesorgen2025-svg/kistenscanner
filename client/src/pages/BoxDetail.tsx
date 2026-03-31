@@ -111,7 +111,7 @@ function buildStickerGeometry(profile: LabelProfile, labelText: string): Sticker
   const halfWidth = innerWidth / 2;
   const numberCenterX = insetX + halfWidth / 2;
   const qrCenterX = insetX + halfWidth + halfWidth / 2;
-  const contentCenterY = insetY + innerHeight / 2;
+  const contentCenterY = insetY + innerHeight / 2 + innerHeight * 0.035;
   const baseSize = Math.min(halfWidth, innerHeight);
   const lengthFactor =
     labelText.length <= 1 ? 0.86 : labelText.length === 2 ? 0.72 : labelText.length === 3 ? 0.58 : 0.46;
