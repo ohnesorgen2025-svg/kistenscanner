@@ -423,6 +423,46 @@ html {
   margin-top: 1rem;
 }
 
+.scan-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.scan-upload__icon {
+  font-size: 3rem;
+  color: var(--muted);
+}
+
+.scan-upload__text {
+  color: var(--muted);
+  font-size: 0.9rem;
+  max-width: 28rem;
+}
+
+.scan-upload__hint {
+  font-weight: 600;
+}
+
+.scan-upload__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  width: 100%;
+}
+
+.scan-upload__button {
+  cursor: pointer;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 10rem;
+  justify-content: center;
+}
+
 .settings-section {
   display: grid;
   gap: 1.25rem;
