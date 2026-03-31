@@ -462,7 +462,7 @@ export function BoxDetailPage() {
           <section className="panel box-detail-header">
             <div className="box-detail-header__identity">
               <div className="box-detail-header__code">
-                <div className="qr-panel qr-panel--compact box-detail-header__qr-panel">
+                <div className="qr-panel box-detail-header__qr-panel">
                   {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
                 </div>
               </div>

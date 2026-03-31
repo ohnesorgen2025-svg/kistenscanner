@@ -893,22 +893,24 @@ html {
 }
 
 .box-detail-header__identity {
-  display: grid;
-  grid-template-columns: minmax(5.5rem, 7.5rem) minmax(0, 1fr);
+  display: flex;
+  align-items: stretch;
   gap: 1rem;
-  align-items: start;
 }
 
 .box-detail-header__code {
-  display: grid;
-  justify-items: start;
-  gap: 0.6rem;
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
 }
 
 .box-detail-header__qr-panel {
-  width: 100%;
+  height: auto;
+  width: auto;
+  align-self: stretch;
   aspect-ratio: 1;
   box-sizing: border-box;
+  max-width: 35vw;
 }
 
 .box-detail-header__qr-label {
@@ -923,6 +925,8 @@ html {
 .box-detail-header__summary {
   display: grid;
   gap: 0.9rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .box-detail-header__location {

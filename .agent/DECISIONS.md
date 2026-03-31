@@ -280,3 +280,7 @@ Reason: To keep the action bar at the very bottom of the card spanning full-widt
 
 - Switched `.box-detail-toolbar` to `flex-wrap` and added placeholder buttons for further features (Edit, Add Photo).
 - Refined `.box-detail-header__fact` with `flex: 1` to ensure responsive equal-width scaling.
+## Dynamic QR Layout
+
+- Switched `.box-detail-header__identity` from a fixed grid with start alignment to `display: flex` with `align-items: stretch`.
+- Removed max-width limits for the left column so the QR square organically scales its height exactly to the dynamically generated height of the right-hand text summary block (`flex: 1`), while preserving a perfect 1:1 aspect ratio.

@@ -16,7 +16,7 @@ Continue the real-world label workflow:
 - Which additional bought label packages should become built-in print profiles after `No. 5028`?
 
 ## Done Recently
-- Refined Box Detail UI: Removed redundant QR text, added "Foto hinzufügen" and "Bearbeiten" placeholders, fixed button toolbar layout and fact-card scaling.
+- Fully scaled QR Code dynamically to text block height instead of fixed width restrictions. Refined Box Detail UI: Removed redundant QR text, added "Foto hinzufügen" and "Bearbeiten" placeholders, fixed button toolbar layout and fact-card scaling.
 - Applied `box-sizing: border-box` and `aspect-ratio` to qr-panel.
 - Fixed Box Detail mobile overlapping layout (forced responsive 2-column grid in `.box-detail-header__identity`).
 - Restructured `.review-card` CSS from grid to flex-column to fix edge-to-edge buttons.
