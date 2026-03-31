@@ -219,3 +219,7 @@ Reason: The sheet configuration is important when printing, but it should not do
 ## 2026-03-29 — Sticker preview should mimic paper with fine guide lines
 The sheet preview now uses a bright paper-like background and subtle guide outlines for every label position, and the printed page keeps similarly fine slot borders.
 Reason: The previous dark mock-style preview made it hard to judge whether the real label grid was aligned correctly.
+
+## 2026-03-31 — No. 5028 uses symmetric A4 margins with a 5 mm center gap
+The `No. 5028` label profile now assumes `83,8 × 50,8 mm` labels on A4 with a `5 mm` center gap, `0 mm` vertical gap, `18,7 mm` left/right margins and `21,5 mm` top/bottom margins.
+Reason: The earlier asymmetric margin values did not match the real-world expectation for this bought sheet, while the measured center gap plus equal outer margins produce a consistent printable grid.

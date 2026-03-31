@@ -90,3 +90,4 @@ Continue the real-world label workflow:
 - Added clickable sheet-position selection so BoxDetail now prints the number plus QR code into one chosen label field on the DIN-A4 sheet instead of wasting a whole page per box
 - Changed the sticker section in BoxDetail to stay collapsed by default and open from the header action instead of always occupying the page
 - Reworked the A4 sticker preview into a bright paper-style sheet with fine guide lines so the real label grid is easier to judge before printing
+- Updated `No. 5028` to a symmetric geometry based on the measured 5 mm center gap: `18,7 mm` left/right margins and `21,5 mm` top/bottom margins
