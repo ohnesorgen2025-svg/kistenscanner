@@ -7,7 +7,7 @@
 - **Port:** 3008
 - **Local Domain:** kistenscanner.local
 - **Deploy Path:** /home/stefan/apps/kistenscanner
-- **Last Deploy:** 2026-03-28T21:21:25.765Z
+- **Last Deploy:** 2026-03-31T12:43:30.848Z
 
 ## Re-Deploy
 After pushing changes to main, re-deploy with:
