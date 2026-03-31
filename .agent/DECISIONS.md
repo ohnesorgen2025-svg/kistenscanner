@@ -271,3 +271,8 @@ Reason: The backend already supported box deletion, but without a visible UI the
 ## 2026-03-31 — Review Card Item Actions span edge-to-edge
 The `.review-card__actions` und `.move-panel` in BoxDetail have been moved out of the padded `.review-card__content` container. The `.review-card` container itself was switched from grid to a flex column.
 Reason: To keep the action bar at the very bottom of the card spanning full-width seamlessly, the actions can't sit inside the parent content's left/right padding. The flex column also ensures cards in lists share uniform height without breaking content layouts when `flex: 1` stretches the content node.
+## Architecture Decisions
+
+- Used raw CSS over Tailwind to minimize payload overhead.
+- Layout switched to `flex-direction: column` for `.review-card` to allow full-width action buttons.
+- Box Detail header grid forced into 2-column layout to prevent mobile overlap.
