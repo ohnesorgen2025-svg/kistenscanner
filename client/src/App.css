@@ -940,6 +940,8 @@ html {
 }
 
 .box-detail-header__fact {
+  flex: 1;
+  min-width: 0;
   display: grid;
   gap: 0.2rem;
   padding: 0.85rem 1rem;
@@ -964,14 +966,17 @@ html {
 }
 
 .box-detail-toolbar {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   gap: 0.75rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
 }
 
 .box-detail-toolbar__action {
+  flex: 1;
+  min-width: 8rem;
   width: 100%;
   justify-content: center;
   min-height: 3rem;

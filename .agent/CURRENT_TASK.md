@@ -1,7 +1,7 @@
 # Current Task
 
 ## Status:
-🟢 LAN deployment confirmed, Box Detail UI fixed
+🟢 LAN deployment confirmed, Box Detail UI refined
 
 ## Current Goal
 Keep the deployed LAN version stable and refine the live UI plus print workflow against real usage.
@@ -16,7 +16,7 @@ Continue the real-world label workflow:
 - Which additional bought label packages should become built-in print profiles after `No. 5028`?
 
 ## Done Recently
+- Refined Box Detail UI: Removed redundant QR text, added "Foto hinzufügen" and "Bearbeiten" placeholders, fixed button toolbar layout and fact-card scaling.
+- Applied `box-sizing: border-box` and `aspect-ratio` to qr-panel.
 - Fixed Box Detail mobile overlapping layout (forced responsive 2-column grid in `.box-detail-header__identity`).
 - Restructured `.review-card` CSS from grid to flex-column to fix edge-to-edge buttons.
-- Monorepo scaffolded with `client/` and `server/`
-- Vite + React + strict TypeScript set up on port `5174`

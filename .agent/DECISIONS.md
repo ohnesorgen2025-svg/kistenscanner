@@ -276,3 +276,7 @@ Reason: To keep the action bar at the very bottom of the card spanning full-widt
 - Used raw CSS over Tailwind to minimize payload overhead.
 - Layout switched to `flex-direction: column` for `.review-card` to allow full-width action buttons.
 - Box Detail header grid forced into 2-column layout to prevent mobile overlap.
+## Box Detail UI Adjustments
+
+- Switched `.box-detail-toolbar` to `flex-wrap` and added placeholder buttons for further features (Edit, Add Photo).
+- Refined `.box-detail-header__fact` with `flex: 1` to ensure responsive equal-width scaling.

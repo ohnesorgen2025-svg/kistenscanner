@@ -465,7 +465,6 @@ export function BoxDetailPage() {
                 <div className="qr-panel qr-panel--compact box-detail-header__qr-panel">
                   {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
                 </div>
-                <p className="box-detail-header__qr-label">QR zum Scannen</p>
               </div>
 
               <div className="box-detail-header__summary">
@@ -489,6 +488,24 @@ export function BoxDetailPage() {
             </div>
 
             <div className="box-detail-toolbar" role="toolbar" aria-label="Kistenaktionen">
+              <button
+                aria-label="Kiste bearbeiten"
+                className="button button--ghost box-detail-toolbar__action"
+                title="Kiste bearbeiten"
+                type="button"
+              >
+                <span className="material-symbols-outlined">edit</span>
+                <span className="box-detail-toolbar__text">Bearbeiten</span>
+              </button>
+              <button
+                aria-label="Foto hinzufügen"
+                className="button button--ghost box-detail-toolbar__action"
+                title="Foto hinzufügen"
+                type="button"
+              >
+                <span className="material-symbols-outlined">add_a_photo</span>
+                <span className="box-detail-toolbar__text">Foto hinzufügen</span>
+              </button>
               <button
                 aria-label="Label drucken"
                 className="button button--ghost box-detail-toolbar__action"
