@@ -5,6 +5,7 @@ import { AddBoxPage } from "./pages/AddBox";
 import { BoxDetailPage } from "./pages/BoxDetail";
 import { BoxesPage } from "./pages/Boxes";
 import { DashboardPage } from "./pages/Dashboard";
+import { HelpPage } from "./pages/Help";
 import { ScanPage } from "./pages/Scan";
 import { SearchPage } from "./pages/Search";
 import { SettingsPage } from "./pages/Settings";
@@ -22,6 +23,7 @@ const navigationLinks: NavigationLink[] = [
   { label: "Kisten", icon: "inventory_2", to: "/boxes" },
   { label: "Dashboard", icon: "dashboard", to: "/dashboard" },
   { label: "Einstellungen", icon: "settings", to: "/settings" },
+  { label: "Hilfe", icon: "help", to: "/help" },
 ];
 
 function NavigationItem({ icon, label, to }: NavigationLink) {
@@ -77,6 +79,7 @@ function App() {
             <Route element={<AddBoxPage />} path="/boxes/add" />
             <Route element={<BoxDetailPage />} path="/boxes/:id" />
             <Route element={<DashboardPage />} path="/dashboard" />
+            <Route element={<HelpPage />} path="/help" />
           </Routes>
         </div>
       </main>

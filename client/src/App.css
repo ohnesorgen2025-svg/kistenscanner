@@ -1826,6 +1826,148 @@ html {
 .chip--move { background: #ff9800; color: #fff; }
 .chip--split { background: #9c27b0; color: #fff; }
 
+/* ─── Help page ─── */
+.help-intro {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: var(--fg);
+}
+
+.help-intro p {
+  margin: 0;
+}
+
+.help-section__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.help-section__icon {
+  font-size: 1.8rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.help-section__header .section-kicker {
+  margin-bottom: 0.1rem;
+}
+
+.help-section__header h2 {
+  margin: 0;
+}
+
+.help-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--fg);
+}
+
+.help-section__body p {
+  margin: 0;
+}
+
+.help-feature {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.help-feature h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+}
+
+.help-feature h3 .material-symbols-outlined {
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.help-feature p,
+.help-feature ul {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.help-feature ul {
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.help-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding-left: 1.4rem;
+  margin: 0;
+}
+
+.help-steps li {
+  line-height: 1.6;
+}
+
+.help-steps li strong {
+  color: var(--accent);
+}
+
+.help-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+.help-type {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.help-type .material-symbols-outlined {
+  font-size: 1.5rem;
+  opacity: 0.7;
+}
+
+.help-type strong {
+  font-size: 0.82rem;
+}
+
+.help-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-left: 1.4rem;
+  margin: 0;
+}
+
+.help-tips li {
+  line-height: 1.6;
+}
+
+.help-tips li strong {
+  color: var(--accent);
+}
+
+.help-section--tips {
+  border-color: var(--accent);
+}
+
 /* ─── Breadcrumb path ─── */
 .breadcrumb-path {
   display: flex;
