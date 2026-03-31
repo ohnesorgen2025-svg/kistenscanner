@@ -154,6 +154,12 @@ export async function getBox(boxId: number): Promise<BoxRecord> {
   return requestJson<BoxRecord>(`/api/boxes/${boxId}`);
 }
 
+export async function deleteBox(boxId: number): Promise<void> {
+  return requestJson<void>(`/api/boxes/${boxId}`, {
+    method: "DELETE",
+  });
+}
+
 export async function searchInventory(query: string): Promise<SearchResult[]> {
   const params = new URLSearchParams({ q: query });
   return requestJson<SearchResult[]>(`/api/search?${params.toString()}`);

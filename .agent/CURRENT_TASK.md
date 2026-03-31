@@ -99,3 +99,6 @@ Continue the real-world label workflow:
 - Fine-tuned the QR code position separately from the number so the QR can sit a touch higher without disturbing the now-correct number alignment
 - Strengthened multi-photo analysis dedupe with conservative heuristics instead of exact `name + description` matching only
 - Updated the AI prompt to explicitly consolidate the same object across multiple photos, keep the richest description and avoid fake quantity increases from repeat views
+- Rebuilt the box-detail header into a calmer two-zone layout with the QR block on the left, the location as the main headline and the remaining box facts in one consistent fact row
+- Added a dedicated box action bar with equal-width actions and a mobile icon-only mode so header actions no longer float around the page
+- Exposed box deletion in the detail header and wired it to `DELETE /api/boxes/:id` with confirmation and navigation back to `/boxes`

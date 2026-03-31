@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import QRCode from "qrcode";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import {
+  deleteBox,
   getBox,
   listBoxes,
   moveItem,
@@ -185,6 +186,7 @@ function getItemImageUrl(item: ItemRecord): string | null {
 
 export function BoxDetailPage() {
   const params = useParams();
+  const navigate = useNavigate();
   const boxId = Number(params.id);
   const labelPanelRef = useRef<HTMLElement | null>(null);
   const [box, setBox] = useState<BoxRecord | null>(null);
@@ -414,6 +416,28 @@ export function BoxDetailPage() {
     }
   }
 
+  async function handleDeleteBox() {
+    if (!box) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Kiste #${box.number} wirklich löschen?\n\nAlle enthaltenen Items und Bilder werden ebenfalls entfernt.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteBox(box.id);
+      setError(null);
+      void navigate("/boxes");
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Kiste konnte nicht gelöscht werden.");
+    }
+  }
+
 
   const availableMoveTargets = boxes.filter((entry) => entry.id !== box?.id);
   const activeLabelProfile =
@@ -436,28 +460,64 @@ export function BoxDetailPage() {
       {box ? (
         <>
           <section className="panel box-detail-header">
-            <div className="box-detail-header__copy">
-              <p className="section-kicker">Kiste</p>
-              <h1 className="box-detail-header__title">Kiste #{box.number}</h1>
-              <p className="box-detail-header__name">{box.name}</p>
-              <div className="box-detail-header__meta">
-                <span>Standort: {box.location}</span>
-                <span>{box.itemCount} Items</span>
+            <div className="box-detail-header__identity">
+              <div className="box-detail-header__code">
+                <div className="qr-panel qr-panel--compact box-detail-header__qr-panel">
+                  {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
+                </div>
+                <p className="box-detail-header__qr-label">QR zum Scannen</p>
               </div>
-              <div className="action-row">
-                <button className="button button--primary" onClick={openLabelPanel} type="button">
-                  Label drucken
-                </button>
-                <Link className="button button--ghost" to="/boxes">
-                  Zurück zu den Kisten
-                </Link>
+
+              <div className="box-detail-header__summary">
+                <p className="section-kicker">Standort</p>
+                <h1 className="box-detail-header__location">{box.location}</h1>
+                <div className="box-detail-header__facts">
+                  <div className="box-detail-header__fact">
+                    <span className="box-detail-header__fact-label">Kiste</span>
+                    <strong className="box-detail-header__fact-value">#{box.number}</strong>
+                  </div>
+                  <div className="box-detail-header__fact">
+                    <span className="box-detail-header__fact-label">Name</span>
+                    <strong className="box-detail-header__fact-value">{box.name}</strong>
+                  </div>
+                  <div className="box-detail-header__fact">
+                    <span className="box-detail-header__fact-label">Items</span>
+                    <strong className="box-detail-header__fact-value">{box.itemCount}</strong>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="box-detail-header__code">
-              <div className="qr-panel qr-panel--compact">
-                {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
-              </div>
-              <p className="box-detail-header__qr-label">QR zum Scannen</p>
+
+            <div className="box-detail-toolbar" role="toolbar" aria-label="Kistenaktionen">
+              <button
+                aria-label="Label drucken"
+                className="button button--ghost box-detail-toolbar__action"
+                onClick={openLabelPanel}
+                title="Label drucken"
+                type="button"
+              >
+                <span className="material-symbols-outlined">print</span>
+                <span className="box-detail-toolbar__text">Label drucken</span>
+              </button>
+              <Link
+                aria-label="Zurück zu den Kisten"
+                className="button button--ghost box-detail-toolbar__action"
+                title="Zurück zu den Kisten"
+                to="/boxes"
+              >
+                <span className="material-symbols-outlined">arrow_back</span>
+                <span className="box-detail-toolbar__text">Zurück</span>
+              </Link>
+              <button
+                aria-label="Kiste löschen"
+                className="button button--ghost box-detail-toolbar__action box-detail-toolbar__action--danger"
+                onClick={() => void handleDeleteBox()}
+                title="Kiste löschen"
+                type="button"
+              >
+                <span className="material-symbols-outlined">delete</span>
+                <span className="box-detail-toolbar__text">Löschen</span>
+              </button>
             </div>
           </section>
 

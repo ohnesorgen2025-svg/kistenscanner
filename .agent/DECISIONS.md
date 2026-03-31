@@ -255,3 +255,15 @@ Reason: Exact `name + description` matching left obvious duplicate items in mult
 ## 2026-03-31 — Quantity should not grow just because the same object appears in another photo
 When duplicate detections are merged across photos, quantity now keeps the safer maximum value instead of blindly summing.
 Reason: In multi-photo analysis the same physical object is often seen more than once, so summing duplicate quantities tends to overcount.
+
+## 2026-03-31 — Box detail header should act like one calm tool panel
+The box detail page now places the QR block on the left, the location as the dominant headline beside it, and the remaining facts (`Kiste`, `Name`, `Items`) in one uniform fact strip below.
+Reason: The previous hero mixed too many sizes, colors and scattered buttons, which made the most important box information harder to scan.
+
+## 2026-03-31 — Box actions belong in one equal action bar
+The box detail header now uses one equal-width action bar, and on smaller screens the same actions collapse to icon-only buttons instead of wrapping text labels.
+Reason: Header actions should feel like one stable toolset across desktop and mobile, not like separate floating buttons with inconsistent widths.
+
+## 2026-03-31 — Box deletion is available directly in the detail header
+Deleting a box is now exposed from the box detail action bar and confirms before calling `DELETE /api/boxes/:id`.
+Reason: The backend already supported box deletion, but without a visible UI the action was effectively inaccessible in day-to-day use.
