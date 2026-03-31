@@ -235,3 +235,7 @@ Reason: In practice the same sticker may be needed more than once for the same b
 ## 2026-03-31 — Sticker content uses a strict 50/50 label split with inner padding
 Inside each label, the usable area now keeps roughly 10% padding to the outer edges and splits the remaining space into two equal halves: the number on the left and the QR code on the right, both horizontally and vertically centered.
 Reason: A strict geometric split uses the label area more predictably and makes both the number and the QR code feel deliberate instead of loosely arranged.
+
+## 2026-03-31 — Preview and print share one SVG sticker artwork
+The sticker content is now rendered from the same SVG artwork in both the on-screen sheet preview and the actual print layout.
+Reason: Separate CSS layouts for preview and print drifted apart, so the print dialog no longer matched what the user saw before printing.

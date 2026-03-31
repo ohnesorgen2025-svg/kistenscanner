@@ -45,6 +45,19 @@ type LabelSlot = {
   topMm: number;
 };
 
+type StickerGeometry = {
+  insetX: number;
+  insetY: number;
+  halfWidth: number;
+  innerHeight: number;
+  numberCenterX: number;
+  contentCenterY: number;
+  numberFontSize: number;
+  qrSize: number;
+  qrX: number;
+  qrY: number;
+};
+
 const labelProfiles: LabelProfile[] = [
   {
     id: "no-5028",
@@ -88,6 +101,79 @@ function formatSlotList(slots: LabelSlot[]): string {
     .map((slot) => slot.index + 1)
     .sort((left, right) => left - right)
     .join(", ");
+}
+
+function buildStickerGeometry(profile: LabelProfile, labelText: string): StickerGeometry {
+  const insetX = profile.labelWidthMm * 0.1;
+  const insetY = profile.labelHeightMm * 0.1;
+  const innerWidth = profile.labelWidthMm - insetX * 2;
+  const innerHeight = profile.labelHeightMm - insetY * 2;
+  const halfWidth = innerWidth / 2;
+  const numberCenterX = insetX + halfWidth / 2;
+  const qrCenterX = insetX + halfWidth + halfWidth / 2;
+  const contentCenterY = insetY + innerHeight / 2;
+  const baseSize = Math.min(halfWidth, innerHeight);
+  const lengthFactor =
+    labelText.length <= 1 ? 0.86 : labelText.length === 2 ? 0.72 : labelText.length === 3 ? 0.58 : 0.46;
+  const numberFontSize = baseSize * lengthFactor;
+  const qrSize = Math.min(halfWidth, innerHeight) * 0.86;
+
+  return {
+    insetX,
+    insetY,
+    halfWidth,
+    innerHeight,
+    numberCenterX,
+    contentCenterY,
+    numberFontSize,
+    qrSize,
+    qrX: qrCenterX - qrSize / 2,
+    qrY: contentCenterY - qrSize / 2,
+  };
+}
+
+function StickerArtwork({
+  labelText,
+  profile,
+  qrCodeDataUrl,
+}: {
+  labelText: string;
+  profile: LabelProfile;
+  qrCodeDataUrl: string | null;
+}) {
+  const geometry = buildStickerGeometry(profile, labelText);
+
+  return (
+    <svg
+      aria-hidden="true"
+      className="sticker-artwork"
+      preserveAspectRatio="none"
+      viewBox={`0 0 ${profile.labelWidthMm} ${profile.labelHeightMm}`}
+    >
+      <text
+        dominantBaseline="middle"
+        fill="#111111"
+        fontFamily="Space Grotesk, sans-serif"
+        fontSize={geometry.numberFontSize}
+        fontWeight="700"
+        textAnchor="middle"
+        x={geometry.numberCenterX}
+        y={geometry.contentCenterY}
+      >
+        {labelText}
+      </text>
+      {qrCodeDataUrl ? (
+        <image
+          height={geometry.qrSize}
+          href={qrCodeDataUrl}
+          preserveAspectRatio="xMidYMid meet"
+          width={geometry.qrSize}
+          x={geometry.qrX}
+          y={geometry.qrY}
+        />
+      ) : null}
+    </svg>
+  );
 }
 
 function getItemImageUrl(item: ItemRecord): string | null {
@@ -470,10 +556,11 @@ export function BoxDetailPage() {
                         >
                           {isSelected ? (
                             <div className="label-preview__sticker">
-                              <span className="label-preview__number">{box.number}</span>
-                              <span className="label-preview__qr">
-                                <span className="material-symbols-outlined">qr_code_2</span>
-                              </span>
+                              <StickerArtwork
+                                labelText={String(box.number)}
+                                profile={activeLabelProfile}
+                                qrCodeDataUrl={qrCodeDataUrl}
+                              />
                             </div>
                           ) : (
                             <span className="label-preview__slot-index">{slot.index + 1}</span>
@@ -517,10 +604,11 @@ export function BoxDetailPage() {
                     key={slot.index}
                     style={printStickerStyle}
                   >
-                    <div className="print-sticker__number">{box.number}</div>
-                    <div className="print-sticker__qr">
-                      {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${box.number}`} src={qrCodeDataUrl} /> : null}
-                    </div>
+                    <StickerArtwork
+                      labelText={String(box.number)}
+                      profile={activeLabelProfile}
+                      qrCodeDataUrl={qrCodeDataUrl}
+                    />
                   </div>
                 );
               })}

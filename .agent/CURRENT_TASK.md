@@ -94,3 +94,4 @@ Continue the real-world label workflow:
 - Switched the sticker content to a side-by-side layout so the box number can use more of the label width with the QR code beside it
 - Changed the sheet selection to multi-select so the same sticker can be printed into several free fields on one A4 page
 - Tightened the sticker itself to a strict 50/50 split with 10% inner padding so number and QR code each sit centered inside their own half
+- Replaced the rough CSS-based sticker sizing with one shared SVG artwork so preview and print use the same geometry and scale behavior
