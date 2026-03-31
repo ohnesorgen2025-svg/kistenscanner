@@ -96,3 +96,4 @@ Continue the real-world label workflow:
 - Tightened the sticker itself to a strict 50/50 split with 10% inner padding so number and QR code each sit centered inside their own half
 - Replaced the rough CSS-based sticker sizing with one shared SVG artwork so preview and print use the same geometry and scale behavior
 - Added a small shared optical Y-offset in the sticker artwork so number and QR read visually centered instead of only mathematically centered
+- Added a temporary horizontal center guideline through the sticker artwork so the vertical alignment of number and QR can be judged against the true label midpoint
