@@ -66,8 +66,15 @@ export function ScanPage() {
       return;
     }
 
-    setStatus("QR-Code erkannt. Kiste wird geladen…");
+    setStatus("QR-Code erkannt. Wird geladen…");
     setError(null);
+
+    // Check for item QR code: kistenscanner://item/{id}
+    const itemMatch = decodedText.trim().match(/^kistenscanner:\/\/item\/(\d+)$/);
+    if (itemMatch) {
+      navigate(`/items/${itemMatch[1]}`);
+      return;
+    }
 
     const boxNumber = extractBoxNumber(decodedText);
     if (!boxNumber) {

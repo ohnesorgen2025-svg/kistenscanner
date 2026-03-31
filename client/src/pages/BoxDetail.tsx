@@ -1378,7 +1378,7 @@ export function BoxDetailPage() {
                         </div>
                       ) : (
                         <div className="review-card__body">
-                          <p className="review-card__name">{item.name}</p>
+                          <Link to={`/items/${item.id}`} className="review-card__name review-card__name--link">{item.name}</Link>
                           {item.description ? <p className="review-card__desc">{item.description}</p> : null}
                           <div className="item-meta-row">
                             <div className="quantity-control">

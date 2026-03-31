@@ -83,6 +83,11 @@ export type BoxSummary = {
   thumbnailPath: string | null;
 };
 
+export type ItemWithBox = ItemRecord & {
+  box: BoxSummary;
+  path: PathSegment[];
+};
+
 export type BoxRecord = BoxSummary & {
   images: BoxImageRecord[];
   items: ItemRecord[];
@@ -478,6 +483,28 @@ export async function updateBox(
   return requestJson<BoxRecord>(`/api/boxes/${boxId}`, {
     method: "PATCH",
     body: JSON.stringify(payload),
+  });
+}
+
+// --- Item Detail ---
+
+export async function getItem(itemId: number): Promise<ItemWithBox> {
+  return requestJson<ItemWithBox>(`/api/items/${itemId}`);
+}
+
+export async function analyzeItemImages(
+  itemId: number,
+  modelId: string,
+  files: File[],
+): Promise<ItemRecord> {
+  const formData = new FormData();
+  formData.append("modelId", modelId);
+  for (const file of files) {
+    formData.append("images[]", file);
+  }
+  return requestJson<ItemRecord>(`/api/analyze/item/${itemId}`, {
+    method: "POST",
+    rawBody: formData,
   });
 }
 

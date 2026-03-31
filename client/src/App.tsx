@@ -6,6 +6,7 @@ import { BoxDetailPage } from "./pages/BoxDetail";
 import { BoxesPage } from "./pages/Boxes";
 import { DashboardPage } from "./pages/Dashboard";
 import { HelpPage } from "./pages/Help";
+import { ItemDetailPage } from "./pages/ItemDetail";
 import { ScanPage } from "./pages/Scan";
 import { SearchPage } from "./pages/Search";
 import { SettingsPage } from "./pages/Settings";
@@ -60,7 +61,8 @@ function NavigationItem({ icon, label, to }: NavigationLink) {
 function App() {
   const location = useLocation();
   const isBoxDetailRoute =
-    location.pathname.startsWith("/boxes/") && location.pathname !== "/boxes/add";
+    (location.pathname.startsWith("/boxes/") && location.pathname !== "/boxes/add")
+    || location.pathname.startsWith("/items/");
   const routeShellClass = isBoxDetailRoute
     ? "page-shell page-shell--detail"
     : "page-shell page-shell--app";
@@ -78,6 +80,7 @@ function App() {
             <Route element={<BoxesPage />} path="/boxes" />
             <Route element={<AddBoxPage />} path="/boxes/add" />
             <Route element={<BoxDetailPage />} path="/boxes/:id" />
+            <Route element={<ItemDetailPage />} path="/items/:id" />
             <Route element={<DashboardPage />} path="/dashboard" />
             <Route element={<HelpPage />} path="/help" />
           </Routes>

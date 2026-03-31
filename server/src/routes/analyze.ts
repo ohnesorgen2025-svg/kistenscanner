@@ -12,7 +12,10 @@ import {
   parseAnalysis,
 } from "../lib/ai/parse-analysis.js";
 import { BOX_ANALYSIS_PROMPT } from "../lib/ai/prompts/box-analysis.js";
+import { buildItemAnalysisPrompt } from "../lib/ai/prompts/item-analysis.js";
 import { getSettings } from "../services/settings.js";
+import { saveItemImageBuffer } from "../services/file-storage.js";
+import { addItemImage, getItemWithBox, updateItem } from "../services/inventory.js";
 
 type SavedImage = {
   absolutePath: string;
@@ -171,5 +174,86 @@ analyzeRouter.post("/", upload.any(), async (request, response) => {
     return response.status(502).json({
       error: error instanceof Error ? error.message : "Analyse konnte nicht ausgeführt werden.",
     });
+  }
+});
+
+type ItemAnalysisResult = {
+  name: string;
+  description: string;
+  detail: string;
+};
+
+function parseItemAnalysis(rawText: string): ItemAnalysisResult {
+  const start = rawText.indexOf("{");
+  const end = rawText.lastIndexOf("}");
+  if (start === -1 || end === -1) {
+    throw new Error("Modell hat kein gültiges JSON geliefert.");
+  }
+
+  const parsed = JSON.parse(rawText.slice(start, end + 1)) as Record<string, unknown>;
+  return {
+    name: typeof parsed.name === "string" ? parsed.name.trim() : "",
+    description: typeof parsed.description === "string" ? parsed.description.trim() : "",
+    detail: typeof parsed.detail === "string" ? parsed.detail.trim() : "",
+  };
+}
+
+analyzeRouter.post("/item/:id", upload.any(), async (request, response) => {
+  try {
+    const itemId = Number(request.params.id);
+    if (!Number.isInteger(itemId) || itemId <= 0) {
+      return response.status(400).json({ error: "Ungültige Item-ID." });
+    }
+
+    const item = getItemWithBox(itemId);
+
+    const requestedModelId =
+      typeof request.body.modelId === "string" ? request.body.modelId.trim() : "";
+    const settings = await getSettings();
+    const modelId = requestedModelId || settings.activeModelId;
+    const uploadedImages = getUploadedImageFiles(request);
+
+    if (!modelId) {
+      return response.status(400).json({ error: "Kein aktives Modell konfiguriert." });
+    }
+
+    if (uploadedImages.length === 0) {
+      return response.status(400).json({ error: "Mindestens ein Bild ist erforderlich." });
+    }
+
+    const savedPaths: string[] = [];
+    const base64Images: string[] = [];
+
+    for (const file of uploadedImages) {
+      const imagePath = await saveItemImageBuffer(file.buffer);
+      savedPaths.push(imagePath);
+      const normalizedBuffer = await sharp(file.buffer).rotate().jpeg({ quality: 90 }).toBuffer();
+      base64Images.push(normalizedBuffer.toString("base64"));
+    }
+
+    for (const imagePath of savedPaths) {
+      addItemImage(itemId, imagePath);
+    }
+
+    const prompt = buildItemAnalysisPrompt(item.name, item.description, item.detail);
+    const rawText = await analyzeImages({ modelId, images: base64Images, prompt });
+    const analysis = parseItemAnalysis(rawText);
+
+    const updatePayload: { name?: string; description?: string; detail?: string } = {};
+    if (analysis.name) updatePayload.name = analysis.name;
+    if (analysis.description) updatePayload.description = analysis.description;
+    if (analysis.detail) updatePayload.detail = analysis.detail;
+
+    const updated = updateItem(itemId, updatePayload);
+
+    return response.json(updated);
+  } catch (error) {
+    if (error instanceof multer.MulterError) {
+      return response.status(400).json({ error: error.message });
+    }
+
+    const message = error instanceof Error ? error.message : "Item-Analyse fehlgeschlagen.";
+    const status = message === "Item nicht gefunden." ? 404 : 502;
+    return response.status(status).json({ error: message });
   }
 });

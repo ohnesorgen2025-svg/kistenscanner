@@ -172,7 +172,7 @@ export function SearchPage() {
 
       <section className="search-results">
         {results.map((result) => (
-          <Link className="search-result panel" key={`${result.box.id}-${result.item.id}`} to={`/boxes/${result.box.id}`}>
+          <Link className="search-result panel" key={`${result.box.id}-${result.item.id}`} to={`/items/${result.item.id}`}>
             <div className="search-result__media">
               {resolveAssetUrl(result.item.thumbnailPath) ? (
                 <img
@@ -225,7 +225,7 @@ export function SearchPage() {
             KI-Ergebnisse
           </div>
           {aiResults.map((result) => (
-            <Link className="search-result panel" key={`ai-${result.id}`} to={`/boxes/${result.boxId}`}>
+            <Link className="search-result panel" key={`ai-${result.id}`} to={`/items/${result.id}`}>
               <div className="search-result__media">
                 {resolveAssetUrl(result.thumbnailPath) ? (
                   <img alt={result.name} src={resolveAssetUrl(result.thumbnailPath) ?? undefined} />
@@ -274,7 +274,7 @@ export function SearchPage() {
           {isVisualSearching ? <div className="feedback">KI analysiert das Foto…</div> : null}
           <div className="search-results">
             {visualResults.map((result) => (
-              <Link className="search-result panel" key={`visual-${result.id}`} to={`/boxes/${result.boxId}`}>
+              <Link className="search-result panel" key={`visual-${result.id}`} to={`/items/${result.id}`}>
                 <div className="search-result__media">
                   {resolveAssetUrl(result.thumbnailPath) ? (
                     <img alt={result.name} src={resolveAssetUrl(result.thumbnailPath) ?? undefined} />

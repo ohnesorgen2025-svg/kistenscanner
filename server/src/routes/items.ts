@@ -5,6 +5,7 @@ import {
   batchMoveItems,
   createItem,
   deleteItem,
+  getItemWithBox,
   moveItem,
   updateItem,
   updateItemQuantity,
@@ -74,6 +75,17 @@ boxItemsRouter.post("/:id/items", (request, response) => {
   } catch (error) {
     const message = error instanceof Error ? error.message : "Item konnte nicht erstellt werden.";
     response.status(message === "Box nicht gefunden." ? 404 : 400).json({ error: message });
+  }
+});
+
+itemsRouter.get("/:id", (request, response) => {
+  try {
+    const itemId = parseRouteId(request.params.id);
+    const itemWithBox = getItemWithBox(itemId);
+    response.json(itemWithBox);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Item konnte nicht geladen werden.";
+    response.status(message === "Item nicht gefunden." ? 404 : 400).json({ error: message });
   }
 });
 

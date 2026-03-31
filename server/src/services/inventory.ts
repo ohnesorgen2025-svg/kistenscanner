@@ -345,6 +345,19 @@ function requireItemRecord(itemId: number): ItemRecord {
   return item;
 }
 
+export type ItemWithBox = ItemRecord & {
+  box: BoxSummary;
+  path: PathSegment[];
+};
+
+export function getItemWithBox(itemId: number): ItemWithBox {
+  const item = requireItemRecord(itemId);
+  const box = requireBoxSummary(item.boxId);
+  const containerPath = getContainerPath(item.boxId);
+
+  return { ...item, box, path: containerPath };
+}
+
 export function listBoxes(): BoxSummary[] {
   const rows = database
     .prepare(
