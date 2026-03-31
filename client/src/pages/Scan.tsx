@@ -31,6 +31,8 @@ export function ScanPage() {
   const scannerRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const hasResolvedRef = useRef(false);
+  const scanModeRef = useRef<ScanMode>("qr");
+  const cameraAvailableRef = useRef(true);
   const [status, setStatus] = useState("Kamera wird vorbereitet…");
   const [error, setError] = useState<string | null>(null);
   const [cameraAvailable, setCameraAvailable] = useState(true);
@@ -46,7 +48,7 @@ export function ScanPage() {
 
     hasResolvedRef.current = true;
 
-    if (scanMode === "barcode" || isBarcodeLike(decodedText)) {
+    if (scanModeRef.current === "barcode" || isBarcodeLike(decodedText)) {
       setStatus("Barcode erkannt. Produkt wird gesucht…");
       setError(null);
       setIsLookingUp(true);
@@ -71,7 +73,7 @@ export function ScanPage() {
     if (!boxNumber) {
       hasResolvedRef.current = false;
       setError("Kiste nicht gefunden");
-      setStatus(cameraAvailable ? "Ungültiger QR-Code" : "QR-Code nicht erkannt. Nochmal versuchen.");
+      setStatus(cameraAvailableRef.current ? "Ungültiger QR-Code" : "QR-Code nicht erkannt. Nochmal versuchen.");
       return;
     }
 
@@ -114,6 +116,7 @@ export function ScanPage() {
 
   function handleModeSwitch(mode: ScanMode) {
     setScanMode(mode);
+    scanModeRef.current = mode;
     setBarcodeResult(null);
     setError(null);
     hasResolvedRef.current = false;
@@ -177,8 +180,9 @@ export function ScanPage() {
         }
 
         setCameraAvailable(false);
+        cameraAvailableRef.current = false;
         setError(null);
-        setStatus("Kamera nicht verfügbar – QR-Code als Foto hochladen");
+        setStatus("Kamera nicht verfügbar – Code als Foto hochladen");
       }
     }
 

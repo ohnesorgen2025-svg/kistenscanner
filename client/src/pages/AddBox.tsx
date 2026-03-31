@@ -736,6 +736,7 @@ export function AddBoxPage() {
                     setSavedBox(null);
                     setQrCodeDataUrl(null);
                     setError(null);
+                    void listBoxes().then(setAllBoxes).catch(() => undefined);
                   }}
                   type="button"
                 >
