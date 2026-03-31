@@ -907,6 +907,8 @@ html {
 
 .box-detail-header__qr-panel {
   width: 100%;
+  aspect-ratio: 1;
+  box-sizing: border-box;
 }
 
 .box-detail-header__qr-label {
