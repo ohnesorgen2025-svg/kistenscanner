@@ -246,6 +246,17 @@ export function BoxDetailPage() {
   const [boxEditParentId, setBoxEditParentId] = useState<number | null>(null);
   const [isBoxEditSaving, setIsBoxEditSaving] = useState(false);
   const [locations, setLocations] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<"grid" | "list">(
+    () => (localStorage.getItem("item-view-mode") === "list" ? "list" : "grid"),
+  );
+
+  function toggleViewMode() {
+    setViewMode((current) => {
+      const next = current === "grid" ? "list" : "grid";
+      localStorage.setItem("item-view-mode", next);
+      return next;
+    });
+  }
 
   useEffect(() => {
     function clearPrintMode() {
@@ -1347,14 +1358,27 @@ export function BoxDetailPage() {
                 <h2>Inhalt</h2>
               </div>
               {box.items.length > 0 ? (
-                <button
-                  className={`button button--ghost${isBatchMode ? " button--active" : ""}`}
-                  onClick={() => isBatchMode ? exitBatchMode() : setIsBatchMode(true)}
-                  type="button"
-                >
-                  <span className="material-symbols-outlined">checklist</span>
-                  {isBatchMode ? "Auswahl beenden" : "Mehrfachauswahl"}
-                </button>
+                <div className="action-row">
+                  <button
+                    aria-label={viewMode === "grid" ? "Listenansicht" : "Kachelansicht"}
+                    className="button button--ghost"
+                    onClick={toggleViewMode}
+                    title={viewMode === "grid" ? "Listenansicht" : "Kachelansicht"}
+                    type="button"
+                  >
+                    <span className="material-symbols-outlined">
+                      {viewMode === "grid" ? "view_list" : "grid_view"}
+                    </span>
+                  </button>
+                  <button
+                    className={`button button--ghost${isBatchMode ? " button--active" : ""}`}
+                    onClick={() => isBatchMode ? exitBatchMode() : setIsBatchMode(true)}
+                    type="button"
+                  >
+                    <span className="material-symbols-outlined">checklist</span>
+                    {isBatchMode ? "Auswahl beenden" : "Mehrfachauswahl"}
+                  </button>
+                </div>
               ) : null}
             </div>
 
@@ -1418,7 +1442,7 @@ export function BoxDetailPage() {
               </div>
             ) : null}
 
-            <div className="review-list">
+            <div className={`review-list${viewMode === "list" ? " review-list--list" : ""}`}>
               {box.items.map((item) => {
                 const isEditing = editingItemId === item.id && draft;
                 const isMoving = movingItemId === item.id;
