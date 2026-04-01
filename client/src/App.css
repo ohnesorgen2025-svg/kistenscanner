@@ -2580,7 +2580,7 @@ a.item-detail-header__fact-value:hover {
 
 /* Listenansicht */
 .review-list--list {
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr !important;
 }
 
 .review-list--list .review-card {
