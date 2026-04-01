@@ -14,11 +14,13 @@ import {
   getLoansForItem,
   getSettings,
   listBoxes,
+  listLocations,
   listModels,
   moveItem,
   rescanBox,
   resolveAssetUrl,
   returnLoan,
+  updateBox,
   updateItemQuantity,
   type BoxRecord,
   type BoxSummary,
@@ -237,6 +239,13 @@ export function BoxDetailPage() {
   const [batchMoveTargetId, setBatchMoveTargetId] = useState<number | null>(null);
   const [isBatchMoving, setIsBatchMoving] = useState(false);
   const [isBatchBusy, setIsBatchBusy] = useState(false);
+  const [isBoxEditing, setIsBoxEditing] = useState(false);
+  const [boxEditName, setBoxEditName] = useState("");
+  const [boxEditLocation, setBoxEditLocation] = useState("");
+  const [boxEditContainerType, setBoxEditContainerType] = useState<ContainerType>("box");
+  const [boxEditParentId, setBoxEditParentId] = useState<number | null>(null);
+  const [isBoxEditSaving, setIsBoxEditSaving] = useState(false);
+  const [locations, setLocations] = useState<string[]>([]);
 
   useEffect(() => {
     function clearPrintMode() {
@@ -372,6 +381,42 @@ export function BoxDetailPage() {
   async function refreshBox() {
     const freshBox = await getBox(boxId);
     setBox(freshBox);
+  }
+
+  function openBoxEdit() {
+    if (!box) return;
+    setBoxEditName(box.name);
+    setBoxEditLocation(box.location);
+    setBoxEditContainerType(box.containerType as ContainerType);
+    setBoxEditParentId(box.path.length >= 2 ? box.path[box.path.length - 2].id : null);
+    setIsBoxEditing(true);
+    setError(null);
+    void listLocations().then(setLocations);
+  }
+
+  function closeBoxEdit() {
+    setIsBoxEditing(false);
+  }
+
+  async function handleBoxEditSave() {
+    if (!box) return;
+    setIsBoxEditSaving(true);
+    setError(null);
+    try {
+      const updated = await updateBox(box.id, {
+        name: boxEditName.trim(),
+        location: boxEditLocation.trim(),
+        containerType: boxEditContainerType,
+        parentId: boxEditParentId,
+      });
+      setBox(updated);
+      setIsBoxEditing(false);
+      showConfirmation("Kiste aktualisiert.");
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : "Fehler beim Speichern.");
+    } finally {
+      setIsBoxEditSaving(false);
+    }
   }
 
   function openRescan() {
@@ -802,7 +847,8 @@ export function BoxDetailPage() {
             <div className="box-detail-toolbar" role="toolbar" aria-label="Kistenaktionen">
               <button
                 aria-label="Kiste bearbeiten"
-                className="button button--ghost box-detail-toolbar__action"
+                className={`button button--ghost box-detail-toolbar__action${isBoxEditing ? " button--active" : ""}`}
+                onClick={openBoxEdit}
                 title="Kiste bearbeiten"
                 type="button"
               >
@@ -860,6 +906,105 @@ export function BoxDetailPage() {
               </button>
             </div>
           </section>
+
+          {isBoxEditing ? (
+            <section className="panel box-edit-panel">
+              <div className="panel-header">
+                <div>
+                  <p className="section-kicker">Bearbeiten</p>
+                  <h2>Kiste bearbeiten</h2>
+                </div>
+                <button className="button button--ghost" onClick={closeBoxEdit} type="button">
+                  <span className="material-symbols-outlined">close</span>
+                  Abbrechen
+                </button>
+              </div>
+
+              <div className="form-stack">
+                <div className="field">
+                  <label htmlFor="box-edit-name">Name</label>
+                  <input
+                    className="input"
+                    id="box-edit-name"
+                    onChange={(event) => setBoxEditName(event.target.value)}
+                    type="text"
+                    value={boxEditName}
+                  />
+                </div>
+
+                <div className="field">
+                  <label htmlFor="box-edit-location">Standort</label>
+                  <input
+                    className="input"
+                    id="box-edit-location"
+                    list="box-edit-locations"
+                    onChange={(event) => setBoxEditLocation(event.target.value)}
+                    type="text"
+                    value={boxEditLocation}
+                  />
+                  <datalist id="box-edit-locations">
+                    {locations.map((loc) => (
+                      <option key={loc} value={loc} />
+                    ))}
+                  </datalist>
+                </div>
+
+                <div className="field">
+                  <label htmlFor="box-edit-type">Container-Typ</label>
+                  <select
+                    className="move-select"
+                    id="box-edit-type"
+                    onChange={(event) => setBoxEditContainerType(event.target.value as ContainerType)}
+                    value={boxEditContainerType}
+                  >
+                    {(Object.entries(CONTAINER_TYPE_LABELS) as [ContainerType, string][]).map(
+                      ([value, label]) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </div>
+
+                <div className="field">
+                  <label htmlFor="box-edit-parent">Übergeordneter Behälter</label>
+                  <select
+                    className="move-select"
+                    id="box-edit-parent"
+                    onChange={(event) =>
+                      setBoxEditParentId(event.target.value ? Number(event.target.value) : null)
+                    }
+                    value={boxEditParentId ?? ""}
+                  >
+                    <option value="">– Kein übergeordneter Behälter –</option>
+                    {boxes
+                      .filter((entry) => entry.id !== boxId)
+                      .map((entry) => (
+                        <option key={entry.id} value={entry.id}>
+                          {CONTAINER_TYPE_LABELS[entry.containerType] ?? "Kiste"} #{entry.number} –{" "}
+                          {entry.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+
+                <div className="action-row">
+                  <button
+                    className="button button--primary"
+                    disabled={isBoxEditSaving || !boxEditName.trim()}
+                    onClick={() => void handleBoxEditSave()}
+                    type="button"
+                  >
+                    {isBoxEditSaving ? "Speichern…" : "Speichern"}
+                  </button>
+                  <button className="button button--ghost" onClick={closeBoxEdit} type="button">
+                    Abbrechen
+                  </button>
+                </div>
+              </div>
+            </section>
+          ) : null}
 
           <section
             className={`panel label-print-panel${isLabelPanelOpen ? "" : " label-print-panel--collapsed"}`}
