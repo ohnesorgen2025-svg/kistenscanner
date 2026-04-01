@@ -246,9 +246,34 @@ export function BoxDetailPage() {
   const [boxEditParentId, setBoxEditParentId] = useState<number | null>(null);
   const [isBoxEditSaving, setIsBoxEditSaving] = useState(false);
   const [locations, setLocations] = useState<string[]>([]);
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [addItemName, setAddItemName] = useState("");
+  const [addItemDescription, setAddItemDescription] = useState("");
+  const [isAddItemSaving, setIsAddItemSaving] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">(
     () => (localStorage.getItem("item-view-mode") === "list" ? "list" : "grid"),
   );
+
+  async function handleAddItem(event: React.FormEvent) {
+    event.preventDefault();
+    if (!box || !addItemName.trim()) return;
+    setIsAddItemSaving(true);
+    try {
+      await createItem(box.id, {
+        name: addItemName.trim(),
+        description: addItemDescription.trim(),
+        detail: "",
+      });
+      await refreshBox();
+      setAddItemName("");
+      setAddItemDescription("");
+      setIsAddingItem(false);
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Item konnte nicht gespeichert werden.");
+    } finally {
+      setIsAddItemSaving(false);
+    }
+  }
 
   function toggleViewMode() {
     setViewMode((current) => {
@@ -1357,30 +1382,85 @@ export function BoxDetailPage() {
                 <p className="section-kicker">Items</p>
                 <h2>Inhalt</h2>
               </div>
-              {box.items.length > 0 ? (
+              <div className="action-row">
+                {box.items.length > 0 ? (
+                  <>
+                    <button
+                      aria-label={viewMode === "grid" ? "Listenansicht" : "Kachelansicht"}
+                      className="button button--ghost"
+                      onClick={toggleViewMode}
+                      title={viewMode === "grid" ? "Listenansicht" : "Kachelansicht"}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined">
+                        {viewMode === "grid" ? "view_list" : "grid_view"}
+                      </span>
+                    </button>
+                    <button
+                      className={`button button--ghost${isBatchMode ? " button--active" : ""}`}
+                      onClick={() => isBatchMode ? exitBatchMode() : setIsBatchMode(true)}
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined">checklist</span>
+                      {isBatchMode ? "Auswahl beenden" : "Mehrfachauswahl"}
+                    </button>
+                  </>
+                ) : null}
+                <button
+                  aria-label="Item hinzufügen"
+                  className={`button button--ghost${isAddingItem ? " button--active" : ""}`}
+                  onClick={() => {
+                    setIsAddingItem((v) => !v);
+                    setAddItemName("");
+                    setAddItemDescription("");
+                  }}
+                  title="Item manuell hinzufügen"
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">add</span>
+                </button>
+              </div>
+            </div>
+
+            {isAddingItem ? (
+              <form className="add-item-form" onSubmit={(e) => void handleAddItem(e)}>
+                <input
+                  autoFocus
+                  className="input"
+                  disabled={isAddItemSaving}
+                  onChange={(e) => setAddItemName(e.target.value)}
+                  placeholder="Name"
+                  required
+                  type="text"
+                  value={addItemName}
+                />
+                <input
+                  className="input"
+                  disabled={isAddItemSaving}
+                  onChange={(e) => setAddItemDescription(e.target.value)}
+                  placeholder="Beschreibung (optional)"
+                  type="text"
+                  value={addItemDescription}
+                />
                 <div className="action-row">
                   <button
-                    aria-label={viewMode === "grid" ? "Listenansicht" : "Kachelansicht"}
-                    className="button button--ghost"
-                    onClick={toggleViewMode}
-                    title={viewMode === "grid" ? "Listenansicht" : "Kachelansicht"}
-                    type="button"
+                    className="button button--primary"
+                    disabled={isAddItemSaving || !addItemName.trim()}
+                    type="submit"
                   >
-                    <span className="material-symbols-outlined">
-                      {viewMode === "grid" ? "view_list" : "grid_view"}
-                    </span>
+                    Hinzufügen
                   </button>
                   <button
-                    className={`button button--ghost${isBatchMode ? " button--active" : ""}`}
-                    onClick={() => isBatchMode ? exitBatchMode() : setIsBatchMode(true)}
+                    className="button button--ghost"
+                    disabled={isAddItemSaving}
+                    onClick={() => setIsAddingItem(false)}
                     type="button"
                   >
-                    <span className="material-symbols-outlined">checklist</span>
-                    {isBatchMode ? "Auswahl beenden" : "Mehrfachauswahl"}
+                    Abbrechen
                   </button>
                 </div>
-              ) : null}
-            </div>
+              </form>
+            ) : null}
 
             {isBatchMode && selectedItemIds.size > 0 ? (
               <div className="batch-action-bar">
