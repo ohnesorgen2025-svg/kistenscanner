@@ -389,7 +389,9 @@ export function BoxDetailPage() {
     setBoxEditLocation(box.location);
     setBoxEditContainerType(box.containerType as ContainerType);
     setBoxEditParentId(box.path.length >= 2 ? box.path[box.path.length - 2].id : null);
-    setIsBoxEditing(true);
+    setIsRescanOpen(false);
+    setIsLabelPanelOpen(false);
+    setIsBoxEditing((current) => !current);
     setError(null);
     void listLocations().then(setLocations);
   }
@@ -420,7 +422,9 @@ export function BoxDetailPage() {
   }
 
   function openRescan() {
-    setIsRescanOpen(true);
+    setIsBoxEditing(false);
+    setIsLabelPanelOpen(false);
+    setIsRescanOpen((current) => !current);
     setRescanFiles([]);
     setRescanResult(null);
     setError(null);
@@ -498,7 +502,9 @@ export function BoxDetailPage() {
   }
 
   function openLabelPanel() {
-    setIsLabelPanelOpen(true);
+    setIsBoxEditing(false);
+    setIsRescanOpen(false);
+    setIsLabelPanelOpen((current) => !current);
   }
 
   function beginEdit(item: ItemRecord) {
@@ -767,10 +773,10 @@ export function BoxDetailPage() {
     if (navigator.share) {
       try {
         await navigator.share({ title, text });
-        return;
       } catch {
-        // User cancelled or share failed — fall through to clipboard
+        // User cancelled or share unavailable — silently ignore
       }
+      return;
     }
 
     try {
@@ -857,7 +863,7 @@ export function BoxDetailPage() {
               </button>
               <button
                 aria-label="Foto hinzufügen"
-                className="button button--ghost box-detail-toolbar__action"
+                className={`button button--ghost box-detail-toolbar__action${isRescanOpen ? " button--active" : ""}`}
                 onClick={openRescan}
                 title="Re-Scan: Neue Fotos analysieren"
                 type="button"
@@ -867,7 +873,7 @@ export function BoxDetailPage() {
               </button>
               <button
                 aria-label="Label drucken"
-                className="button button--ghost box-detail-toolbar__action"
+                className={`button button--ghost box-detail-toolbar__action${isLabelPanelOpen ? " button--active" : ""}`}
                 onClick={openLabelPanel}
                 title="Label drucken"
                 type="button"

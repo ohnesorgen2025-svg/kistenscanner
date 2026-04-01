@@ -221,6 +221,7 @@ html {
 .move-select {
   width: 100%;
   min-height: 2.75rem;
+  height: 2.75rem;
   padding: 0.65rem 1rem;
   border-radius: 0.5rem;
   border: 1px solid transparent;
@@ -233,6 +234,7 @@ html {
 .textarea {
   resize: vertical;
   min-height: 6rem;
+  height: auto;
 }
 
 .input:focus,
@@ -950,13 +952,15 @@ html {
   display: flex;
   align-items: center;
   flex-shrink: 0;
+  align-self: stretch;
 }
 
 .box-detail-header__qr-panel {
-  height: auto;
+  height: 100%;
   width: auto;
   aspect-ratio: 1;
   box-sizing: border-box;
+  max-height: 12rem;
   max-width: 35vw;
 }
 
