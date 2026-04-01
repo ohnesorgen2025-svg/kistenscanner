@@ -1439,17 +1439,29 @@ export function BoxDetailPage() {
                         </div>
                       ) : null}
                       {getItemImageUrl(item) ? (
-                        <img alt={item.name} src={getItemImageUrl(item) ?? undefined} />
+                        isBatchMode ? (
+                          <img alt={item.name} src={getItemImageUrl(item) ?? undefined} />
+                        ) : (
+                          <Link className="review-card__media-link" to={`/items/${item.id}`}>
+                            <img alt={item.name} src={getItemImageUrl(item) ?? undefined} />
+                          </Link>
+                        )
                       ) : (
-                        <label
-                          className="item-image-placeholder"
-                          htmlFor={`item-upload-${item.id}`}
-                          title="Foto hinzufügen"
-                        >
-                          <span className="material-symbols-outlined">imagesmode</span>
-                          <strong>Kein Vorschaubild</strong>
-                          <span>Foto hinzufügen</span>
-                        </label>
+                        isBatchMode ? (
+                          <div className="item-image-placeholder">
+                            <span className="material-symbols-outlined">imagesmode</span>
+                            <strong>Kein Vorschaubild</strong>
+                          </div>
+                        ) : (
+                          <Link
+                            className="item-image-placeholder"
+                            title="Details anzeigen"
+                            to={`/items/${item.id}`}
+                          >
+                            <span className="material-symbols-outlined">imagesmode</span>
+                            <strong>Kein Vorschaubild</strong>
+                          </Link>
+                        )
                       )}
                     </div>
 
