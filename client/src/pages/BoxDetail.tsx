@@ -1428,6 +1428,7 @@ export function BoxDetailPage() {
                         <input
                           checked={selectedItemIds.has(item.id)}
                           onChange={() => toggleBatchSelect(item.id)}
+                          onClick={(event) => event.stopPropagation()}
                           type="checkbox"
                         />
                       </div>
