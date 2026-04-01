@@ -934,20 +934,19 @@ html {
 
 .box-detail-header__identity {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   gap: 1rem;
 }
 
 .box-detail-header__code {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   flex-shrink: 0;
 }
 
 .box-detail-header__qr-panel {
   height: auto;
   width: auto;
-  align-self: stretch;
   aspect-ratio: 1;
   box-sizing: border-box;
   max-width: 35vw;
