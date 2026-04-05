@@ -1,7 +1,7 @@
 # Current Task
 
 ## Status:
-🟢 Ollama auf direkten Online-Zugang umgestellt. Settings speichern jetzt den offiziellen `OLLAMA_API_KEY`.
+🟢 Ollama auf direkten Online-Zugang umgestellt. Offizielle Online-Modellnamen sind jetzt in der Registry korrigiert.
 
 ## Current Goal
 Die KI-Konfiguration bewusst einfach und online-tauglich halten: direkter Ollama-Zugang per API-Key, Gemini AI Studio als externer Fallback.
@@ -15,6 +15,7 @@ Die KI-Konfiguration bewusst einfach und online-tauglich halten: direkter Ollama
 - Keine.
 
 ## Done Recently
+- Veraltete Ollama-Cloud-Modellnamen korrigiert (`qwen3.5:397b`, `qwen3-vl:235b`, `glm-4.6`) und das lokale 9B-Modell aus der aktiven Online-Liste entfernt.
 - Ollama-Modelle von der festen LAN-IP auf direkten Zugriff gegen `https://ollama.com/api` umgestellt.
 - Einheitlichen `OLLAMA_API_KEY` eingeführt und Legacy-Werte (`OLLAMA_CLOUD_API_KEY`, `GLM_API_KEY`) als Übergangsmigration abgefangen.
 - Hilfe- und Settings-Referenzen auf den direkten Ollama-Key-Pfad aktualisiert.

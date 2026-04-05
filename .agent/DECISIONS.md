@@ -4,6 +4,10 @@
 The Ollama integration no longer defaults to a fixed LAN host. All Ollama models now target the direct Ollama API and use one stored `OLLAMA_API_KEY`, while legacy env names (`OLLAMA_CLOUD_API_KEY`, `GLM_API_KEY`) are accepted as migration fallbacks.
 Reason: The app must work online without depending on a private LAN Ollama instance, and the settings flow should match the single official Ollama API key model.
 
+## 2026-04-06 — Direct Ollama API uses different model tags than the old LAN/cloud bridge
+The active Ollama registry now uses the direct online model tags exposed by `https://ollama.com/api`, for example `qwen3.5:397b`, `qwen3-vl:235b`, and `glm-4.6`, and the old local-only `qwen3.5:9b` entry has been removed from the active online list.
+Reason: A live test with the stored Ollama key showed the direct API works, but the older `*-cloud` and `:cloud` model tags return server errors because they belonged to the previous bridge setup, not the direct Ollama API surface.
+
 ## 2026-04-05 — Active AI provider scope reduced to Ollama + Gemini AI Studio
 OpenAI, Anthropic and Vertex have been removed from the active model registry, Settings UI and Settings backend. The `openai-compatible` adapter remains because Gemini AI Studio uses that protocol surface.
 Reason: The user wants a deliberately simple AI setup with low billing complexity, while keeping Ollama and Gemini AI Studio as the only active providers.

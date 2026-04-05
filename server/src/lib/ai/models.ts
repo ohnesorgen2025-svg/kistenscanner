@@ -13,21 +13,12 @@ export interface ModelConfig {
 
 export const MODELS: ModelConfig[] = [
   {
-    id: "qwen35-9b-local",
-    name: "Qwen3.5-9B",
-    provider: "ollama",
-    protocol: "ollama",
-    endpoint: "https://ollama.com",
-    model: "qwen3.5:9b",
-    apiKeyEnv: "OLLAMA_API_KEY",
-  },
-  {
     id: "qwen35-397b-cloud",
     name: "Qwen3.5-397B",
     provider: "ollama",
     protocol: "ollama",
     endpoint: "https://ollama.com",
-    model: "qwen3.5:397b-cloud",
+    model: "qwen3.5:397b",
     apiKeyEnv: "OLLAMA_API_KEY",
   },
   {
@@ -36,7 +27,7 @@ export const MODELS: ModelConfig[] = [
     provider: "ollama",
     protocol: "ollama",
     endpoint: "https://ollama.com",
-    model: "qwen3-vl:235b-cloud",
+    model: "qwen3-vl:235b",
     apiKeyEnv: "OLLAMA_API_KEY",
   },
   {
@@ -45,7 +36,7 @@ export const MODELS: ModelConfig[] = [
     provider: "ollama",
     protocol: "ollama",
     endpoint: "https://ollama.com",
-    model: "glm-4.6:cloud",
+    model: "glm-4.6",
     apiKeyEnv: "OLLAMA_API_KEY",
   },
   {
