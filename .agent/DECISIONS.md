@@ -8,6 +8,10 @@ Reason: The app must work online without depending on a private LAN Ollama insta
 The active Ollama registry now uses the direct online model tags exposed by `https://ollama.com/api`, for example `qwen3.5:397b`, `qwen3-vl:235b`, and `glm-4.6`, and the old local-only `qwen3.5:9b` entry has been removed from the active online list.
 Reason: A live test with the stored Ollama key showed the direct API works, but the older `*-cloud` and `:cloud` model tags return server errors because they belonged to the previous bridge setup, not the direct Ollama API surface.
 
+## 2026-04-06 — Provider connection tests now use a text-only ping
+The Settings "Test Verbindung" route now verifies provider connectivity with a minimal text-only prompt instead of attaching a tiny image blob.
+Reason: A live Ollama test proved the direct API and key work, but the tiny image used by the old generic test triggered a server-side 500 on Ollama's direct API. The settings test should validate auth and reachability, not image-specific behavior.
+
 ## 2026-04-05 — Active AI provider scope reduced to Ollama + Gemini AI Studio
 OpenAI, Anthropic and Vertex have been removed from the active model registry, Settings UI and Settings backend. The `openai-compatible` adapter remains because Gemini AI Studio uses that protocol surface.
 Reason: The user wants a deliberately simple AI setup with low billing complexity, while keeping Ollama and Gemini AI Studio as the only active providers.

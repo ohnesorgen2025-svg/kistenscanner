@@ -15,6 +15,7 @@ Die KI-Konfiguration bewusst einfach und online-tauglich halten: direkter Ollama
 - Keine.
 
 ## Done Recently
+- Settings-Provider-Test auf textbasierten Ping umgestellt, damit direkter Ollama-Zugang nicht mehr am Testbild scheitert.
 - Veraltete Ollama-Cloud-Modellnamen korrigiert (`qwen3.5:397b`, `qwen3-vl:235b`, `glm-4.6`) und das lokale 9B-Modell aus der aktiven Online-Liste entfernt.
 - Ollama-Modelle von der festen LAN-IP auf direkten Zugriff gegen `https://ollama.com/api` umgestellt.
 - Einheitlichen `OLLAMA_API_KEY` eingeführt und Legacy-Werte (`OLLAMA_CLOUD_API_KEY`, `GLM_API_KEY`) als Übergangsmigration abgefangen.
