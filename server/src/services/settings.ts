@@ -4,7 +4,7 @@ import path from "node:path";
 import { analyzeImages } from "../lib/ai/analyze-images.js";
 import { MODELS } from "../lib/ai/models.js";
 
-export type ProviderKeyId = "OPENAI" | "ANTHROPIC" | "GEMINI" | "OLLAMA" | "VERTEX";
+export type ProviderKeyId = "GEMINI" | "OLLAMA";
 
 export type ProviderStatusMap = Record<ProviderKeyId, boolean>;
 export type ProviderKeyValueMap = Record<ProviderKeyId, string>;
@@ -22,23 +22,25 @@ const TINY_JPEG_BASE64 =
   "/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxAQEBUQEA8PEA8PEA8PDw8PDw8PDw8QFREWFhURFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMsNygtLisBCgoKDg0OGxAQGy0mICYtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAAEAAgMBIgACEQEDEQH/xAAXAAADAQAAAAAAAAAAAAAAAAAAAQID/8QAFhEBAQEAAAAAAAAAAAAAAAAAAQAC/9oADAMBAAIQAxAAAAH2oA//xAAXEAADAQAAAAAAAAAAAAAAAAAAAREC/9oACAEBAAEFAqaf/8QAFhEBAQEAAAAAAAAAAAAAAAAAABEB/9oACAEDAQE/ASf/xAAVEQEBAAAAAAAAAAAAAAAAAAAAEf/aAAgBAgEBPwGn/8QAFxABAQEBAAAAAAAAAAAAAAAAAQARIf/aAAgBAQAGPwJq7//EABgQAAMBAQAAAAAAAAAAAAAAAAABESEx/9oACAEBAAE/IcRYN//aAAwDAQACAAMAAAAQ8//EABYRAQEBAAAAAAAAAAAAAAAAAAABEf/aAAgBAwEBPxClP//EABYRAQEBAAAAAAAAAAAAAAAAAAABEf/aAAgBAgEBPxClP//Z";
 
 const providerEnvKeys = {
-  OPENAI: "OPENAI_API_KEY",
-  ANTHROPIC: "ANTHROPIC_API_KEY",
   GEMINI: "GEMINI_API_KEY",
   OLLAMA: "OLLAMA_CLOUD_API_KEY",
-  VERTEX: "VERTEX_API_KEY",
 } satisfies Record<ProviderKeyId, string>;
 
 const managedEnvKeys = [
   "OLLAMA_CLOUD_API_KEY",
   "GLM_API_KEY",
   "GEMINI_API_KEY",
+] as const;
+
+const retiredManagedEnvKeys = [
   "ANTHROPIC_API_KEY",
   "OPENAI_API_KEY",
   "VERTEX_API_KEY",
   "VERTEX_PROJECT_ID",
   "VERTEX_REGION",
 ] as const;
+
+const allManagedEnvKeys = [...managedEnvKeys, ...retiredManagedEnvKeys] as const;
 
 let settingsCache: { activeModelId: string; configuredProviders: ProviderStatusMap } | null = null;
 
@@ -82,15 +84,10 @@ async function readEnvValues(): Promise<Map<string, string>> {
 
 function buildProviderStatuses(envValues: Map<string, string>): ProviderStatusMap {
   return {
-    OPENAI: Boolean(envValues.get(providerEnvKeys.OPENAI)?.trim() || process.env.OPENAI_API_KEY?.trim()),
-    ANTHROPIC: Boolean(
-      envValues.get(providerEnvKeys.ANTHROPIC)?.trim() || process.env.ANTHROPIC_API_KEY?.trim(),
-    ),
     GEMINI: Boolean(envValues.get(providerEnvKeys.GEMINI)?.trim() || process.env.GEMINI_API_KEY?.trim()),
     OLLAMA: Boolean(
       envValues.get(providerEnvKeys.OLLAMA)?.trim() || process.env.OLLAMA_CLOUD_API_KEY?.trim(),
     ),
-    VERTEX: Boolean(envValues.get(providerEnvKeys.VERTEX)?.trim() || process.env.VERTEX_API_KEY?.trim()),
   };
 }
 
@@ -173,7 +170,7 @@ export async function saveProviderKeys(
     .split(/\r?\n/)
     .filter((line) => {
       const key = line.split("=")[0]?.trim();
-      return !managedEnvKeys.includes(key as (typeof managedEnvKeys)[number]);
+      return !allManagedEnvKeys.includes(key as (typeof allManagedEnvKeys)[number]);
     })
     .filter((line, index, lines) => line.length > 0 || index < lines.length - 1);
 
@@ -184,6 +181,10 @@ export async function saveProviderKeys(
 
   for (const key of managedEnvKeys) {
     process.env[key] = nextManagedValues.get(key) ?? "";
+  }
+
+  for (const key of retiredManagedEnvKeys) {
+    delete process.env[key];
   }
 
   return buildProviderStatuses(nextManagedValues);

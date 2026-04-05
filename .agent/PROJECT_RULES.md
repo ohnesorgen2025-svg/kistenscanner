@@ -21,8 +21,8 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
 - models.ts is the single source of truth for all models/providers
 - Prompt lives in src/lib/ai/prompts/ — never inline
 - Parser must handle both clean JSON and half-format fallback
-- Vertex adapter: copy from inventarisierung project (OAuth2 complexity)
-- models.ts + API keys: copy from inventarisierung project
+- Current active provider scope: Ollama + Gemini AI Studio only
+- Gemini uses the openai-compatible adapter internally; no OpenAI, Anthropic or Vertex models stay in active config
 
 ## File Structure Rules
 - AI core: src/lib/ai/

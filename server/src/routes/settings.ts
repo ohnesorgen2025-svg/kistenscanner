@@ -40,11 +40,8 @@ settingsRouter.post("/", async (request, response) => {
 settingsRouter.post("/keys", async (request, response) => {
   try {
     const configuredProviders = await saveProviderKeys({
-      OPENAI: typeof request.body.OPENAI === "string" ? request.body.OPENAI : undefined,
-      ANTHROPIC: typeof request.body.ANTHROPIC === "string" ? request.body.ANTHROPIC : undefined,
       GEMINI: typeof request.body.GEMINI === "string" ? request.body.GEMINI : undefined,
       OLLAMA: typeof request.body.OLLAMA === "string" ? request.body.OLLAMA : undefined,
-      VERTEX: typeof request.body.VERTEX === "string" ? request.body.VERTEX : undefined,
     });
 
     response.json({ configuredProviders });

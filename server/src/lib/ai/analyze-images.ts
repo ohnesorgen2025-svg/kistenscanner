@@ -1,8 +1,6 @@
 import { MODELS, type ModelConfig } from "./models.js";
-import { callAnthropic } from "./providers/anthropic.js";
 import { callOllama } from "./providers/ollama.js";
 import { callOpenAiCompatible } from "./providers/openai-compatible.js";
-import { callVertex } from "./providers/vertex.js";
 
 export type AnalyzeImagesInput = {
   modelId: string;
@@ -54,17 +52,9 @@ export async function analyzeImages(input: AnalyzeImagesInput): Promise<string> 
   }
 
   const model = getModelConfig(input.modelId);
-  let rawText: string;
-
   if (model.protocol === "ollama") {
-    rawText = await callOllama(model, input.prompt, input.images);
-  } else if (model.protocol === "openai") {
-    rawText = await callOpenAiCompatible(model, input.prompt, input.images);
-  } else if (model.protocol === "vertex") {
-    rawText = await callVertex(model, input.prompt, input.images);
-  } else {
-    rawText = await callAnthropic(model, input.prompt, input.images);
+    return callOllama(model, input.prompt, input.images);
   }
 
-  return rawText;
+  return callOpenAiCompatible(model, input.prompt, input.images);
 }

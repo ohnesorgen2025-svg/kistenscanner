@@ -1,4 +1,4 @@
-export type ModelProtocol = "openai" | "anthropic" | "ollama" | "vertex";
+export type ModelProtocol = "openai" | "ollama";
 
 export interface ModelConfig {
   id: string;
@@ -45,15 +45,6 @@ export const MODELS: ModelConfig[] = [
     model: "glm-4.6:cloud",
   },
   {
-    id: "gemini-31-pro-vertex",
-    name: "Gemini 3.1 Pro (Vertex AI)",
-    provider: "google-vertex",
-    protocol: "vertex",
-    endpoint: "https://europe-west1-aiplatform.googleapis.com",
-    model: "gemini-3.1-pro-preview",
-    apiKeyEnv: "VERTEX_API_KEY",
-  },
-  {
     id: "gemini-31-pro",
     name: "Gemini 3.1 Pro (AI Studio)",
     provider: "google",
@@ -61,32 +52,5 @@ export const MODELS: ModelConfig[] = [
     endpoint: "https://generativelanguage.googleapis.com/v1beta/openai",
     model: "gemini-3.1-pro-preview",
     apiKeyEnv: "GEMINI_API_KEY",
-  },
-  {
-    id: "claude-sonnet-4",
-    name: "Claude Sonnet 4.6",
-    provider: "anthropic",
-    protocol: "anthropic",
-    endpoint: "https://api.anthropic.com",
-    model: "claude-sonnet-4-6",
-    apiKeyEnv: "ANTHROPIC_API_KEY",
-  },
-  {
-    id: "claude-opus-4",
-    name: "Claude Opus 4.6",
-    provider: "anthropic",
-    protocol: "anthropic",
-    endpoint: "https://api.anthropic.com",
-    model: "claude-opus-4-6",
-    apiKeyEnv: "ANTHROPIC_API_KEY",
-  },
-  {
-    id: "gpt-5",
-    name: "GPT-5.4",
-    provider: "openai",
-    protocol: "openai",
-    endpoint: "https://api.openai.com",
-    model: "gpt-5.4",
-    apiKeyEnv: "OPENAI_API_KEY",
   },
 ];

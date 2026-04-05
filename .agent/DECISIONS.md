@@ -1,5 +1,9 @@
 # Decisions — kistenscanner
 
+## 2026-04-05 — Active AI provider scope reduced to Ollama + Gemini AI Studio
+OpenAI, Anthropic and Vertex have been removed from the active model registry, Settings UI and Settings backend. The `openai-compatible` adapter remains because Gemini AI Studio uses that protocol surface.
+Reason: The user wants a deliberately simple AI setup with low billing complexity and strong focus on local Ollama testing, while keeping Gemini AI Studio as the only external fallback.
+
 ## 2026-04-05 — Design system consolidation (P1-P12)
 Full CSS audit and fix pass across App.css and index.css:
 - Unified 3 competing blue tones (#378ADD, #3B82F6, #00DAF3) to single `--accent: #3B82F6`

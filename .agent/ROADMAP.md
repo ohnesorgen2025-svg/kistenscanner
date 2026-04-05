@@ -3,7 +3,7 @@
 ## Milestone 1 — Foundation ✅
 - [x] Project setup (Vite + Express + SQLite)
 - [x] DB schema: boxes, items, images, item_images
-- [x] AI layer: copy models.ts + vertex adapter, build dispatcher + parser
+- [x] AI layer: build model registry, dispatcher + parser
 - [x] POST /api/analyze — accepts images, returns AnalysisItem[]
 - [x] Image storage + sharp crop pipeline
 

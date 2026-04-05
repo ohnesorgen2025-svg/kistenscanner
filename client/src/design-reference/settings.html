@@ -125,24 +125,18 @@
 <span class="material-symbols-outlined text-primary text-xl">psychology</span>
 <h3 class="font-headline text-lg uppercase tracking-widest text-on-surface">AI_PROVIDER</h3>
 </div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<!-- Provider Card: OpenAI -->
-<button class="flex flex-col items-start p-4 rounded bg-surface-container kinetic-border border-primary/50 text-left transition-all hover:bg-surface-bright group">
-<span class="font-headline text-primary text-xs tracking-[0.2em] mb-2">ACTIVE</span>
-<span class="font-headline text-xl text-on-surface">OPENAI</span>
-<span class="font-body text-[10px] text-on-surface-variant mt-1 uppercase">GPT-4O OMNI</span>
-</button>
-<!-- Provider Card: Anthropic -->
-<button class="flex flex-col items-start p-4 rounded bg-surface-container-low border border-transparent text-left transition-all hover:bg-surface-bright group">
-<span class="font-headline text-on-surface-variant text-xs tracking-[0.2em] mb-2">STANDBY</span>
-<span class="font-headline text-xl text-on-surface/60 group-hover:text-on-surface">CLAUDE</span>
-<span class="font-body text-[10px] text-on-surface-variant mt-1 uppercase">SONNET 3.5</span>
-</button>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <!-- Provider Card: Google -->
 <button class="flex flex-col items-start p-4 rounded bg-surface-container-low border border-transparent text-left transition-all hover:bg-surface-bright group">
 <span class="font-headline text-on-surface-variant text-xs tracking-[0.2em] mb-2">STANDBY</span>
 <span class="font-headline text-xl text-on-surface/60 group-hover:text-on-surface">GEMINI</span>
-<span class="font-body text-[10px] text-on-surface-variant mt-1 uppercase">PRO 1.5</span>
+<span class="font-body text-[10px] text-on-surface-variant mt-1 uppercase">PRO 3.1</span>
+</button>
+<!-- Provider Card: Ollama -->
+<button class="flex flex-col items-start p-4 rounded bg-surface-container kinetic-border border-primary/50 text-left transition-all hover:bg-surface-bright group">
+<span class="font-headline text-primary text-xs tracking-[0.2em] mb-2">ACTIVE</span>
+<span class="font-headline text-xl text-on-surface">OLLAMA</span>
+<span class="font-body text-[10px] text-on-surface-variant mt-1 uppercase">QWEN / GLM</span>
 </button>
 </div>
 </div>
@@ -152,40 +146,25 @@
 <span class="material-symbols-outlined text-primary text-xl">key</span>
 <h3 class="font-headline text-lg uppercase tracking-widest text-on-surface">INTEGRATION_KEYS</h3>
 </div>
-<!-- OpenAI Field -->
+<!-- Gemini Field -->
 <div class="space-y-4">
 <div class="flex justify-between items-end">
-<label class="font-headline text-xs tracking-[0.2em] text-on-surface-variant">OPENAI_API_KEY</label>
-<span class="text-[10px] font-headline text-primary/60">ENCRYPTED_AES256</span>
+<label class="font-headline text-xs tracking-[0.2em] text-on-surface-variant">GEMINI_API_KEY</label>
+<span class="text-[10px] font-headline text-primary/60">CONFIGURED</span>
 </div>
 <div class="flex flex-col md:flex-row gap-4">
 <div class="flex-1 relative border-b border-outline-variant focus-within:border-primary transition-colors py-2">
-<input class="bg-transparent border-none focus:ring-0 w-full font-mono text-on-surface placeholder:text-outline-variant/50 text-sm" type="password" value="sk-proj-••••••••••••••••••••••••••••••••"/>
+<input class="bg-transparent border-none focus:ring-0 w-full font-mono text-on-surface placeholder:text-outline-variant/50 text-sm" type="password" value="AIza•••••••••••••••••••••••••••••••"/>
 </div>
 <button class="bg-surface-container-highest hover:bg-surface-bright text-primary font-headline text-[10px] tracking-widest px-6 py-3 rounded transition-colors uppercase">
                             TEST_LINK
                         </button>
 </div>
 </div>
-<!-- Anthropic Field -->
+<!-- Ollama Field -->
 <div class="space-y-4">
 <div class="flex justify-between items-end">
-<label class="font-headline text-xs tracking-[0.2em] text-on-surface-variant">ANTHROPIC_API_KEY</label>
-<span class="text-[10px] font-headline text-on-surface-variant/40">NOT_CONFIGURED</span>
-</div>
-<div class="flex flex-col md:flex-row gap-4">
-<div class="flex-1 relative border-b border-outline-variant/20 focus-within:border-primary transition-colors py-2">
-<input class="bg-transparent border-none focus:ring-0 w-full font-mono text-on-surface placeholder:text-outline-variant/30 text-sm" placeholder="ENTER_KEY_..." type="password"/>
-</div>
-<button class="bg-surface-container-highest/50 text-on-surface-variant/40 cursor-not-allowed font-headline text-[10px] tracking-widest px-6 py-3 rounded uppercase">
-                            TEST_LINK
-                        </button>
-</div>
-</div>
-<!-- Google Field -->
-<div class="space-y-4">
-<div class="flex justify-between items-end">
-<label class="font-headline text-xs tracking-[0.2em] text-on-surface-variant">GEMINI_API_KEY</label>
+<label class="font-headline text-xs tracking-[0.2em] text-on-surface-variant">OLLAMA_CLOUD_API_KEY</label>
 <span class="text-[10px] font-headline text-on-surface-variant/40">NOT_CONFIGURED</span>
 </div>
 <div class="flex flex-col md:flex-row gap-4">

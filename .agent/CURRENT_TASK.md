@@ -1,18 +1,22 @@
 # Current Task
 
 ## Status:
-🟢 Design System Consolidation (P1-P12) abgeschlossen und deployed.
+🟢 KI-Provider-Bereinigung abgeschlossen. Aktive Modelloberfläche auf Ollama + Gemini AI Studio reduziert.
 
 ## Current Goal
-Alle Design-System-Regeln sind implementiert und in PROJECT_RULES.md dokumentiert. CSS ist auf strikte Tokens konsolidiert.
+Die KI-Konfiguration bewusst einfach und testbar halten: Ollama für lokale Experimente, Gemini AI Studio als externer Fallback.
 
 ## Next Action
-- Weitere Feature-Arbeit oder nächster Review-Zyklus nach User-Feedback.
+- Reale Modelltests für Ollama und Gemini aus der Settings-Seite und den Analyse-Flows durchführen.
+- Danach nächste Feature-Arbeit oder Review-Zyklus nach User-Feedback.
 
 ## Open Questions
 - Keine.
 
 ## Done Recently
+- OpenAI, Anthropic und Vertex vollständig aus aktiver Modellliste, Settings-UI und Settings-Backend entfernt.
+- Unbenutzte Anthropic-/Vertex-Provider-Dateien gelöscht, Dispatcher auf Ollama + openai-compatible (für Gemini) reduziert.
+- Stack-, Rules- und Design-Referenz auf die neue Provider-Reduktion angepasst.
 - P1: 3 Blautöne auf einheitliches `--accent` (#3B82F6) vereinheitlicht
 - P2: `.button:active` State für Touch-Feedback ergänzt
 - P3: Input/Textarea min-height 44px → 48px

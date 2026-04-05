@@ -14,27 +14,18 @@ import { PageHeader } from "../components/PageHeader";
 type ProviderKeyId = keyof SettingsResponse["configuredProviders"];
 
 const providerLabels: Record<ProviderKeyId, string> = {
-  OPENAI: "OPENAI",
-  ANTHROPIC: "ANTHROPIC",
   GEMINI: "GEMINI",
   OLLAMA: "OLLAMA",
-  VERTEX: "VERTEX",
 };
 
 const providerPredicates: Record<ProviderKeyId, (model: ModelSummary) => boolean> = {
-  OPENAI: (model) => model.provider === "openai",
-  ANTHROPIC: (model) => model.provider === "anthropic",
   GEMINI: (model) => model.provider === "google",
   OLLAMA: (model) => model.protocol === "ollama",
-  VERTEX: (model) => model.protocol === "vertex",
 };
 
 const emptyProviderKeys: Record<ProviderKeyId, string> = {
-  OPENAI: "",
-  ANTHROPIC: "",
   GEMINI: "",
   OLLAMA: "",
-  VERTEX: "",
 };
 
 export function SettingsPage() {
@@ -43,11 +34,8 @@ export function SettingsPage() {
   const [configuredProviders, setConfiguredProviders] = useState<
     SettingsResponse["configuredProviders"]
   >({
-    OPENAI: false,
-    ANTHROPIC: false,
     GEMINI: false,
     OLLAMA: false,
-    VERTEX: false,
   });
   const [providerKeys, setProviderKeys] =
     useState<Record<ProviderKeyId, string>>(emptyProviderKeys);
@@ -106,11 +94,8 @@ export function SettingsPage() {
           return accumulator;
         },
         {
-          OPENAI: [],
-          ANTHROPIC: [],
           GEMINI: [],
           OLLAMA: [],
-          VERTEX: [],
         },
       ),
     [models],

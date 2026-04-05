@@ -123,7 +123,7 @@ export type ModelSummary = {
 
 export type SettingsResponse = {
   activeModelId: string;
-  configuredProviders: Record<"OPENAI" | "ANTHROPIC" | "GEMINI" | "OLLAMA" | "VERTEX", boolean>;
+  configuredProviders: Record<"GEMINI" | "OLLAMA", boolean>;
 };
 
 type RequestOptions = RequestInit & {
@@ -227,7 +227,7 @@ export async function saveActiveModel(modelId: string): Promise<{ activeModelId:
   });
 }
 
-export async function saveProviderKeys(payload: Partial<Record<"OPENAI" | "ANTHROPIC" | "GEMINI" | "OLLAMA" | "VERTEX", string>>): Promise<{
+export async function saveProviderKeys(payload: Partial<Record<"GEMINI" | "OLLAMA", string>>): Promise<{
   configuredProviders: SettingsResponse["configuredProviders"];
 }> {
   return requestJson<{ configuredProviders: SettingsResponse["configuredProviders"] }>("/api/settings/keys", {
