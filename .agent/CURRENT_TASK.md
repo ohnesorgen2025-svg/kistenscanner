@@ -16,6 +16,7 @@ Die KI-Konfiguration bewusst einfach und flexibel halten: direkter Ollama-Zugang
 - Keine.
 
 ## Done Recently
+- Provider-Tests verwenden jetzt frisch eingegebene Keys direkt mit, statt nur bereits gespeicherte Werte zu prüfen.
 - Zusätzliche Ollama-Modelle können jetzt über die Settings-Seite per Modell-Tag gespeichert und wieder entfernt werden.
 - Benutzerdefinierte Ollama-Modelle werden in `data/custom-models.json` persistiert und zusammen mit den eingebauten Modellen über `/api/models` ausgeliefert.
 - Settings-Provider-Test auf textbasierten Ping umgestellt, damit direkter Ollama-Zugang nicht mehr am Testbild scheitert.

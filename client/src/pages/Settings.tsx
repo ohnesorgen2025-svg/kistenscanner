@@ -172,6 +172,11 @@ export function SettingsPage() {
       setTestingProvider(providerId);
       setError(null);
       setNotice(null);
+      const pendingKey = providerKeys[providerId].trim();
+      if (pendingKey.length > 0) {
+        const response = await saveProviderKeys({ [providerId]: pendingKey });
+        setConfiguredProviders(response.configuredProviders);
+      }
       await testModelConnection(modelToTest.id);
       setNotice(`Test-Verbindung für ${providerLabels[providerId]} erfolgreich.`);
     } catch (requestError) {
