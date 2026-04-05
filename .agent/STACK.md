@@ -23,6 +23,7 @@
 - src/lib/ai/analyze-images.ts — dispatcher
 - src/lib/ai/parse-analysis.ts — parser + normalizer
 - src/lib/ai/prompts/box-analysis.ts — box-specific prompt
+- data/custom-models.json — persisted user-added Ollama model tags
 
 ## Image Processing
 - sharp — bounding box crops → item thumbnails

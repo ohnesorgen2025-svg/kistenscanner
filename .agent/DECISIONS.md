@@ -1,5 +1,9 @@
 # Decisions — kistenscanner
 
+## 2026-04-06 — Custom Ollama models are user-managed in app settings
+Additional Ollama models can now be added and removed from the Settings page by entering the exact Ollama model tag. Custom entries are persisted in `data/custom-models.json` and merged with the built-in model registry at runtime.
+Reason: The user wants the simplest possible workflow: copy a model tag from the Ollama library and make it available in the app without another code change.
+
 ## 2026-04-06 — Ollama now uses direct online API access with one stored key
 The Ollama integration no longer defaults to a fixed LAN host. All Ollama models now target the direct Ollama API and use one stored `OLLAMA_API_KEY`, while legacy env names (`OLLAMA_CLOUD_API_KEY`, `GLM_API_KEY`) are accepted as migration fallbacks.
 Reason: The app must work online without depending on a private LAN Ollama instance, and the settings flow should match the single official Ollama API key model.

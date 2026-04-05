@@ -3,6 +3,7 @@ import path from "node:path";
 
 import { analyzeImages } from "../lib/ai/analyze-images.js";
 import { MODELS } from "../lib/ai/models.js";
+import { getModelConfig, listModels } from "./models.js";
 
 export type ProviderKeyId = "GEMINI" | "OLLAMA";
 
@@ -44,8 +45,6 @@ const legacyProviderEnvFallbacks = {
   GEMINI: [],
   OLLAMA: ["OLLAMA_CLOUD_API_KEY", "GLM_API_KEY"],
 } satisfies Record<ProviderKeyId, string[]>;
-
-let settingsCache: { activeModelId: string; configuredProviders: ProviderStatusMap } | null = null;
 
 async function ensureDataDirectory(): Promise<void> {
   await mkdir(dataDirectory, { recursive: true });
@@ -109,19 +108,16 @@ export async function getSettings(): Promise<{
   activeModelId: string;
   configuredProviders: ProviderStatusMap;
 }> {
-  if (settingsCache) {
-    return settingsCache;
-  }
-
   await ensureDataDirectory();
 
   let activeModelId = DEFAULT_ACTIVE_MODEL_ID;
   try {
     const content = await readFile(settingsFilePath, "utf8");
     const parsed = JSON.parse(content) as Partial<StoredSettings>;
+    const models = await listModels();
     if (
       typeof parsed.activeModelId === "string" &&
-      MODELS.some((model) => model.id === parsed.activeModelId)
+      models.some((model) => model.id === parsed.activeModelId)
     ) {
       activeModelId = parsed.activeModelId;
     }
@@ -132,23 +128,20 @@ export async function getSettings(): Promise<{
   }
 
   const envValues = await readEnvValues();
-  const result = {
+  return {
     activeModelId,
     configuredProviders: buildProviderStatuses(envValues),
   };
-  settingsCache = result;
-  return result;
 }
 
 export async function saveActiveModelId(modelId: string): Promise<StoredSettings> {
-  if (!MODELS.some((model) => model.id === modelId)) {
+  if (!(await getModelConfig(modelId))) {
     throw new Error("Ungültiges Modell.");
   }
 
   await ensureDataDirectory();
   const payload: StoredSettings = { activeModelId: modelId };
   await writeFile(settingsFilePath, `${JSON.stringify(payload, null, 2)}\n`, "utf8");
-  settingsCache = null;
   return payload;
 }
 
@@ -208,7 +201,6 @@ export async function saveProviderKeys(
   const managedLines = managedEnvKeys.map((key) => `${key}=${nextManagedValues.get(key) ?? ""}`);
   const nextContent = [...filteredLines.filter(Boolean), ...managedLines].join("\n").trimEnd();
   await writeFile(envFilePath, `${nextContent}\n`, "utf8");
-  settingsCache = null;
 
   for (const key of managedEnvKeys) {
     process.env[key] = nextManagedValues.get(key) ?? "";
@@ -222,7 +214,7 @@ export async function saveProviderKeys(
 }
 
 export async function testModelConnection(modelId: string): Promise<{ ok: true }> {
-  if (!MODELS.some((model) => model.id === modelId)) {
+  if (!(await getModelConfig(modelId))) {
     throw new Error("Ungültiges Modell.");
   }
 

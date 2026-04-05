@@ -1,13 +1,14 @@
 # Current Task
 
 ## Status:
-🟢 Ollama auf direkten Online-Zugang umgestellt. Offizielle Online-Modellnamen sind jetzt in der Registry korrigiert.
+🟢 Zusätzliche Ollama-Modelle lassen sich jetzt direkt in der App anlegen und entfernen.
 
 ## Current Goal
-Die KI-Konfiguration bewusst einfach und online-tauglich halten: direkter Ollama-Zugang per API-Key, Gemini AI Studio als externer Fallback.
+Die KI-Konfiguration bewusst einfach und flexibel halten: direkter Ollama-Zugang per API-Key, zusätzliche Ollama-Tags ohne Codeänderung, Gemini AI Studio als Fallback.
 
 ## Next Action
 - Reale Modelltests für Ollama und Gemini aus der Settings-Seite und den Analyse-Flows durchführen.
+- Mit echten Ollama-Library-Tags prüfen, welche zusätzlichen Modelle in der Praxis aufgenommen werden sollen.
 - Prüfen, welche Ollama-Modelle über den direkten Online-Zugang im Alltag stabil und wirtschaftlich genug sind.
 - Danach nächste Feature-Arbeit oder Review-Zyklus nach User-Feedback.
 
@@ -15,6 +16,8 @@ Die KI-Konfiguration bewusst einfach und online-tauglich halten: direkter Ollama
 - Keine.
 
 ## Done Recently
+- Zusätzliche Ollama-Modelle können jetzt über die Settings-Seite per Modell-Tag gespeichert und wieder entfernt werden.
+- Benutzerdefinierte Ollama-Modelle werden in `data/custom-models.json` persistiert und zusammen mit den eingebauten Modellen über `/api/models` ausgeliefert.
 - Settings-Provider-Test auf textbasierten Ping umgestellt, damit direkter Ollama-Zugang nicht mehr am Testbild scheitert.
 - Veraltete Ollama-Cloud-Modellnamen korrigiert (`qwen3.5:397b`, `qwen3-vl:235b`, `glm-4.6`) und das lokale 9B-Modell aus der aktiven Online-Liste entfernt.
 - Ollama-Modelle von der festen LAN-IP auf direkten Zugriff gegen `https://ollama.com/api` umgestellt.

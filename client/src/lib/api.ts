@@ -119,6 +119,7 @@ export type ModelSummary = {
   name: string;
   provider: string;
   protocol: string;
+  isCustom: boolean;
 };
 
 export type SettingsResponse = {
@@ -211,6 +212,19 @@ export async function searchInventory(query: string): Promise<SearchResult[]> {
 export async function listModels(): Promise<ModelSummary[]> {
   return requestJson<ModelSummary[]>("/api/models", {
     cache: "no-store",
+  });
+}
+
+export async function addCustomOllamaModel(modelTag: string): Promise<ModelSummary> {
+  return requestJson<ModelSummary>("/api/models/ollama", {
+    method: "POST",
+    body: JSON.stringify({ modelTag }),
+  });
+}
+
+export async function removeCustomOllamaModel(modelId: string): Promise<void> {
+  return requestJson<void>(`/api/models/ollama/${encodeURIComponent(modelId)}`, {
+    method: "DELETE",
   });
 }
 

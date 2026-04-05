@@ -1,6 +1,7 @@
-import { MODELS, type ModelConfig } from "./models.js";
+import type { ModelConfig } from "./models.js";
 import { callOllama } from "./providers/ollama.js";
 import { callOpenAiCompatible } from "./providers/openai-compatible.js";
+import { getModelConfig } from "../../services/models.js";
 
 export type AnalyzeImagesInput = {
   modelId: string;
@@ -37,21 +38,16 @@ function buildMockAnalysisRawText(): string {
   ]);
 }
 
-function getModelConfig(modelId: string): ModelConfig {
-  const model = MODELS.find((entry) => entry.id === modelId);
-  if (!model) {
-    throw new Error(`Unknown model: ${modelId}`);
-  }
-
-  return model;
-}
-
 export async function analyzeImages(input: AnalyzeImagesInput): Promise<string> {
   if (process.env.AI_ANALYZE_USE_MOCK === "1") {
     return buildMockAnalysisRawText();
   }
 
-  const model = getModelConfig(input.modelId);
+  const model = await getModelConfig(input.modelId);
+  if (!model) {
+    throw new Error(`Unknown model: ${input.modelId}`);
+  }
+
   if (model.protocol === "ollama") {
     return callOllama(model, input.prompt, input.images);
   }

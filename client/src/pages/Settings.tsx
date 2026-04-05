@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 
 import {
+  addCustomOllamaModel,
   getSettings,
   listModels,
+  removeCustomOllamaModel,
   saveActiveModel,
   saveProviderKeys,
   testModelConnection,
@@ -39,12 +41,22 @@ export function SettingsPage() {
   });
   const [providerKeys, setProviderKeys] =
     useState<Record<ProviderKeyId, string>>(emptyProviderKeys);
+  const [newOllamaModelTag, setNewOllamaModelTag] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSavingKeys, setIsSavingKeys] = useState(false);
   const [isSwitchingModel, setIsSwitchingModel] = useState<string | null>(null);
+  const [isAddingOllamaModel, setIsAddingOllamaModel] = useState(false);
+  const [removingModelId, setRemovingModelId] = useState<string | null>(null);
   const [testingProvider, setTestingProvider] = useState<ProviderKeyId | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  async function reloadPageData(): Promise<void> {
+    const [nextModels, settings] = await Promise.all([listModels(), getSettings()]);
+    setModels(nextModels);
+    setActiveModelId(settings.activeModelId);
+    setConfiguredProviders(settings.configuredProviders);
+  }
 
   async function reloadSettings(): Promise<void> {
     const settings = await getSettings();
@@ -171,6 +183,47 @@ export function SettingsPage() {
     }
   }
 
+  async function handleAddOllamaModel() {
+    try {
+      setIsAddingOllamaModel(true);
+      setError(null);
+      setNotice(null);
+      await addCustomOllamaModel(newOllamaModelTag);
+      await reloadPageData();
+      setNewOllamaModelTag("");
+      setNotice("Ollama-Modell hinzugefügt.");
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Ollama-Modell konnte nicht hinzugefügt werden.",
+      );
+    } finally {
+      setIsAddingOllamaModel(false);
+    }
+  }
+
+  async function handleRemoveCustomModel(modelId: string) {
+    try {
+      setRemovingModelId(modelId);
+      setError(null);
+      setNotice(null);
+      await removeCustomOllamaModel(modelId);
+      await reloadPageData();
+      setNotice("Ollama-Modell entfernt.");
+    } catch (requestError) {
+      setError(
+        requestError instanceof Error
+          ? requestError.message
+          : "Ollama-Modell konnte nicht entfernt werden.",
+      );
+    } finally {
+      setRemovingModelId(null);
+    }
+  }
+
+  const customOllamaModels = models.filter((model) => model.protocol === "ollama" && model.isCustom);
+
   return (
     <div className="page-stack">
       <PageHeader kicker="Systemkonfiguration" title="Einstellungen" />
@@ -213,6 +266,65 @@ export function SettingsPage() {
             );
           })}
         </div>
+      </section>
+
+      <section className="panel settings-section">
+        <div className="settings-section__header">
+          <div>
+            <p className="section-kicker">OLLAMA_MODELS</p>
+            <h2>Ollama-Modelle hinzufügen</h2>
+          </div>
+        </div>
+
+        <div className="field">
+          <label htmlFor="custom-ollama-model">Ollama-Modell-Tag</label>
+          <input
+            className="input"
+            id="custom-ollama-model"
+            onChange={(event) => setNewOllamaModelTag(event.target.value)}
+            placeholder="z. B. qwen3-vl:235b"
+            type="text"
+            value={newOllamaModelTag}
+          />
+        </div>
+
+        <div className="action-row">
+          <button
+            className="button button--primary"
+            disabled={isAddingOllamaModel || newOllamaModelTag.trim().length === 0}
+            onClick={() => void handleAddOllamaModel()}
+            type="button"
+          >
+            {isAddingOllamaModel ? "Fügt hinzu…" : "Modell hinzufügen"}
+          </button>
+        </div>
+
+        {customOllamaModels.length > 0 ? (
+          <div className="settings-key-list">
+            {customOllamaModels.map((model) => (
+              <div className="settings-key-card" key={model.id}>
+                <div className="settings-key-card__topline">
+                  <label>{model.name}</label>
+                  <span className="settings-key-card__status settings-key-card__status--active">
+                    BENUTZERDEFINIERT
+                  </span>
+                </div>
+                <div className="action-row">
+                  <button
+                    className="button button--ghost"
+                    disabled={removingModelId === model.id}
+                    onClick={() => void handleRemoveCustomModel(model.id)}
+                    type="button"
+                  >
+                    {removingModelId === model.id ? "Entfernt…" : "Entfernen"}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="feedback">Noch keine zusätzlichen Ollama-Modelle gespeichert.</div>
+        )}
       </section>
 
       <section className="panel settings-section">
