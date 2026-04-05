@@ -1,8 +1,12 @@
 # Decisions — kistenscanner
 
+## 2026-04-06 — Ollama now uses direct online API access with one stored key
+The Ollama integration no longer defaults to a fixed LAN host. All Ollama models now target the direct Ollama API and use one stored `OLLAMA_API_KEY`, while legacy env names (`OLLAMA_CLOUD_API_KEY`, `GLM_API_KEY`) are accepted as migration fallbacks.
+Reason: The app must work online without depending on a private LAN Ollama instance, and the settings flow should match the single official Ollama API key model.
+
 ## 2026-04-05 — Active AI provider scope reduced to Ollama + Gemini AI Studio
 OpenAI, Anthropic and Vertex have been removed from the active model registry, Settings UI and Settings backend. The `openai-compatible` adapter remains because Gemini AI Studio uses that protocol surface.
-Reason: The user wants a deliberately simple AI setup with low billing complexity and strong focus on local Ollama testing, while keeping Gemini AI Studio as the only external fallback.
+Reason: The user wants a deliberately simple AI setup with low billing complexity, while keeping Ollama and Gemini AI Studio as the only active providers.
 
 ## 2026-04-05 — Design system consolidation (P1-P12)
 Full CSS audit and fix pass across App.css and index.css:

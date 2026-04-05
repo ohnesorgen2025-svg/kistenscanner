@@ -1,19 +1,23 @@
 # Current Task
 
 ## Status:
-🟢 KI-Provider-Bereinigung abgeschlossen. Aktive Modelloberfläche auf Ollama + Gemini AI Studio reduziert.
+🟢 Ollama auf direkten Online-Zugang umgestellt. Settings speichern jetzt den offiziellen `OLLAMA_API_KEY`.
 
 ## Current Goal
-Die KI-Konfiguration bewusst einfach und testbar halten: Ollama für lokale Experimente, Gemini AI Studio als externer Fallback.
+Die KI-Konfiguration bewusst einfach und online-tauglich halten: direkter Ollama-Zugang per API-Key, Gemini AI Studio als externer Fallback.
 
 ## Next Action
 - Reale Modelltests für Ollama und Gemini aus der Settings-Seite und den Analyse-Flows durchführen.
+- Prüfen, welche Ollama-Modelle über den direkten Online-Zugang im Alltag stabil und wirtschaftlich genug sind.
 - Danach nächste Feature-Arbeit oder Review-Zyklus nach User-Feedback.
 
 ## Open Questions
 - Keine.
 
 ## Done Recently
+- Ollama-Modelle von der festen LAN-IP auf direkten Zugriff gegen `https://ollama.com/api` umgestellt.
+- Einheitlichen `OLLAMA_API_KEY` eingeführt und Legacy-Werte (`OLLAMA_CLOUD_API_KEY`, `GLM_API_KEY`) als Übergangsmigration abgefangen.
+- Hilfe- und Settings-Referenzen auf den direkten Ollama-Key-Pfad aktualisiert.
 - OpenAI, Anthropic und Vertex vollständig aus aktiver Modellliste, Settings-UI und Settings-Backend entfernt.
 - Unbenutzte Anthropic-/Vertex-Provider-Dateien gelöscht, Dispatcher auf Ollama + openai-compatible (für Gemini) reduziert.
 - Stack-, Rules- und Design-Referenz auf die neue Provider-Reduktion angepasst.

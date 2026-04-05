@@ -17,7 +17,7 @@
 - SQLite via better-sqlite3
 
 ## AI Layer
-- src/lib/ai/models.ts — local registry for Ollama + Gemini AI Studio
+- src/lib/ai/models.ts — active registry for direct Ollama API + Gemini AI Studio
 - src/lib/ai/providers/openai-compatible.ts
 - src/lib/ai/providers/ollama.ts
 - src/lib/ai/analyze-images.ts — dispatcher

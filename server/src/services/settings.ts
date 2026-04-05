@@ -23,16 +23,17 @@ const TINY_JPEG_BASE64 =
 
 const providerEnvKeys = {
   GEMINI: "GEMINI_API_KEY",
-  OLLAMA: "OLLAMA_CLOUD_API_KEY",
+  OLLAMA: "OLLAMA_API_KEY",
 } satisfies Record<ProviderKeyId, string>;
 
 const managedEnvKeys = [
-  "OLLAMA_CLOUD_API_KEY",
-  "GLM_API_KEY",
+  "OLLAMA_API_KEY",
   "GEMINI_API_KEY",
 ] as const;
 
 const retiredManagedEnvKeys = [
+  "OLLAMA_CLOUD_API_KEY",
+  "GLM_API_KEY",
   "ANTHROPIC_API_KEY",
   "OPENAI_API_KEY",
   "VERTEX_API_KEY",
@@ -41,6 +42,10 @@ const retiredManagedEnvKeys = [
 ] as const;
 
 const allManagedEnvKeys = [...managedEnvKeys, ...retiredManagedEnvKeys] as const;
+const legacyProviderEnvFallbacks = {
+  GEMINI: [],
+  OLLAMA: ["OLLAMA_CLOUD_API_KEY", "GLM_API_KEY"],
+} satisfies Record<ProviderKeyId, string[]>;
 
 let settingsCache: { activeModelId: string; configuredProviders: ProviderStatusMap } | null = null;
 
@@ -83,11 +88,22 @@ async function readEnvValues(): Promise<Map<string, string>> {
 }
 
 function buildProviderStatuses(envValues: Map<string, string>): ProviderStatusMap {
+  const hasConfiguredValue = (providerId: ProviderKeyId): boolean => {
+    const keys = [providerEnvKeys[providerId], ...legacyProviderEnvFallbacks[providerId]];
+    return keys.some((key) => {
+      const envValue = envValues.get(key);
+      if (typeof envValue === "string" && envValue.trim().length > 0) {
+        return true;
+      }
+
+      const processValue = process.env[key];
+      return typeof processValue === "string" && processValue.trim().length > 0;
+    });
+  };
+
   return {
-    GEMINI: Boolean(envValues.get(providerEnvKeys.GEMINI)?.trim() || process.env.GEMINI_API_KEY?.trim()),
-    OLLAMA: Boolean(
-      envValues.get(providerEnvKeys.OLLAMA)?.trim() || process.env.OLLAMA_CLOUD_API_KEY?.trim(),
-    ),
+    GEMINI: hasConfiguredValue("GEMINI"),
+    OLLAMA: hasConfiguredValue("OLLAMA"),
   };
 }
 
@@ -145,9 +161,26 @@ export async function saveProviderKeys(
 
   const existingEnvValues = await readEnvValues();
   const nextManagedValues = new Map<string, string>();
+  const getExistingValue = (key: string): string => {
+    const directValue = existingEnvValues.get(key) ?? process.env[key] ?? "";
+    if (directValue.trim().length > 0) {
+      return directValue;
+    }
+
+    if (key === "OLLAMA_API_KEY") {
+      for (const legacyKey of legacyProviderEnvFallbacks.OLLAMA) {
+        const legacyValue = existingEnvValues.get(legacyKey) ?? process.env[legacyKey] ?? "";
+        if (legacyValue.trim().length > 0) {
+          return legacyValue;
+        }
+      }
+    }
+
+    return "";
+  };
 
   for (const key of managedEnvKeys) {
-    nextManagedValues.set(key, existingEnvValues.get(key) ?? process.env[key] ?? "");
+    nextManagedValues.set(key, getExistingValue(key));
   }
 
   for (const [provider, envKey] of Object.entries(providerEnvKeys) as Array<

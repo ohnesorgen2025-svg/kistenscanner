@@ -22,6 +22,7 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
 - Prompt lives in src/lib/ai/prompts/ — never inline
 - Parser must handle both clean JSON and half-format fallback
 - Current active provider scope: Ollama + Gemini AI Studio only
+- Ollama is accessed directly via the official online API using `OLLAMA_API_KEY`; do not reintroduce a fixed LAN Ollama host as default
 - Gemini uses the openai-compatible adapter internally; no OpenAI, Anthropic or Vertex models stay in active config
 
 ## File Structure Rules
