@@ -30,3 +30,16 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
 - DB access: src/db/
 - Business logic: src/services/
 - Never mix these layers
+
+## Design System Rules
+- **Navigation**: Mobile is a single-row bottom bar with icons only (no text). Desktop is a left sidebar with text.
+- **Button Symmetry**: 
+  - 1 Action Button = 100% container width.
+  - 2 Action Buttons = 50% / 50% width (`flex: 1`).
+  - 3 Action Buttons = 33/33/33 or 2x50% above 1x100%.
+- **Button Dimensions**: Minimum height of `48px` for all buttons. Toolbar icon buttons must be exactly `48x48px` squares and must NOT stretch.
+- **Button Styles**: 
+  - `Primary`: `#378ADD` background, white text, no border.
+  - `Secondary/Ghost`: Transparent background, `1.5px solid rgba(255,255,255,0.3)` border.
+- **Spacing/Density**: Professional dashboard aesthetic with `12px` gaps as base multiplier.
+- **Content Width**: Maximum width for centered content should be strictly bounded to `768px`.

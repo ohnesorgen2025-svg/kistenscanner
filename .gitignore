@@ -10,3 +10,7 @@ server/dist/
 server/data/
 server/.env
 .env
+
+screenshots/
+.playwright-mcp/
+playwright-profiles/

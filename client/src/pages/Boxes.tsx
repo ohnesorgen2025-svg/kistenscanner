@@ -43,9 +43,11 @@ export function BoxesPage() {
     <div className="page-stack">
       <PageHeader
         actions={(
-          <Link className="button button--primary" to="/boxes/add">
-            Behälter hinzufügen
-          </Link>
+          <div className="action-row">
+            <Link className="button button--primary" to="/boxes/add">
+              Behälter hinzufügen
+            </Link>
+          </div>
         )}
         kicker="Inventar"
         title="Behälter"
@@ -59,9 +61,11 @@ export function BoxesPage() {
         <section className="panel empty-state">
           <p className="section-kicker">Noch keine Behälter</p>
           <h2>Lege den ersten Behälter an.</h2>
-          <Link className="button button--primary" to="/boxes/add">
-            Speicher-Workflow öffnen
-          </Link>
+          <div className="action-row">
+            <Link className="button button--primary" to="/boxes/add">
+              Speicher-Workflow öffnen
+            </Link>
+          </div>
         </section>
       ) : null}
 

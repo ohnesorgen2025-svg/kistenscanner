@@ -224,7 +224,7 @@ export function ScanPage() {
     <div className="page-stack">
       <PageHeader kicker="Scannen" title="Scannen" />
 
-      <div className="scan-mode-toggle">
+      <div className="action-row">
         <button
           className={`button ${scanMode === "qr" ? "button--primary" : "button--ghost"}`}
           onClick={() => handleModeSwitch("qr")}

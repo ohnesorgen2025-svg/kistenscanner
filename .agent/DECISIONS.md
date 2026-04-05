@@ -284,3 +284,19 @@ Reason: To keep the action bar at the very bottom of the card spanning full-widt
 
 - Switched `.box-detail-header__identity` from a fixed grid with start alignment to `display: flex` with `align-items: stretch`.
 - Removed max-width limits for the left column so the QR square organically scales its height exactly to the dynamically generated height of the right-hand text summary block (`flex: 1`), while preserving a perfect 1:1 aspect ratio.
+
+## 2026-04-05 — UI Overhaul: Icon-only Navigation
+The bottom navigation on mobile now forces 7 icons into a single line without text labels. On desktop, the navigation is a vertical sidebar with icons and labels.
+Reason: To enforce a high-density, professional design system and avoid broken wrapping on narrow mobile screens.
+
+## 2026-04-05 — UI Overhaul: Button Symmetry
+Rigid button symmetry rules established: 1 Button takes 100% width, 2 Buttons take 50/50 equal width (`flex: 1`).
+Reason: Consistent, predictable actions that match modern dashboard aesthetics. Form buttons and panel headers now behave identically.
+
+## 2026-04-05 — UI Overhaul: Button Sizing and Styling
+All buttons enforce a strict `48px` min-height for touch-targets. Primary buttons use a solid blue background (`#378ADD`), secondary/ghost buttons use transparent backgrounds with a `1.5px solid rgba(255,255,255,0.3)` border.
+Reason: Premium look, distinct visual hierarchy, and accessible touch target sizes.
+
+## 2026-04-05 — UI Overhaul: BoxDetail Toolbar Layout
+The BoxDetail toolbar and panel header action bars use icon-only square buttons (`48x48px`) without stretching, housed in a scrolling Row on narrow screens.
+Reason: Design System §2 dictates companion actions and toolbars must not stretch to 100%, keeping them visually distinct from primary container actions.

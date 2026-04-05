@@ -96,6 +96,54 @@ const labelProfiles: LabelProfile[] = [
     qrMm: 28,
     numberFontPt: 26,
   },
+  {
+    id: "no-3483",
+    label: "No. 3483 · 105 × 148 mm · 2 × 2 (A6)",
+    pageWidthMm: 210,
+    pageHeightMm: 297,
+    columns: 2,
+    rows: 2,
+    labelWidthMm: 105,
+    labelHeightMm: 148.5,
+    marginTopMm: 0,
+    marginLeftMm: 0,
+    gapXmm: 0,
+    gapYmm: 0,
+    qrMm: 52,
+    numberFontPt: 48,
+  },
+  {
+    id: "no-3427",
+    label: "No. 3427 · 105 × 74,25 mm · 2 × 4",
+    pageWidthMm: 210,
+    pageHeightMm: 297,
+    columns: 2,
+    rows: 4,
+    labelWidthMm: 105,
+    labelHeightMm: 74.25,
+    marginTopMm: 0,
+    marginLeftMm: 0,
+    gapXmm: 0,
+    gapYmm: 0,
+    qrMm: 36,
+    numberFontPt: 34,
+  },
+  {
+    id: "no-3659",
+    label: "No. 3659 · 97 × 42,3 mm · 2 × 6",
+    pageWidthMm: 210,
+    pageHeightMm: 297,
+    columns: 2,
+    rows: 6,
+    labelWidthMm: 97,
+    labelHeightMm: 42.3,
+    marginTopMm: 21.6,
+    marginLeftMm: 8,
+    gapXmm: 0,
+    gapYmm: 0,
+    qrMm: 22,
+    numberFontPt: 22,
+  },
 ];
 
 function buildSlots(profile: LabelProfile): LabelSlot[] {
@@ -1382,7 +1430,7 @@ export function BoxDetailPage() {
                 <p className="section-kicker">Items</p>
                 <h2>Inhalt</h2>
               </div>
-              <div className="action-row">
+              <div className="page-header__actions">
                 {box.items.length > 0 ? (
                   <>
                     <button

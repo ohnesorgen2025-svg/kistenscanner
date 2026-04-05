@@ -1,22 +1,21 @@
 # Current Task
 
 ## Status:
-🟢 LAN deployment confirmed, Box Detail UI refined
+🟢 Design System Refactor Phase 1-2 Abgeschlossen. Nav-Refactor, Button-Grid-System und BoxDetail Toolbar implementiert.
 
 ## Current Goal
-Keep the deployed LAN version stable and refine the live UI plus print workflow against real usage.
+Den gesamten Kistenscanner konsistent auf das strikte Design System umstellen. Die Buttons, Toolbars und Navigationsleisten sind konform.
 
 ## Next Action
-Continue the real-world label workflow:
-- add more real sticker profiles beyond `No. 5028`
-- validate the clickable sheet-position workflow against a real printed test page
-- keep checking the live UI on desktop and mobile for remaining broken layouts
+- §3 Search-Bar Spacing: Suchleiste und Such-Screen fixen.
+- §4 Content-Container: `max-width: 768px` global durchsetzen.
 
 ## Open Questions
-- Which additional bought label packages should become built-in print profiles after `No. 5028`?
+- Keine.
 
 ## Done Recently
-- Fully scaled QR Code dynamically to text block height instead of fixed width restrictions. Refined Box Detail UI: Removed redundant QR text, added "Foto hinzufügen" and "Bearbeiten" placeholders, fixed button toolbar layout and fact-card scaling.
-- Applied `box-sizing: border-box` and `aspect-ratio` to qr-panel.
-- Fixed Box Detail mobile overlapping layout (forced responsive 2-column grid in `.box-detail-header__identity`).
-- Restructured `.review-card` CSS from grid to flex-column to fix edge-to-edge buttons.
+- Bottom-Nav auf Mobile in einer Zeile gezwungen, Icons ohne Text-Labels. Toolbar Sidebar für Desktop.
+- Rigide Button-Symmetrieregeln durchgesetzt (1 Button = 100%, 2 Buttons = 50% / 50%).
+- Alle Primary-/Secondary- und Ghost-Buttons auf 48px Mindesthöhe gesetzt (`border-box`).
+- Toolbar in `BoxDetail.tsx` zu `flex: none; 48x48px` Icon-Squares umgebaut (`page-header__actions`).
+- "Empty state" und "Page-Header" Buttons konsistent full-width (bzw. context-width) angepasst.
