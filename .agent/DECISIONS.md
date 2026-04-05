@@ -1,5 +1,18 @@
 # Decisions — kistenscanner
 
+## 2026-04-05 — Design system consolidation (P1-P12)
+Full CSS audit and fix pass across App.css and index.css:
+- Unified 3 competing blue tones (#378ADD, #3B82F6, #00DAF3) to single `--accent: #3B82F6`
+- Consolidated 12+ border-radius values to 3 tokens: 0.25rem, 0.5rem, 0.75rem
+- Consolidated 19 font-sizes to 5-step type scale: 0.7/0.75/0.85/0.95/1.05rem
+- Consolidated 8 letter-spacing values to 2: 0.08em and 0.12em
+- All touch targets raised to 48px minimum (inputs, nav-links)
+- All interactive elements now have :hover and :active states
+- Spacing normalized to 12px grid multiples
+- Removed !important overrides on dashboard cards
+- Font changed from Inter to Space Grotesk (previous session)
+Reason: Comprehensive design skill audit revealed systematic inconsistencies. All tokens now documented in PROJECT_RULES.md.
+
 ## 2026-03-27 — AI Layer: New build, two files copied
 New build based on inventarisierung spec document.
 Exception: models.ts and vertex.ts copied directly (Vertex OAuth2 complexity).

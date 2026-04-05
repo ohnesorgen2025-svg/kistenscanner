@@ -1,21 +1,27 @@
 # Current Task
 
 ## Status:
-🟢 Design System Refactor Phase 1-2 Abgeschlossen. Nav-Refactor, Button-Grid-System und BoxDetail Toolbar implementiert.
+🟢 Design System Consolidation (P1-P12) abgeschlossen und deployed.
 
 ## Current Goal
-Den gesamten Kistenscanner konsistent auf das strikte Design System umstellen. Die Buttons, Toolbars und Navigationsleisten sind konform.
+Alle Design-System-Regeln sind implementiert und in PROJECT_RULES.md dokumentiert. CSS ist auf strikte Tokens konsolidiert.
 
 ## Next Action
-- §3 Search-Bar Spacing: Suchleiste und Such-Screen fixen.
-- §4 Content-Container: `max-width: 768px` global durchsetzen.
+- Weitere Feature-Arbeit oder nächster Review-Zyklus nach User-Feedback.
 
 ## Open Questions
 - Keine.
 
 ## Done Recently
-- Bottom-Nav auf Mobile in einer Zeile gezwungen, Icons ohne Text-Labels. Toolbar Sidebar für Desktop.
-- Rigide Button-Symmetrieregeln durchgesetzt (1 Button = 100%, 2 Buttons = 50% / 50%).
-- Alle Primary-/Secondary- und Ghost-Buttons auf 48px Mindesthöhe gesetzt (`border-box`).
-- Toolbar in `BoxDetail.tsx` zu `flex: none; 48x48px` Icon-Squares umgebaut (`page-header__actions`).
-- "Empty state" und "Page-Header" Buttons konsistent full-width (bzw. context-width) angepasst.
+- P1: 3 Blautöne auf einheitliches `--accent` (#3B82F6) vereinheitlicht
+- P2: `.button:active` State für Touch-Feedback ergänzt
+- P3: Input/Textarea min-height 44px → 48px
+- P4: Nav-Link Touch-Target 44px → 48px
+- P5: 12+ border-radius Werte auf 3 Tokens konsolidiert (4/8/12px)
+- P6: 19 font-sizes auf 5-Stufen Type-Scale konsolidiert
+- P7: Fehlende :active States auf 6 interaktiven Elementen ergänzt
+- P8: .image-thumb Hover/Active ergänzt
+- P9: Spacing auf 12px-Grid normalisiert
+- P10: 8 letter-spacing Werte auf 2 standardisiert
+- P12: !important Overrides entfernt
+- PROJECT_RULES.md mit allen Design-Tokens aktualisiert

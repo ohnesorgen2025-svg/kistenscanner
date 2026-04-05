@@ -2,8 +2,11 @@
 
 ## Frontend
 - React + TypeScript + Vite
-- Dark mode only (#0F0F0F bg, #1A1A1A cards)
-- Mobile-first, single accent color
+- Dark mode only (--bg: #1E2124, --card-bg: #2B2F33)
+- Font: Space Grotesk (headings + body)
+- Icons: Material Symbols Outlined
+- Mobile-first, single accent color --accent: #3B82F6
+- Vanilla CSS (App.css + index.css), no Tailwind, no CSS modules
 - Design reference: client/src/design-reference/
 
 ## Backend
