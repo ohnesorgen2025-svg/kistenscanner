@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { font-family: sans-serif; }
+  .grid-test {
+    display: flex;
+    gap: 1rem;
+    align-items: stretch;
+    background: #eee;
+    padding: 1rem;
+  }
+  .left {
+    background: red;
+    aspect-ratio: 1;
+    height: auto;
+    /* max-width prevents it from going crazy */
+    max-width: 40vw;
+  }
+  .right {
+    flex: 1;
+    background: #ccc;
+    min-width: 0;
+  }
+</style>
+</head>
+<body>
+  <div class="grid-test">
+    <div class="left"></div>
+    <div class="right">
+      <div>STANDORT</div>
+      <h1>Werkstatt</h1>
+      <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+        <div style="flex: 1; border: 1px solid black; padding: 1rem;">Kiste #5</div>
+        <div style="flex: 1; border: 1px solid black; padding: 1rem;">Name Werkstatt</div>
+        <div style="flex: 1; border: 1px solid black; padding: 1rem;">Items 11</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

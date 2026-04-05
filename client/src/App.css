@@ -39,7 +39,7 @@ html {
 }
 
 .panel {
-  padding: 1.25rem;
+  padding: 1rem;
   border: 1px solid transparent;
   border-radius: 0.75rem;
   background: var(--card-bg);
@@ -343,7 +343,7 @@ html {
 }
 
 .search-input {
-  min-height: 4.1rem;
+  min-height: 4rem;
   padding-left: 3rem;
   padding-right: 1rem;
   font-family: var(--heading);
@@ -360,15 +360,7 @@ html {
   padding: 0;
 }
 
-/* Foto-Suche: lone button → 100% width */
-.search-extras {
-  margin-top: 0.5rem;
-}
-
-.search-visual-btn {
-  width: 100%;
-  justify-content: center;
-}
+/* Foto-Suche: see consolidated .search-extras / .search-visual-btn below */
 
 .search-results {
   grid-template-columns: 1fr;
@@ -392,6 +384,11 @@ html {
   background: var(--tertiary);
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.search-result:active {
+  transform: scale(0.98);
+  box-shadow: none;
 }
 
 .search-result__media {
@@ -573,6 +570,16 @@ html {
 .settings-model-card {
   text-align: left;
   cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.settings-model-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.settings-model-card:active {
+  transform: scale(0.98);
 }
 
 .settings-model-card--active {
@@ -863,7 +870,7 @@ html {
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 3rem;
   padding: 0.5rem 0.75rem;
   border: 1px solid rgba(72, 72, 72, 0.35);
   border-radius: 0.5rem;
@@ -972,6 +979,11 @@ html {
   transform: translateY(-2px);
   border-color: rgba(255, 255, 255, 0.18);
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+.box-card:active {
+  transform: scale(0.98);
+  box-shadow: none;
 }
 
 .box-card__media {
@@ -1484,11 +1496,11 @@ html {
   }
 
   .page-shell--app .page-stack--route {
-    max-width: 66rem;
+    max-width: 48rem;
   }
 
   .page-shell--detail .page-stack--route {
-    max-width: 66rem;
+    max-width: 48rem;
   }
 
   .status-grid,
@@ -1626,7 +1638,7 @@ html {
 
   .page-shell--app .page-stack--route,
   .page-shell--detail .page-stack--route {
-    max-width: 72rem;
+    max-width: 48rem;
   }
 
   .page-stack--multi {
@@ -1790,11 +1802,13 @@ html {
 /* ─── Search extras ─── */
 .search-extras {
   display: flex;
-  gap: 0.5rem;
-  padding-top: 0.5rem;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
 }
 
 .search-visual-btn {
+  width: 100%;
+  justify-content: center;
   font-size: 0.85rem;
 }
 
@@ -2209,6 +2223,8 @@ html {
   border: none;
   color: var(--fg);
   font-size: 1rem;
+  min-height: 3rem;
+  min-width: 3rem;
   padding: 0.2rem 0.5rem;
   cursor: pointer;
   transition: background 0.15s;

@@ -14,3 +14,4 @@ server/.env
 screenshots/
 .playwright-mcp/
 playwright-profiles/
+.claude/skills/taste-skill/

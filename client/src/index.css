@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400;500;700&display=swap");
 
 :root {
@@ -12,8 +12,8 @@
   --accent: #3B82F6;
   --panel-shadow: rgba(0, 0, 0, 0.4) 0 8px 24px -8px;
 
-  --sans: "Inter", "Segoe UI", sans-serif;
-  --heading: "Inter", "Segoe UI", sans-serif;
+  --sans: "Space Grotesk", "Segoe UI", sans-serif;
+  --heading: "Space Grotesk", "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", "SFMono-Regular", monospace;
 
   font: 15px/1.5 var(--sans);
