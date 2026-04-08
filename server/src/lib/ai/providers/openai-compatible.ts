@@ -65,7 +65,6 @@ export async function callOpenAiCompatible(
   } catch {
     throw new Error(`Provider lieferte kein JSON. Anfang der Antwort: ${responseText.slice(0, 120)}`);
   }
-  };
 
   const content = payload.choices?.[0]?.message?.content;
   if (typeof content === "string") {
