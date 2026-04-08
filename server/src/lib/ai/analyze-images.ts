@@ -44,6 +44,14 @@ export async function analyzeImages(input: AnalyzeImagesInput): Promise<string> 
 
   const model = await resolveModelById(input.modelId);
 
+  console.log("[AI-Call]", {
+    modelId: input.modelId,
+    modelTag: model.modelTag,
+    providerType: model.providerType,
+    baseUrl: model.baseUrl,
+    hasApiKey: !!model.apiKey,
+  });
+
   switch (model.providerType) {
     case "ollama":
     case "ollama-cloud":
