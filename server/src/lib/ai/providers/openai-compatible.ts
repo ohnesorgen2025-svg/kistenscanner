@@ -1,31 +1,29 @@
-import type { ModelConfig } from "../models.js";
+import type { ResolvedModel } from "../models.js";
 import {
   fetchWithTimeout,
   getApiErrorMessage,
-  getApiKey,
   normalizeEndpoint,
 } from "./shared.js";
 
 export async function callOpenAiCompatible(
-  model: ModelConfig,
+  model: ResolvedModel,
   prompt: string,
   images: string[],
 ): Promise<string> {
-  const apiKey = getApiKey(model);
-  if (!apiKey) {
-    throw new Error(`API-Key für ${model.name} fehlt (${model.apiKeyEnv ?? "unbekannt"}).`);
+  if (!model.apiKey) {
+    throw new Error(`API-Key für ${model.modelName} fehlt.`);
   }
 
   const response = await fetchWithTimeout(
-    `${normalizeEndpoint(model.endpoint)}/v1/chat/completions`,
+    `${normalizeEndpoint(model.baseUrl ?? "https://api.openai.com")}/v1/chat/completions`,
     {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${model.apiKey}`,
       },
       body: JSON.stringify({
-        model: model.model,
+        model: model.modelTag,
         max_completion_tokens: 4096,
         messages: [
           {

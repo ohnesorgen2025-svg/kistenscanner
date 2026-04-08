@@ -1,30 +1,28 @@
-import type { ModelConfig } from "../models.js";
+import type { ResolvedModel } from "../models.js";
 import {
   fetchWithTimeout,
   getApiErrorMessage,
-  getApiKey,
   normalizeEndpoint,
 } from "./shared.js";
 
 export async function callOllama(
-  model: ModelConfig,
+  model: ResolvedModel,
   prompt: string,
   images: string[],
 ): Promise<string> {
-  const apiKey = getApiKey(model);
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
   };
 
-  if (apiKey) {
-    headers.Authorization = `Bearer ${apiKey}`;
+  if (model.apiKey) {
+    headers.Authorization = `Bearer ${model.apiKey}`;
   }
 
-  const response = await fetchWithTimeout(`${normalizeEndpoint(model.endpoint)}/api/chat`, {
+  const response = await fetchWithTimeout(`${normalizeEndpoint(model.baseUrl ?? "http://localhost:11434")}/api/chat`, {
     method: "POST",
     headers,
     body: JSON.stringify({
-      model: model.model,
+      model: model.modelTag,
       stream: false,
       messages: [
         {

@@ -5,5 +5,9 @@ services:
       - "3008:4001"
       - "3443:4443"
     restart: unless-stopped
+    environment:
+      - AI_HUB_URL=${AI_HUB_URL:-https://ai-hub.ohnesorgen.net}
+      - AI_HUB_TOKEN=${AI_HUB_TOKEN}
+      - AI_HUB_APP_ID=${AI_HUB_APP_ID}
     volumes:
       - ./data:/app/data

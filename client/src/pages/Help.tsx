@@ -301,11 +301,7 @@ export function HelpPage() {
           <p>Hier konfigurierst du die KI-Modelle, die für Analyse, Suche und Erkennung verwendet werden:</p>
           <div className="help-feature">
             <h3><span className="material-symbols-outlined">smart_toy</span> KI-Modelle</h3>
-            <p>Wähle das aktive Modell per Klick. Aktuell unterstützt die App <strong>Google Gemini</strong> und <strong>Ollama</strong> über den direkt hinterlegten API-Zugang.</p>
-          </div>
-          <div className="help-feature">
-            <h3><span className="material-symbols-outlined">key</span> API-Schlüssel</h3>
-            <p>Gib die API-Keys der gewünschten Anbieter ein. Der Status (konfiguriert/nicht konfiguriert) wird pro Anbieter angezeigt. Mit „Verbindung testen" kannst du prüfen, ob der Key funktioniert.</p>
+            <p>Wähle das aktive Modell per Klick. Die verfügbaren Modelle und API-Schlüssel werden zentral über den <strong>AI-Hub</strong> verwaltet.</p>
           </div>
         </div>
       </section>

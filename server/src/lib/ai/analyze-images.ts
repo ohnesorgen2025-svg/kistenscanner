@@ -1,7 +1,6 @@
-import type { ModelConfig } from "./models.js";
 import { callOllama } from "./providers/ollama.js";
 import { callOpenAiCompatible } from "./providers/openai-compatible.js";
-import { getModelConfig } from "../../services/models.js";
+import { resolveModelById } from "../../services/models.js";
 
 export type AnalyzeImagesInput = {
   modelId: string;
@@ -43,14 +42,18 @@ export async function analyzeImages(input: AnalyzeImagesInput): Promise<string> 
     return buildMockAnalysisRawText();
   }
 
-  const model = await getModelConfig(input.modelId);
-  if (!model) {
-    throw new Error(`Unknown model: ${input.modelId}`);
-  }
+  const model = await resolveModelById(input.modelId);
 
-  if (model.protocol === "ollama") {
-    return callOllama(model, input.prompt, input.images);
+  switch (model.providerType) {
+    case "ollama":
+    case "ollama-cloud":
+      return callOllama(model, input.prompt, input.images);
+    case "openai":
+    case "gemini":
+    case "anthropic":
+    case "custom":
+      return callOpenAiCompatible(model, input.prompt, input.images);
+    default:
+      throw new Error(`Unbekannter Provider-Typ: ${model.providerType}`);
   }
-
-  return callOpenAiCompatible(model, input.prompt, input.images);
 }

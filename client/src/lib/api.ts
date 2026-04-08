@@ -118,13 +118,10 @@ export type ModelSummary = {
   id: string;
   name: string;
   provider: string;
-  protocol: string;
-  isCustom: boolean;
 };
 
 export type SettingsResponse = {
   activeModelId: string;
-  configuredProviders: Record<"GEMINI" | "OLLAMA", boolean>;
 };
 
 type RequestOptions = RequestInit & {
@@ -215,19 +212,6 @@ export async function listModels(): Promise<ModelSummary[]> {
   });
 }
 
-export async function addCustomOllamaModel(modelTag: string): Promise<ModelSummary> {
-  return requestJson<ModelSummary>("/api/models/ollama", {
-    method: "POST",
-    body: JSON.stringify({ modelTag }),
-  });
-}
-
-export async function removeCustomOllamaModel(modelId: string): Promise<void> {
-  return requestJson<void>(`/api/models/ollama/${encodeURIComponent(modelId)}`, {
-    method: "DELETE",
-  });
-}
-
 export async function getSettings(): Promise<SettingsResponse> {
   return requestJson<SettingsResponse>("/api/settings", {
     cache: "no-store",
@@ -236,22 +220,6 @@ export async function getSettings(): Promise<SettingsResponse> {
 
 export async function saveActiveModel(modelId: string): Promise<{ activeModelId: string }> {
   return requestJson<{ activeModelId: string }>("/api/settings", {
-    method: "POST",
-    body: JSON.stringify({ modelId }),
-  });
-}
-
-export async function saveProviderKeys(payload: Partial<Record<"GEMINI" | "OLLAMA", string>>): Promise<{
-  configuredProviders: SettingsResponse["configuredProviders"];
-}> {
-  return requestJson<{ configuredProviders: SettingsResponse["configuredProviders"] }>("/api/settings/keys", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-}
-
-export async function testModelConnection(modelId: string): Promise<{ ok: true }> {
-  return requestJson<{ ok: true }>("/api/settings/test", {
     method: "POST",
     body: JSON.stringify({ modelId }),
   });

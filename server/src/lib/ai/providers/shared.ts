@@ -1,29 +1,7 @@
-import type { ModelConfig } from "../models.js";
-
 const REQUEST_TIMEOUT_MS = 120_000;
-const LEGACY_ENV_FALLBACKS: Record<string, string[]> = {
-  OLLAMA_API_KEY: ["OLLAMA_CLOUD_API_KEY", "GLM_API_KEY"],
-};
 
-export function normalizeEndpoint(endpoint: string): string {
-  return endpoint.replace(/\/+$/, "");
-}
-
-export function getApiKey(model: ModelConfig): string | null {
-  const envKey = model.apiKeyEnv;
-  if (!envKey) {
-    return null;
-  }
-
-  const candidateKeys = [envKey, ...(LEGACY_ENV_FALLBACKS[envKey] ?? [])];
-  for (const key of candidateKeys) {
-    const value = process.env[key];
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value.trim();
-    }
-  }
-
-  return null;
+export function normalizeEndpoint(baseUrl: string): string {
+  return baseUrl.replace(/\/+$/, "");
 }
 
 export async function fetchWithTimeout(url: string, init: RequestInit): Promise<Response> {
