@@ -38,9 +38,13 @@ export async function callOllama(
     throw new Error(`Modell nicht erreichbar (${await getApiErrorMessage(response)}).`);
   }
 
-  const payload = (await response.json()) as {
-    message?: { content?: string };
-  };
+  const responseText = await response.text();
+  let payload: { message?: { content?: string } };
+  try {
+    payload = JSON.parse(responseText) as { message?: { content?: string } };
+  } catch {
+    throw new Error(`Provider lieferte kein JSON. Anfang der Antwort: ${responseText.slice(0, 120)}`);
+  }
 
   return payload.message?.content?.trim() ?? "";
 }

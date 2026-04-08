@@ -47,7 +47,8 @@ export async function callOpenAiCompatible(
     throw new Error(`Modell nicht erreichbar (${await getApiErrorMessage(response)}).`);
   }
 
-  const payload = (await response.json()) as {
+  const responseText = await response.text();
+  let payload: {
     choices?: Array<{
       message?: {
         content?:
@@ -58,6 +59,12 @@ export async function callOpenAiCompatible(
             }>;
       };
     }>;
+  };
+  try {
+    payload = JSON.parse(responseText) as typeof payload;
+  } catch {
+    throw new Error(`Provider lieferte kein JSON. Anfang der Antwort: ${responseText.slice(0, 120)}`);
+  }
   };
 
   const content = payload.choices?.[0]?.message?.content;
