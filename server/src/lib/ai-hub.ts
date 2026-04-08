@@ -15,6 +15,7 @@ interface AppModel {
   modelId: string;
   modelName: string;
   modelTag: string;
+  providerId: string;
   providerName: string;
   isDefault: boolean;
 }
@@ -70,7 +71,7 @@ export async function getProvider(providerId: string): Promise<Provider> {
  */
 export async function resolveModel(model?: AppModel) {
   const m = model ?? (await getDefaultModel());
-  const providerId = m.modelId.split(":")[0] ?? m.modelId;
+  const providerId = m.providerId;
   const provider = await getProvider(providerId);
   const apiKey = provider.requiresKey ? await getApiKey(providerId) : undefined;
 
