@@ -12,18 +12,20 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
 
 ## Code Rules
 - TypeScript everywhere (strict)
-- No inline styles in components — use CSS modules or Tailwind
+- No inline styles in components — use vanilla CSS (App.css / index.css)
 - Conventional Commits
 - AI core must be fully decoupled from business logic
 - No provider-specific code outside src/lib/ai/providers/
 
 ## AI Layer Rules
-- models.ts is the single source of truth for all models/providers
+- ai-hub is the single source of truth for all models, API keys and provider configuration
+- The app fetches model assignments from ai-hub at runtime; no local model registry or hardcoded model lists
 - Prompt lives in src/lib/ai/prompts/ — never inline
 - Parser must handle both clean JSON and half-format fallback
-- Current active provider scope: Ollama + Gemini AI Studio only
-- Ollama is accessed directly via the official online API using `OLLAMA_API_KEY`; do not reintroduce a fixed LAN Ollama host as default
-- Gemini uses the openai-compatible adapter internally; no OpenAI, Anthropic or Vertex models stay in active config
+- Provider adapters (ollama.ts, openai-compatible.ts) receive a `ResolvedModel` with baseUrl and apiKey from ai-hub
+- No local key storage, no .env key management, no provider test endpoints in the app
+- Provider dispatch is based on `providerType` from ai-hub (ollama, ollama-cloud, gemini, openai, anthropic, custom)
+- No provider-specific code outside src/lib/ai/providers/
 
 ## File Structure Rules
 - AI core: src/lib/ai/

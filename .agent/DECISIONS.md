@@ -1,28 +1,12 @@
 # Decisions — kistenscanner
 
-## 2026-04-06 — Custom Ollama models are user-managed in app settings
-Additional Ollama models can now be added and removed from the Settings page by entering the exact Ollama model tag. Custom entries are persisted in `data/custom-models.json` and merged with the built-in model registry at runtime.
-Reason: The user wants the simplest possible workflow: copy a model tag from the Ollama library and make it available in the app without another code change.
+## 2026-04-08 — AI model management replaced by central ai-hub service
+All local AI model/key management (models.ts registry, custom-models.json, Settings key inputs, provider test buttons, server/.env key storage) has been removed and replaced by the external ai-hub service at `https://ai-hub.ohnesorgen.net`. The app fetches its assigned models, API keys and provider details from ai-hub at runtime using `AI_HUB_URL`, `AI_HUB_TOKEN` and `AI_HUB_APP_ID` environment variables. The Settings page now only shows a model picker — no key entry, no custom model management, no connection tests. The ai-hub client lives in `server/src/lib/ai-hub.ts`.
+Reason: Centralizing AI config in one service (ai-hub) avoids duplicating model/key management per app and allows model rotation and key management in one place.
 
-## 2026-04-06 — Provider test buttons should use the freshly typed key
-The Settings test action now persists a newly typed provider key before running the connectivity check, instead of testing only whatever was previously stored on the server.
-Reason: In practice this was misleading on fresh environments: typing a valid Ollama key and pressing "Test Verbindung" still returned `401 Unauthorized` because the new key had not been saved yet.
-
-## 2026-04-06 — Ollama now uses direct online API access with one stored key
-The Ollama integration no longer defaults to a fixed LAN host. All Ollama models now target the direct Ollama API and use one stored `OLLAMA_API_KEY`, while legacy env names (`OLLAMA_CLOUD_API_KEY`, `GLM_API_KEY`) are accepted as migration fallbacks.
-Reason: The app must work online without depending on a private LAN Ollama instance, and the settings flow should match the single official Ollama API key model.
-
-## 2026-04-06 — Direct Ollama API uses different model tags than the old LAN/cloud bridge
-The active Ollama registry now uses the direct online model tags exposed by `https://ollama.com/api`, for example `qwen3.5:397b`, `qwen3-vl:235b`, and `glm-4.6`, and the old local-only `qwen3.5:9b` entry has been removed from the active online list.
-Reason: A live test with the stored Ollama key showed the direct API works, but the older `*-cloud` and `:cloud` model tags return server errors because they belonged to the previous bridge setup, not the direct Ollama API surface.
-
-## 2026-04-06 — Provider connection tests now use a text-only ping
-The Settings "Test Verbindung" route now verifies provider connectivity with a minimal text-only prompt instead of attaching a tiny image blob.
-Reason: A live Ollama test proved the direct API and key work, but the tiny image used by the old generic test triggered a server-side 500 on Ollama's direct API. The settings test should validate auth and reachability, not image-specific behavior.
-
-## 2026-04-05 — Active AI provider scope reduced to Ollama + Gemini AI Studio
-OpenAI, Anthropic and Vertex have been removed from the active model registry, Settings UI and Settings backend. The `openai-compatible` adapter remains because Gemini AI Studio uses that protocol surface.
-Reason: The user wants a deliberately simple AI setup with low billing complexity, while keeping Ollama and Gemini AI Studio as the only active providers.
+## 2026-04-08 — Deployment moved from LAN DevPilot to Coolify online
+The app now runs at `https://kistenscanner.ohnesorgen.net` via Coolify, deployed from GitHub main branch. The old LAN deployment via DevPilot to `kistenscanner.local` / `192.168.44.106` is decommissioned.
+Reason: Online deployment is easier to maintain and makes the app accessible from anywhere.
 
 ## 2026-04-05 — Design system consolidation (P1-P12)
 Full CSS audit and fix pass across App.css and index.css:
@@ -126,12 +110,8 @@ The box detail page opens a lightweight inline move panel with a target-box sele
 Reason: The backend move endpoint already exists, and the smallest useful UI is easier to understand, verify and maintain.
 
 ## 2026-03-28 — Active model is stored outside the database
-The selected active model lives in `server/data/settings.json` and `POST /api/analyze` falls back to that stored model when no `modelId` is sent.
+The selected active model lives in `server/data/settings.json` and `POST /api/analyze` falls back to that stored model when no `modelId` is sent. If no model is stored, the app falls back to the ai-hub default model.
 Reason: The setting is small, local and operational rather than relational, so a JSON file keeps it easy to inspect and change without expanding the SQLite schema.
-
-## 2026-03-28 — Provider keys stay runtime-managed in server/.env
-Settings writes managed provider keys back to `server/.env` and updates `process.env` at runtime instead of introducing a dedicated encrypted storage layer in v1.
-Reason: This is the smallest practical bridge between the Settings UI and the existing provider adapters, and it matches the current local single-user deployment model.
 
 ## 2026-03-28 — Model selectors should come from the server model registry
 Client model pickers load their options from `/api/models` and use `/api/settings` for the active default instead of hardcoding a subset of known models in the UI.

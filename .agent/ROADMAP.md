@@ -32,3 +32,13 @@
 - [x] Mobile UX pass
 - [x] DevPilot LAN deploy
 - [x] Design system consolidation (P1-P12)
+
+## Milestone 6 — ai-hub Integration 🟡
+- [x] ai-hub client (`server/src/lib/ai-hub.ts`)
+- [x] Replace local model registry with ai-hub model fetching (5-min cache)
+- [x] Replace local key management with ai-hub key/provider resolution
+- [x] Remove Settings key inputs, provider tests, custom Ollama management
+- [x] Simplify Settings page to model picker only
+- [x] Update compose.yaml with AI_HUB_URL/TOKEN/APP_ID env vars
+- [x] Deploy to Coolify (kistenscanner.ohnesorgen.net)
+- [ ] Fix image analysis (provider returns HTML instead of JSON — debugging)

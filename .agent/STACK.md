@@ -17,13 +17,21 @@
 - SQLite via better-sqlite3
 
 ## AI Layer
-- src/lib/ai/models.ts — active registry for direct Ollama API + Gemini AI Studio
-- src/lib/ai/providers/openai-compatible.ts
-- src/lib/ai/providers/ollama.ts
-- src/lib/ai/analyze-images.ts — dispatcher
-- src/lib/ai/parse-analysis.ts — parser + normalizer
-- src/lib/ai/prompts/box-analysis.ts — box-specific prompt
-- data/custom-models.json — persisted user-added Ollama model tags
+- server/src/lib/ai-hub.ts — ai-hub client (fetches models, keys, providers from central service)
+- server/src/lib/ai/models.ts — ProviderType + ResolvedModel types
+- server/src/lib/ai/providers/ollama.ts — Ollama / Ollama-Cloud provider
+- server/src/lib/ai/providers/openai-compatible.ts — OpenAI-compatible provider (Gemini, OpenAI, Anthropic, custom)
+- server/src/lib/ai/providers/shared.ts — shared utilities (normalizeEndpoint, fetchWithTimeout)
+- server/src/lib/ai/analyze-images.ts — dispatcher (resolves model via ai-hub, routes to provider)
+- server/src/lib/ai/parse-analysis.ts — parser + normalizer
+- server/src/lib/ai/prompts/box-analysis.ts — box-specific prompt
+- server/src/services/models.ts — model list with 5-min cache, model resolution via ai-hub
+- server/src/services/settings.ts — active model ID only (settings.json)
+
+## AI Configuration
+- All model assignments, API keys and provider details managed by **ai-hub** (`https://ai-hub.ohnesorgen.net`)
+- Env vars: `AI_HUB_URL`, `AI_HUB_TOKEN`, `AI_HUB_APP_ID`
+- No local key storage, no custom-models.json, no provider test endpoints
 
 ## Image Processing
 - sharp — bounding box crops → item thumbnails
@@ -33,4 +41,4 @@
 - html5-qrcode — in-app scanning
 
 ## Deployment
-- DevPilot → Caddy → kistenscanner.local
+- Coolify → kistenscanner.ohnesorgen.net (Docker, compose.yaml, GitHub main branch)
