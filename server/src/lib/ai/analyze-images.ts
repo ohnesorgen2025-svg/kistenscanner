@@ -52,16 +52,23 @@ export async function analyzeImages(input: AnalyzeImagesInput): Promise<string> 
     hasApiKey: !!model.apiKey,
   });
 
-  switch (model.providerType) {
-    case "ollama":
-    case "ollama-cloud":
-      return callOllama(model, input.prompt, input.images);
-    case "openai":
-    case "gemini":
-    case "anthropic":
-    case "custom":
-      return callOpenAiCompatible(model, input.prompt, input.images);
-    default:
-      throw new Error(`Unbekannter Provider-Typ: ${model.providerType}`);
+  const debugInfo = `[${model.providerType}] ${model.modelTag} → ${model.baseUrl ?? "no-url"} (key: ${model.apiKey ? "yes" : "no"})`;
+
+  try {
+    switch (model.providerType) {
+      case "ollama":
+      case "ollama-cloud":
+        return await callOllama(model, input.prompt, input.images);
+      case "openai":
+      case "gemini":
+      case "anthropic":
+      case "custom":
+        return await callOpenAiCompatible(model, input.prompt, input.images);
+      default:
+        throw new Error(`Unbekannter Provider-Typ: ${model.providerType}`);
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    throw new Error(`${message} — DEBUG: ${debugInfo}`);
   }
 }
