@@ -11,6 +11,7 @@ healthRouter.get("/", (_request, response) => {
 
   response.json({
     status: "ok",
+    version: "ai-hub-v1",
     database: databaseStatus.status,
     timestamp: new Date().toISOString(),
   });
