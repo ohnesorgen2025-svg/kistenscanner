@@ -5,17 +5,24 @@
  *   AI_HUB_URL    — e.g. "http://localhost:3800"
  *   AI_HUB_TOKEN  — Bearer token
  *   AI_HUB_APP_ID — your app identifier (e.g. "kistenscanner")
+ *
+ * Env vars are read lazily at call time, not at import time,
+ * so dotenv or other env initialization can run after import.
  */
 
-const AI_HUB_URL = process.env.AI_HUB_URL || "http://localhost:3800";
-const AI_HUB_TOKEN = process.env.AI_HUB_TOKEN || "";
-const AI_HUB_APP_ID = process.env.AI_HUB_APP_ID || "";
+function getAiHubConfig() {
+  return {
+    url: process.env.AI_HUB_URL || "http://localhost:3800",
+    token: process.env.AI_HUB_TOKEN || "",
+    appId: process.env.AI_HUB_APP_ID || "",
+  };
+}
 
 interface AppModel {
   modelId: string;
+  providerId: string;
   modelName: string;
   modelTag: string;
-  providerId: string;
   providerName: string;
   isDefault: boolean;
 }
@@ -29,8 +36,9 @@ interface Provider {
 }
 
 async function hubFetch<T>(path: string): Promise<T> {
-  const res = await fetch(`${AI_HUB_URL}${path}`, {
-    headers: { Authorization: `Bearer ${AI_HUB_TOKEN}` },
+  const { url, token } = getAiHubConfig();
+  const res = await fetch(`${url}${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
     const body = await res.text();
@@ -41,14 +49,16 @@ async function hubFetch<T>(path: string): Promise<T> {
 
 /** Get all models assigned to this app. */
 export async function getAppModels(): Promise<AppModel[]> {
-  return hubFetch<AppModel[]>(`/api/app-models?app=${encodeURIComponent(AI_HUB_APP_ID)}`);
+  const { appId } = getAiHubConfig();
+  return hubFetch<AppModel[]>(`/api/app-models?app=${encodeURIComponent(appId)}`);
 }
 
 /** Get the default model for this app. Throws if none assigned. */
 export async function getDefaultModel(): Promise<AppModel> {
+  const { appId } = getAiHubConfig();
   const models = await getAppModels();
   const def = models.find((m) => m.isDefault);
-  if (!def) throw new Error(`No default model assigned for app "${AI_HUB_APP_ID}"`);
+  if (!def) throw new Error(`No default model assigned for app "${appId}"`);
   return def;
 }
 
@@ -71,9 +81,8 @@ export async function getProvider(providerId: string): Promise<Provider> {
  */
 export async function resolveModel(model?: AppModel) {
   const m = model ?? (await getDefaultModel());
-  const providerId = m.providerId;
-  const provider = await getProvider(providerId);
-  const apiKey = provider.requiresKey ? await getApiKey(providerId) : undefined;
+  const provider = await getProvider(m.providerId);
+  const apiKey = provider.requiresKey ? await getApiKey(m.providerId) : undefined;
 
   return {
     modelTag: m.modelTag,
