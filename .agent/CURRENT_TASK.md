@@ -17,6 +17,8 @@ AI-Bildanalyse mit dem über ai-hub zugewiesenen Modell (`ollama-cloud:glm-5.1`)
 - Warum liefert der Ollama-Cloud-Provider HTML statt JSON zurück? (baseUrl und/oder API-Path vermutlich falsch)
 
 ## Done Recently
+- ai-hub client: `resolveModel()` nutzt jetzt `m.providerId` statt `m.modelId.split(":")[0]`; `AppModel` hat neues Feld `providerId`.
+- Fehlende `GET /api/providers/:id` Route im ai-hub Backend identifiziert (verursachte HTML-statt-JSON Antwort).
 - Komplette ai-hub Integration (Szenario B): ai-hub-client, alle Backend-Services, Provider, Routes, Frontend Settings/Help.
 - Alle lokalen Key-/Model-Management-Features entfernt (Settings-Keys, custom-models.json, Provider-Tests, .env-Handling).
 - Safe JSON parsing in beiden Providern (ollama.ts, openai-compatible.ts) — zeigt jetzt HTML-Body bei Parsing-Fehlern.
