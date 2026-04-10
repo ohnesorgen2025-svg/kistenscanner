@@ -5,7 +5,7 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
 
 ## Scope (v1)
 - Single user, no auth
-- Local LAN deployment via DevPilot
+- Local Docker Compose verification plus shared LAN deployment
 - No export, no backup, no categories/tags
 - No duplicate detection
 - No box status system

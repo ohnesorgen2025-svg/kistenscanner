@@ -1,12 +1,20 @@
 # Decisions — kistenscanner
 
+## 2026-04-10 — ai-hub env is read lazily at call time
+`server/src/lib/ai-hub.ts` now reads `AI_HUB_URL`, `AI_HUB_TOKEN` and `AI_HUB_APP_ID` via `getAiHubConfig()` on each call instead of capturing them as top-level constants during module import.
+Reason: This avoids stale configuration when dotenv loading, Docker Compose env injection or test setup happens after module import.
+
+## 2026-04-10 — Local ai-hub verification uses localhost, not `kistenscanner.local`
+The reliable local verification path is `http://127.0.0.1:3008/api/models`. On the current development Mac, `kistenscanner.local` resolves to the shared LAN host `192.168.44.106` instead of the local Docker container.
+Reason: Hostname resolution makes `kistenscanner.local` a LAN check, not a local-loopback check, so local ai-hub validation must use localhost ports directly.
+
 ## 2026-04-08 — AI model management replaced by central ai-hub service
 All local AI model/key management (models.ts registry, custom-models.json, Settings key inputs, provider test buttons, server/.env key storage) has been removed and replaced by the external ai-hub service at `https://ai-hub.ohnesorgen.net`. The app fetches its assigned models, API keys and provider details from ai-hub at runtime using `AI_HUB_URL`, `AI_HUB_TOKEN` and `AI_HUB_APP_ID` environment variables. The Settings page now only shows a model picker — no key entry, no custom model management, no connection tests. The ai-hub client lives in `server/src/lib/ai-hub.ts`.
 Reason: Centralizing AI config in one service (ai-hub) avoids duplicating model/key management per app and allows model rotation and key management in one place.
 
 ## 2026-04-08 — Deployment moved from LAN DevPilot to Coolify online
-The app now runs at `https://kistenscanner.ohnesorgen.net` via Coolify, deployed from GitHub main branch. The old LAN deployment via DevPilot to `kistenscanner.local` / `192.168.44.106` is decommissioned.
-Reason: Online deployment is easier to maintain and makes the app accessible from anywhere.
+Coolify was introduced as an additional online deployment target, but the shared LAN deployment at `kistenscanner.local` / `192.168.44.106` remains active and is still part of the day-to-day workflow alongside local Docker Compose verification.
+Reason: The project currently needs both a shared LAN runtime for real-device use and a local Compose runtime for fast verification.
 
 ## 2026-04-05 — Design system consolidation (P1-P12)
 Full CSS audit and fix pass across App.css and index.css:

@@ -41,4 +41,6 @@
 - html5-qrcode — in-app scanning
 
 ## Deployment
-- Coolify → kistenscanner.ohnesorgen.net (Docker, compose.yaml, GitHub main branch)
+- Local verification → Docker Compose on `127.0.0.1:3008`
+- Shared LAN runtime → `kistenscanner.local` / `192.168.44.106` via SSH + `docker compose`
+- Local HTTPS requires certs under `data/certs/`; otherwise use local HTTP for verification

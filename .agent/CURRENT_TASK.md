@@ -1,27 +1,22 @@
 # Current Task
 
-## Status:
-� ai-hub Integration abgeschlossen, Bildanalyse debuggen.
+## Status
+- ai-hub Integration ist funktionsfähig; der Lazy-Env-Fix in `server/src/lib/ai-hub.ts` ist eingebaut und verifiziert.
 
 ## Current Goal
-AI-Bildanalyse mit dem über ai-hub zugewiesenen Modell (`ollama-cloud:glm-5.1`) zum Laufen bringen.
+Sauberen Ausgangszustand für die nächsten Produktänderungen halten: ai-hub-gestützte Modellauflösung muss lokal und im LAN stabil bleiben.
 
 ## Next Action
-- Nach Redeploy (Version `ai-hub-v2`) Bildanalyse erneut testen.
-- Die verbesserte Fehlermeldung zeigt jetzt den HTML-Body des Providers (erste 120 Zeichen) plus Debug-Info (providerType, modelTag, baseUrl, hasApiKey).
-- Anhand der Debug-Ausgabe das eigentliche Problem identifizieren (falsche URL, Auth-Fehler, Redirect).
-- Fix implementieren, pushen, Redeploy.
-- Nach erfolgreichem Fix: Debug-Logging entfernen, Version-Tag aus Health-Endpoint entfernen.
+- Nächste Feature- oder Bugfix-Arbeit auf dem jetzt stabilen ai-hub-Stand aufbauen.
+- Für lokale ai-hub-Verifikation `http://127.0.0.1:3008/api/models` verwenden.
+- Für LAN-Deploys weiter den Host `192.168.44.106` per SSH + `docker compose` benutzen.
 
 ## Open Questions
-- Warum liefert der Ollama-Cloud-Provider HTML statt JSON zurück? (baseUrl und/oder API-Path vermutlich falsch)
+- Soll `kistenscanner.local` dauerhaft auf den LAN-Host zeigen, oder brauchen lokale Tests einen separaten Hostnamen / lokales TLS-Setup?
 
 ## Done Recently
-- ai-hub client: `resolveModel()` nutzt jetzt `m.providerId` statt `m.modelId.split(":")[0]`; `AppModel` hat neues Feld `providerId`.
-- Fehlende `GET /api/providers/:id` Route im ai-hub Backend identifiziert (verursachte HTML-statt-JSON Antwort).
-- Komplette ai-hub Integration (Szenario B): ai-hub-client, alle Backend-Services, Provider, Routes, Frontend Settings/Help.
-- Alle lokalen Key-/Model-Management-Features entfernt (Settings-Keys, custom-models.json, Provider-Tests, .env-Handling).
-- Safe JSON parsing in beiden Providern (ollama.ts, openai-compatible.ts) — zeigt jetzt HTML-Body bei Parsing-Fehlern.
-- Debug-Info in analyze-images.ts Fehlerbehandlung hinzugefügt.
-- Health-Endpoint mit Version-Tag (`ai-hub-v2`) zur Deploy-Verifizierung.
-- Deployment auf Coolify umgestellt (kistenscanner.ohnesorgen.net).
+- `server/src/lib/ai-hub.ts` auf Lazy-Env-Lookup via `getAiHubConfig()` umgestellt; `AI_HUB_*` werden nicht mehr beim Import eingefroren.
+- Lokale Compose-Umgebung mit `AI_HUB_URL`, `AI_HUB_TOKEN` und `AI_HUB_APP_ID` in der Root-`.env` verifiziert.
+- Direkter ai-hub-Call aus dem Container liefert `200 OK`.
+- `http://127.0.0.1:3008/api/models` liefert lokal erfolgreich die Modellliste.
+- `kistenscanner.local` zeigt auf diesem Mac aktuell auf `192.168.44.106` und ist damit kein lokaler Loopback-Testpfad.
