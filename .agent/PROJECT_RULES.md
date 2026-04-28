@@ -47,7 +47,11 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
   - All buttons and interactive elements must have `:hover` and `:active` states.
 - **Color**: Single accent color `--accent: #3B82F6`. All accent-derived values use `rgba(59, 130, 246, <opacity>)`. No hardcoded hex blues.
 - **Spacing/Density**: Professional dashboard aesthetic with `12px` gaps as base multiplier. Valid values: 6px (0.375rem), 12px (0.75rem), 24px (1.5rem), 36px (2.25rem), 48px (3rem).
-- **Content Width**: Maximum width for centered content should be strictly bounded to `768px` (48rem).
+- **Content Width**: Responsive, not a single fixed cap.
+  - Tablet (≥ 768px / 48rem): max `48rem` (`768px`) — mobile-first baseline
+  - Desktop (≥ 1024px / 64rem): max `56rem` app / `64rem` detail
+  - Large Desktop (≥ 1280px / 80rem): max `72rem` app / `84rem` detail
+  - Note: `page-shell--detail` (BoxDetail, ItemDetail) always gets more width than `page-shell--app` routes.
 - **Border Radius**: 3 tokens only — `0.25rem` (4px, chips/badges), `0.5rem` (8px, buttons/inputs), `0.75rem` (12px, panels/cards).
 - **Font Sizes**: 5-step type scale — `0.7rem` (xs), `0.75rem` (sm), `0.85rem` (base), `0.95rem` (md), `1.05rem` (lg). Headings use `clamp()`.
 - **Letter Spacing**: 2 values only — `0.08em` (normal) and `0.12em` (wide/uppercase labels).
