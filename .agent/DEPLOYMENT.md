@@ -1,36 +1,28 @@
 # Deployment
 
-## Shared LAN Runtime
-- **Hostname:** http://kistenscanner.local
-- **LAN URL (HTTP):** http://192.168.44.106:3008
-- **LAN URL (HTTPS):** https://192.168.44.106:3443
-- **Host:** 192.168.44.106
-- **Deploy Path:** /home/stefan/apps/kistenscanner
-- **Last Deploy:** 2026-04-10T09:14:58.024Z
-- **Note:** On the current dev Mac, `kistenscanner.local` resolves to `192.168.44.106`, not to localhost.
+## Production: Coolify (online)
+- **Trigger:** Manuell. Nach `git push origin main` auf der Coolify-Oberfläche „Redeploy" klicken.
+- **Quelle:** GitHub `main`. Was nicht gepusht ist, geht nicht live.
+- **Webhook:** bewusst nicht eingerichtet — Halbfertiges darf auf `main` liegen, ohne sofort online zu gehen.
 
-## Local Compose Runtime
+## Local Compose Runtime (Verifikation)
 - **HTTP:** http://127.0.0.1:3008
-- **HTTPS Port:** https://127.0.0.1:3443
-- **Note:** Local HTTPS only works if certificates exist under `data/certs/`; otherwise the HTTP endpoint is the reliable local verification path.
-- **ai-hub Check:** `http://127.0.0.1:3008/api/models`
-- **Compose Env Source:** root `.env` next to `compose.yaml`
+- **HTTPS Port:** https://127.0.0.1:3443 (nur wenn Zertifikate unter `data/certs/` liegen; sonst HTTP nutzen)
+- **ai-hub Check:** `curl -sS http://127.0.0.1:3008/api/models`
+- **Compose Env Source:** root `.env` neben `compose.yaml`
 
-## Re-Deploy LAN
-After pushing changes to `main`, re-deploy the shared LAN host with:
-```bash
-ssh -i ~/.ssh/id_ed25519 stefan@192.168.44.106 "cd /home/stefan/apps/kistenscanner && git pull --ff-only && docker compose down --remove-orphans && docker compose up -d --build"
-```
-
-## Re-Deploy Local
-For local verification on the dev machine:
 ```bash
 cd /Users/stefansorgenfrey/dev/kistenscanner
 docker compose down --remove-orphans
 docker compose up -d --build
 ```
 
-## Important
-- Test changes locally before LAN deploys.
-- After ai-hub or env changes, verify with `curl -sS http://127.0.0.1:3008/api/models`.
-- Check LAN logs with `ssh -i ~/.ssh/id_ed25519 stefan@192.168.44.106 "cd /home/stefan/apps/kistenscanner && docker compose logs --tail 30"`.
+## Workflow für Änderungen
+1. Lokal in den Dev-Servern (Vite + Node) arbeiten.
+2. Optional: `node screenshot_desktop.js` für visuelle Checks.
+3. Optional: Compose-Run starten und `curl` gegen `/api/models`.
+4. `git commit` (Conventional Commits) und `git push origin main`.
+5. In Coolify auf „Redeploy" klicken, sobald der Stand veröffentlicht werden soll.
+
+## Später (nicht aktiv)
+Eine LAN-Runtime auf `192.168.44.106` (`kistenscanner.local`) ist denkbar, aber aktuell nicht in Betrieb. Wird bei Bedarf separat wieder aufgesetzt.

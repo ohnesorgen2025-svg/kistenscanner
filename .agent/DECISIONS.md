@@ -1,5 +1,9 @@
 # Decisions — kistenscanner
 
+## 2026-04-30 — LAN-Runtime ausgemustert, nur noch Coolify online
+Der Shared-LAN-Host `192.168.44.106` / `kistenscanner.local` wird nicht mehr aktiv betrieben. Production läuft ausschließlich auf Coolify, manueller Redeploy nach jedem Push auf `main`. Webhook bewusst nicht eingerichtet, damit halbfertige Commits auf `main` liegen dürfen, ohne sofort live zu gehen. `LAN_HANDOFF.md` entfernt, `.agent/DEPLOYMENT.md` komplett auf den Coolify-Workflow umgeschrieben.
+Reason: Es gibt aktuell keinen aktiven LAN-Bedarf, und zwei parallele Deploy-Pfade vergrößern nur den Wartungsaufwand. Eine LAN-Runtime kann später separat wieder aufgesetzt werden, wenn sie wirklich gebraucht wird.
+
 ## 2026-04-30 — Mockup-A-Redesign + Dashboard abgeschafft
 Die UI wurde komplett auf Mockup A („Tool / Engineering“-Ästhetik) umgestellt: neue Tokens (`--bg-base #0B0D10`, `--accent #4A8DFF`), Inter + JetBrains Mono, sticky AppBar (44 px) plus SubNav (38 px) auf Desktop, max-width 1240 px, Page-Scope-Klassen pro Route. Frische `.agent/DESIGN.md` ersetzt die früheren Linear-/Apple-Blue-Regeln vollständig.
 Gleichzeitig wurde `/dashboard` ersatzlos entfernt: Stats-Kacheln waren nicht aussagekräftig, Duplikat-Erkennung verworfen, CSV/JSON-Export ebenfalls (kann bei Bedarf zurückgeholt werden). Smart-Reorganisation lebt jetzt als Werkzeug-Sektion unter `/settings`. SubNav-Tabs sind dadurch nur noch **Behälter**, **Suchen**, (disabled) **Aktivität**.

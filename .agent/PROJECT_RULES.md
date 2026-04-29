@@ -5,7 +5,7 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
 
 ## Scope (v1)
 - Single user, no auth
-- Local Docker Compose verification plus shared LAN deployment
+- Production läuft auf Coolify (online), lokales Docker Compose nur für Verifikation
 - No export, no backup, no categories/tags
 - No duplicate detection
 - No box status system

@@ -15,9 +15,9 @@ Phase 2 — Funktion hinter den neuen Look bringen, ohne die Mockup-A-Tokens / L
 - Aktivität-Tab funktional anbinden — Audit-Log oder Recent-Activity, danach `disabled` entfernen.
 - Bei jedem UI-Touch zuerst `.agent/DESIGN.md` lesen; neue CSS-Regeln immer scoped über die Page-Class einführen.
 - Lokale Verifikation: `node screenshot_desktop.js`; ai-hub via `http://127.0.0.1:3008/api/models`.
+- Production lebt auf Coolify; nach Push auf `main` manuell „Redeploy“ klicken (siehe `.agent/DEPLOYMENT.md`).
 
 ## Open Questions
-- Soll `kistenscanner.local` dauerhaft auf den LAN-Host zeigen, oder brauchen lokale Tests einen separaten Hostnamen / lokales TLS-Setup?
 - CSV/JSON-Export: ersatzlos gestrichen oder als zweite Werkzeug-Karte unter Settings zurückholen, wenn jemand das wirklich braucht?
 - „Verliehen“ als Filter-Chip auf `/boxes` einführen, sobald Loans aktiver genutzt werden?
 

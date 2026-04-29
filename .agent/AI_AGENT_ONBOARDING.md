@@ -13,7 +13,7 @@ When you start a session, read these files in this order:
 
 ## Purpose
 - `CURRENT_TASK.md` is the operational handover file
-- `DEPLOYMENT.md` is the current deployment state for both local Compose and the shared LAN host
+- `DEPLOYMENT.md` describes the Coolify production workflow and local Compose verification
 - `DECISIONS.md` explains why the project looks the way it does
 - `ROADMAP.md` shows broader direction
 - `STACK.md` and `PROJECT_RULES.md` define technical and product constraints
@@ -23,4 +23,4 @@ When you start a session, read these files in this order:
 - Continue from the current task instead of inventing a new workflow
 - Prefer small, pragmatic, reusable changes
 - Keep handovers short and concrete
-- If the task affects runtime behavior, validate locally with Docker Compose first, then do the shared LAN redeploy unless the prompt explicitly says no deploy
+- If the task affects runtime behavior, validate locally with Docker Compose first. Production lives on Coolify and is redeployed manually after pushing to `main`.

@@ -42,5 +42,5 @@
 
 ## Deployment
 - Local verification → Docker Compose on `127.0.0.1:3008`
-- Shared LAN runtime → `kistenscanner.local` / `192.168.44.106` via SSH + `docker compose`
+- Production → Coolify (online), manueller Redeploy nach `git push origin main`
 - Local HTTPS requires certs under `data/certs/`; otherwise use local HTTP for verification
