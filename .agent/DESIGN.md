@@ -16,7 +16,7 @@ This is a mobile-first tool used on phones for scanning QR codes and photographi
 - Luminance stacking for depth — no drop shadows on dark surfaces
 - Item photography is the only source of color — UI chrome stays neutral
 - Mobile: bottom nav with icons only, no labels
-- Desktop: left sidebar with icons + labels
+- Desktop: fixed 48px top bar with icons only, no labels; never use a left sidebar
 
 ## 2. Color Palette & Roles
 
@@ -25,7 +25,7 @@ This is a mobile-first tool used on phones for scanning QR codes and photographi
 | Token | Hex | Use |
 |-------|-----|-----|
 | `--bg-base` | `#08090a` | Page canvas, deepest background |
-| `--bg-panel` | `#0f1011` | Sidebar, bottom nav, fixed panels |
+| `--bg-panel` | `#0f1011` | Top bar, bottom nav, fixed panels |
 | `--bg-card` | `#161718` | Cards, list items, content containers |
 | `--bg-elevated` | `#1c1d1f` | Hover states, dropdowns, popovers, modals |
 
@@ -81,7 +81,6 @@ This is a mobile-first tool used on phones for scanning QR codes and photographi
 | Body | 14px (0.875rem) | 400 | 1.5 | -0.1px | Descriptions, metadata values |
 | Small | 12px (0.75rem) | 400 | 1.4 | normal | Badges, timestamps, tertiary info |
 | Button | 14px (0.875rem) | 500 | 1.0 | -0.08px | All button labels |
-| Nav label (desktop) | 12px (0.75rem) | 500 | 1.2 | 0.06em | Sidebar icon labels |
 
 ### Principles
 - **Two weights in practice**: 400 (reading) and 500 (emphasis/interactive). 600 only for page titles and section kickers.
@@ -195,18 +194,19 @@ Item actions (edit, upload photo, move, delete) are hidden behind a single ⋯ i
 - **Icons only, no text labels on mobile**
 - Maximum 7 items in one row
 
-**Desktop — Left sidebar (1024px and above)**
-- Position: fixed left, full height
-- Width: 72px
+**Desktop — Top bar (1024px and above)**
+- Position: fixed top, full width
+- Height: 48px
 - Background: `var(--bg-panel)`
-- Border-right: `1px solid var(--border-subtle)`
-- Layout: flex column, centered, gap 4px, padding 16px 0
-- Items: 56px wide, flex column, gap 4px, padding 8px, border-radius 10px
+- Border-bottom: `1px solid var(--border-subtle)`
+- Layout: flex row, centered, gap 8px, padding 4px 16px
+- Items: 40×40px tap area, border-radius 10px
 - Icon: 20px
-- Label: 10px, weight 500, letter-spacing 0.04em
 - Default: color `var(--text-tertiary)`
 - Active: color `var(--accent-bright)`, background `var(--accent-muted)`
 - Hover: color `var(--text-primary)`, background `rgba(255,255,255,0.04)`
+- **Icons only, no text labels on desktop**
+- **No left sidebar on desktop**
 
 ### Image Treatment
 
@@ -238,7 +238,8 @@ Base unit: 8px. All spacing values are multiples of 4px.
 | Box detail | 100% - 16px padding | max 640px centered | max 840px | max 960px |
 | Box grid (Kisten) | 100% - 16px padding | 2-col grid | 3-col grid | 4-col grid |
 
-- Desktop page offset: `margin-left: 72px` (sidebar width)
+- Desktop page offset: `margin-left: 0` (sidebar removed)
+- Desktop page top pad: `padding-top: 64px` (48px fixed top bar + 16px spacing)
 - Mobile page bottom pad: `padding-bottom: 72px` (bottom nav + safe area)
 
 ### Box Overview Grid
@@ -288,16 +289,16 @@ Every page uses the same header structure:
 |------|-------|-------------|
 | Mobile | <640px | Bottom nav (icons only), single column, 16px page padding |
 | Tablet | 640–1023px | Bottom nav, 2-column box grid, centered content max 640px |
-| Desktop | 1024–1279px | Left sidebar (72px), 3-column box grid, content max 720–840px |
-| Large | ≥1280px | Left sidebar, 4-column box grid, content max 800–960px |
+| Desktop | 1024–1279px | Top bar (48px), 3-column box grid, content max 720–840px |
+| Large | ≥1280px | Top bar (48px), 4-column box grid, content max 800–960px |
 
 ### Navigation Switch
 - Below 1024px: Bottom nav bar (fixed, 56px height, icons only)
-- 1024px and above: Left sidebar (fixed, 72px width, icons + labels)
+- 1024px and above: Top bar (fixed, 48px height, icons only)
 
 ### Touch Targets
 - All buttons: 40px minimum height
-- Nav items: 44×44px tap area
+- Nav items: 44×44px tap area on mobile, 40×40px tap area on desktop
 - Item cards: entire card is tappable to open detail
 - Context menu trigger (⋯): 40×40px
 
