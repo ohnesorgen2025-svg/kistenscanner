@@ -9,6 +9,7 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
 - No export, no backup, no categories/tags
 - No duplicate detection
 - No box status system
+- No dedicated dashboard route — IA besteht aus Behälter / Suchen / (Aktivität TBD); Smart-Reorganisation ist ein Werkzeug unter Settings
 
 ## Code Rules
 - TypeScript everywhere (strict)
@@ -35,25 +36,13 @@ Two workflows only: STORE and FIND. Every feature must serve one of these.
 - Never mix these layers
 
 ## Design System Rules
-- **Navigation**: Mobile is a single-row bottom bar with icons only (no text). Desktop is a fixed top bar with icons only (no text), full width, height `48px`, centered horizontal icons, and no left sidebar.
-- **Desktop Content Offset**: Desktop content must use `margin-left: 0` and `padding-top: 64px` (`48px` top bar + `16px` spacing). Never reserve `72px` for a sidebar.
-- **Button Symmetry**: 
-  - 1 Action Button = 100% container width.
-  - 2 Action Buttons = 50% / 50% width (`flex: 1`).
-  - 3 Action Buttons = 33/33/33 or 2x50% above 1x100%.
-- **Button Dimensions**: Minimum height of `40px` for all buttons and interactive touch targets. Toolbar icon buttons must be exactly `40x40px` squares and must NOT stretch.
-- **Button Styles**: 
-  - `Primary`: `var(--accent)` (`#0071e3`) background, `var(--text-primary)` text, no border.
-  - `Secondary/Ghost`: Transparent background, `1.5px solid rgba(255,255,255,0.3)` border.
-  - All buttons and interactive elements must have `:hover` and `:active` states.
-- **Color**: Single accent color `--accent: #0071e3`, with `--accent-bright: #2997ff`, `--accent-hover: #0077ed`, `--accent-pressed: #005bb5`, and `--accent-muted: rgba(0,113,227,0.12)`. No hardcoded legacy blues.
-- **Spacing/Density**: Professional dashboard aesthetic with `12px` gaps as base multiplier. Valid values: 6px (0.375rem), 12px (0.75rem), 24px (1.5rem), 36px (2.25rem), 48px (3rem).
-- **Content Width**: Responsive, not a single fixed cap.
-  - Tablet (≥ 768px / 48rem): max `640px`, centered
-  - Desktop (≥ 1024px / 64rem): max `720px` app / `840px` detail
-  - Large Desktop (≥ 1280px / 80rem): max `800px` app / `960px` detail
-  - Note: `page-shell--detail` (BoxDetail, ItemDetail) always gets more width than `page-shell--app` routes.
-- **Border Radius**: 4 tokens only — `6px`, `8px`, `10px`, `12px`.
-- **Font Sizes**: Use the design-system scale from `.agent/DESIGN.md`; page titles are `24px`, section kickers `11px`, body text `14px`. No font size below `11px`.
-- **Font Weight**: No weight above `600`.
-- **Letter Spacing**: Use `0.08em` for uppercase section labels and subtle negative spacing only where specified in `.agent/DESIGN.md`.
+Siehe `.agent/DESIGN.md` (Stand 2026-04-30, Mockup A) für die vollständigen Regeln. Kurzfassung:
+- **Layout-Shell (Desktop ≥ 1024 px)**: Sticky AppBar (44 px, Brand + Breadcrumb + ⌘K + Icon-Aktionen + Avatar) und darunter Sticky SubNav (38 px, Routen-Tabs + primäre Page-Actions). Inhalt zentriert auf max. **1240 px**, padding `0 24px`. Kein Sidebar.
+- **Mobile (< 1024 px)**: AppBar/SubNav ausgeblendet, Bottom-Nav (56 px + safe-area, icons-only).
+- **Color Tokens** (Quelle: `client/src/index.css`): `--bg-base #0B0D10`, `--bg-panel #111418`, `--bg-card #161A1F`, `--bg-elevated #1C2127`, `--accent #4A8DFF` (mit `-bright/-hover/-pressed/-muted`-Varianten). Keine zusätzlichen Akzentfarben.
+- **Typografie**: `Inter` (400/500/600), Body 13 px, Page-Title 22 px / 600. `JetBrains Mono` (`var(--mono)`) verpflichtend für Box-IDs, Item-Codes, Standort-Pfade, Tastenkürzel und Stats-Zahlen. Section-Kicker 11 px / 600 / `letter-spacing: 0.08em`, uppercase, `--text-tertiary`.
+- **Buttons**: Default Primary `var(--accent)`-Background, Ghost transparent + `--border-default`, Danger `--danger`-Text. Mindesthöhe 32 px Desktop / 40 px Mobile. BoxDetail-Toolbar nutzt horizontale Chip-Buttons mit `::after`-Labels.
+- **Spacing**: 4 / 8 / 12 / 16 / 24 / 32 px. Standard-Gap zwischen Panels 16 px.
+- **Border Radius Tokens**: `--radius-sm 4`, `--radius-md 6`, `--radius-lg 8`, `--radius-xl 10`. Nichts > 10 px auf rechteckigen Elementen.
+- **Page-Scope-Klassen**: Jede Page-Komponente kriegt eine Wrapper-Klasse (`.boxes-page`, `.search-page`, `.box-detail-page`, `.settings-page`, `.help-page`, `.scan-page`, `.add-box-page`, `.item-detail-page`). Lokale Overrides nur scoped, niemals globale Selektoren kapern.
+- **Routes / IA**: Sub-Nav-Tabs sind nur **Behälter**, **Suchen** und (disabled) **Aktivität**. Es gibt **kein `/dashboard`** mehr. Smart-Reorganisation lebt unter Settings → Werkzeuge. Settings/Help erreicht man über die AppBar-Icons.

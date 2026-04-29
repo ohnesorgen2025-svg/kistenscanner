@@ -1,28 +1,31 @@
 # Current Task
 
 ## Status
-- ai-hub Integration ist funktionsfähig; der Lazy-Env-Fix in `server/src/lib/ai-hub.ts` ist eingebaut und verifiziert.
-- UI-Redesign nach Linear + Apple Blue Design System ist umgesetzt, dokumentiert, committed und nach `origin/main` gepusht.
+- Mockup-A-Redesign ist visuell ausgerollt (AppBar + SubNav, 1240 px, JetBrains Mono für Codes, Page-Scope-Klassen pro Route).
+- IA bereinigt: `/dashboard` ist entfernt, Smart-Reorganisation lebt unter `/settings` → Werkzeuge. SubNav-Tabs sind Behälter / Suchen / (disabled) Aktivität.
+- `.agent/DESIGN.md` und `.agent/PROJECT_RULES.md` reflektieren den neuen Stand.
+- ai-hub-Integration weiterhin stabil; `getAiHubConfig()` bleibt der lazy Lookup.
 
 ## Current Goal
-Sauberen Ausgangszustand für die nächsten Produktänderungen halten: ai-hub-gestützte Modellauflösung muss lokal und im LAN stabil bleiben; neue UI-Arbeit muss auf dem dokumentierten Design System in `.agent/DESIGN.md` und `.agent/PROJECT_RULES.md` aufbauen.
+Phase 2 — Funktion hinter den neuen Look bringen, ohne die Mockup-A-Tokens / Layout-Shell zu kippen.
 
 ## Next Action
-- Nächste Feature- oder Bugfix-Arbeit auf dem jetzt stabilen ai-hub-Stand aufbauen.
-- Bei UI-Änderungen zuerst `.agent/DESIGN.md` und `.agent/PROJECT_RULES.md` lesen; Desktop-Navigation ist eine fixed Top Bar (`48px`, icons only), Content nutzt `padding-top: 64px` und `margin-left: 0`.
-- Für lokale ai-hub-Verifikation `http://127.0.0.1:3008/api/models` verwenden.
-- Für LAN-Deploys weiter den Host `192.168.44.106` per SSH + `docker compose` benutzen.
+- Echte Standort-Filter-Chips auf `/boxes` (statt der Demo-Liste) und Sortierung im List-View (Letzte Änderung / Items / Name).
+- ⌘K-Palette mit Quick-Find verdrahten (aktuell springt sie nur auf `/`).
+- Aktivität-Tab funktional anbinden — Audit-Log oder Recent-Activity, danach `disabled` entfernen.
+- Bei jedem UI-Touch zuerst `.agent/DESIGN.md` lesen; neue CSS-Regeln immer scoped über die Page-Class einführen.
+- Lokale Verifikation: `node screenshot_desktop.js`; ai-hub via `http://127.0.0.1:3008/api/models`.
 
 ## Open Questions
 - Soll `kistenscanner.local` dauerhaft auf den LAN-Host zeigen, oder brauchen lokale Tests einen separaten Hostnamen / lokales TLS-Setup?
+- CSV/JSON-Export: ersatzlos gestrichen oder als zweite Werkzeug-Karte unter Settings zurückholen, wenn jemand das wirklich braucht?
+- „Verliehen“ als Filter-Chip auf `/boxes` einführen, sobald Loans aktiver genutzt werden?
 
 ## Done Recently
-- Komplettes UI-Redesign nach Linear + Apple Blue umgesetzt: Tokens, Inter, Navigation, Box Grid, Box Detail, Search, Scanner und Add Box Screens.
-- Desktop-Navigation von Left Sidebar auf fixed Top Bar (`48px`, icons only) umgestellt; Content-Offset auf `padding-top: 64px` und `margin-left: 0` dokumentiert.
-- `.agent/DESIGN.md` und `.agent/PROJECT_RULES.md` entsprechend aktualisiert.
-- UI-Redesign commit `74acd9e` (`feat: complete UI redesign (Linear + Apple Blue)`) und Design-System-Doku commit `32dff82` (`docs: update design system to top bar navigation`) nach `origin/main` gepusht.
-- `server/src/lib/ai-hub.ts` auf Lazy-Env-Lookup via `getAiHubConfig()` umgestellt; `AI_HUB_*` werden nicht mehr beim Import eingefroren.
-- Lokale Compose-Umgebung mit `AI_HUB_URL`, `AI_HUB_TOKEN` und `AI_HUB_APP_ID` in der Root-`.env` verifiziert.
-- Direkter ai-hub-Call aus dem Container liefert `200 OK`.
-- `http://127.0.0.1:3008/api/models` liefert lokal erfolgreich die Modellliste.
-- `kistenscanner.local` zeigt auf diesem Mac aktuell auf `192.168.44.106` und ist damit kein lokaler Loopback-Testpfad.
+- Mockup-A-Redesign über alle Routen ausgerollt: AppBar, SubNav, MobileBottomNav, neue Tokens in `client/src/index.css`, Page-Scope-Klassen in allen Pages.
+- BoxDetail-Toolbar auf horizontale Chip-Buttons mit `::after`-Labels umgestellt.
+- `/dashboard` entfernt, `Dashboard.tsx` gelöscht, Route + SubNav-Tab „Übersicht“ aus `App.tsx` raus.
+- Smart-Reorganisation als eigene Werkzeug-Sektion in `Settings.tsx` integriert (mit kurzem Hinweis-Text und vorhandener Suggestion-Liste).
+- `screenshot_desktop.js` PAGES-Liste ohne Dashboard, alle 7 Screenshots laufen sauber gegen `localhost:5175`.
+- Layout zentriert auf 1240 px (`appbar__inner`, `subnav__inner`, beide page-shells).
+- ai-hub: `getAiHubConfig()` Lazy-Lookup verifiziert; lokale Compose-Umgebung liefert `200 OK` an `/api/models`.

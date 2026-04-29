@@ -220,7 +220,7 @@ export function ScanPage() {
   }, [navigate]);
 
   return (
-    <div className="page-stack scan-screen">
+    <div className="page-stack scan-screen scan-page">
       <header className="screen-header">
         <p className="screen-kicker">Scanner</p>
         <h1 className="screen-title">Scannen</h1>

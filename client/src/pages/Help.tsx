@@ -2,7 +2,7 @@ import { PageHeader } from "../components/PageHeader";
 
 export function HelpPage() {
   return (
-    <div className="page-stack">
+    <div className="page-stack help-page">
       <PageHeader kicker="Kistenscanner" title="Hilfe & Funktionen" />
 
       <section className="panel help-intro">

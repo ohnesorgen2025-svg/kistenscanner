@@ -1,5 +1,10 @@
 # Decisions — kistenscanner
 
+## 2026-04-30 — Mockup-A-Redesign + Dashboard abgeschafft
+Die UI wurde komplett auf Mockup A („Tool / Engineering“-Ästhetik) umgestellt: neue Tokens (`--bg-base #0B0D10`, `--accent #4A8DFF`), Inter + JetBrains Mono, sticky AppBar (44 px) plus SubNav (38 px) auf Desktop, max-width 1240 px, Page-Scope-Klassen pro Route. Frische `.agent/DESIGN.md` ersetzt die früheren Linear-/Apple-Blue-Regeln vollständig.
+Gleichzeitig wurde `/dashboard` ersatzlos entfernt: Stats-Kacheln waren nicht aussagekräftig, Duplikat-Erkennung verworfen, CSV/JSON-Export ebenfalls (kann bei Bedarf zurückgeholt werden). Smart-Reorganisation lebt jetzt als Werkzeug-Sektion unter `/settings`. SubNav-Tabs sind dadurch nur noch **Behälter**, **Suchen**, (disabled) **Aktivität**.
+Reason: Die alte IA war aufgebläht (Dashboard mit nicht genutzten Funktionen), das Tool soll auf die zwei Kern-Workflows STORE/FIND fokussiert bleiben. Mockup A bringt die technische Tool-Sprache zurück und macht IDs/Codes durch Mono-Schrift sofort lesbar.
+
 ## 2026-04-10 — ai-hub env is read lazily at call time
 `server/src/lib/ai-hub.ts` now reads `AI_HUB_URL`, `AI_HUB_TOKEN` and `AI_HUB_APP_ID` via `getAiHubConfig()` on each call instead of capturing them as top-level constants during module import.
 Reason: This avoids stale configuration when dotenv loading, Docker Compose env injection or test setup happens after module import.

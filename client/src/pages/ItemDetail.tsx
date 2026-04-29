@@ -200,7 +200,7 @@ export function ItemDetailPage() {
   const activeLoans = loans.filter((l) => !l.returnedDate);
 
   return (
-    <div className="page-stack">
+    <div className="page-stack item-detail-page">
       {isLoading ? <div className="feedback">Item wird geladen…</div> : null}
       {confirmation ? <div className="feedback">{confirmation}</div> : null}
       {error ? <div className="feedback feedback--error">{error}</div> : null}

@@ -399,7 +399,7 @@ export function AddBoxPage() {
   }
 
   return (
-    <div className="page-stack add-box-screen">
+    <div className="page-stack add-box-screen add-box-page">
       <header className="screen-header">
         <p className="screen-kicker">Neu</p>
         <h1 className="screen-title">Hinzufügen</h1>

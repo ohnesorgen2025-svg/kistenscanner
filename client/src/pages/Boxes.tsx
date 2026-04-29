@@ -1,94 +1,236 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { CONTAINER_TYPE_ICONS, CONTAINER_TYPE_LABELS, listBoxes, resolveAssetUrl, type BoxSummary } from "../lib/api";
+import {
+  CONTAINER_TYPE_ICONS,
+  CONTAINER_TYPE_LABELS,
+  listBoxes,
+  resolveAssetUrl,
+  type BoxSummary,
+} from "../lib/api";
+
+type ViewMode = "list" | "grid";
+
+const FILTERS = ["Alle", "Keller", "Dachboden", "Werkstatt", "Büro"] as const;
+type Filter = (typeof FILTERS)[number];
+
+function formatItems(count: number) {
+  return `${count} ${count === 1 ? "Item" : "Items"}`;
+}
+
+function formatDate(iso: string) {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "2-digit" });
+  } catch {
+    return "—";
+  }
+}
 
 export function BoxesPage() {
+  const navigate = useNavigate();
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [view, setView] = useState<ViewMode>("list");
+  const [filter, setFilter] = useState<Filter>("Alle");
 
   useEffect(() => {
     let isMounted = true;
-
     void listBoxes()
       .then((data) => {
-        if (!isMounted) {
-          return;
-        }
-
+        if (!isMounted) return;
         setBoxes(data);
         setError(null);
       })
       .catch((requestError: unknown) => {
-        if (!isMounted) {
-          return;
-        }
-
-        setError(requestError instanceof Error ? requestError.message : "Kisten konnten nicht geladen werden.");
+        if (!isMounted) return;
+        setError(
+          requestError instanceof Error
+            ? requestError.message
+            : "Kisten konnten nicht geladen werden.",
+        );
       })
       .finally(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       });
-
     return () => {
       isMounted = false;
     };
   }, []);
 
+  const filtered = useMemo(() => {
+    if (filter === "Alle") return boxes;
+    return boxes.filter((b) =>
+      (b.location ?? "").toLowerCase().includes(filter.toLowerCase()),
+    );
+  }, [boxes, filter]);
+
   return (
-    <div className="page-stack boxes-overview">
-      <header className="boxes-overview__header">
-        <div className="boxes-overview__heading">
-          <p className="boxes-overview__kicker">Inventar</p>
-          <h1 className="boxes-overview__title">Behälter</h1>
+    <div className="boxes-page">
+      <header className="boxes-page__head">
+        <div className="boxes-page__heading">
+          <p className="boxes-page__kicker">Inventar · {boxes.length} Behälter</p>
+          <h1 className="boxes-page__title">Behälter</h1>
+          <p className="boxes-page__sub">
+            Alles was du eingelagert hast. Klick rein für Details, scan einen Code für den Direkteinstieg.
+          </p>
         </div>
-        <Link className="button button--ghost boxes-overview__add" to="/boxes/add">
-          Hinzufügen
-        </Link>
       </header>
 
-      {error ? <div className="feedback feedback--error">{error}</div> : null}
-
-      {isLoading ? <div className="feedback">Kisten werden geladen…</div> : null}
-
-      {!isLoading && boxes.length === 0 ? (
-        <section className="panel empty-state">
-          <p className="section-kicker">Noch keine Behälter</p>
-          <h2>Lege den ersten Behälter an.</h2>
-          <div className="action-row">
-            <Link className="button button--primary" to="/boxes/add">
-              Speicher-Workflow öffnen
-            </Link>
-          </div>
-        </section>
-      ) : null}
-
-      <section className="box-grid">
-        {boxes.map((box) => (
-          <Link className="box-card" key={box.id} to={`/boxes/${box.id}`}>
-            <div className="box-card__media">
-              {resolveAssetUrl(box.thumbnailPath) ? (
-                <img alt={box.name} src={resolveAssetUrl(box.thumbnailPath) ?? undefined} />
-              ) : (
-                <div className="box-card__placeholder">
-                  <span className="material-symbols-outlined">{CONTAINER_TYPE_ICONS[box.containerType] ?? "inventory_2"}</span>
-                </div>
-              )}
-            </div>
-            <div className="box-card__body">
-              <div className="box-card__metadata">
-                <span className="box-card__badge">{CONTAINER_TYPE_LABELS[box.containerType] ?? "Kiste"} #{box.number}</span>
-                <span className="box-card__badge">{box.itemCount} Items</span>
-              </div>
-              <h2 className="box-card__title">{box.name}</h2>
-              <p className="box-card__location">{box.location}</p>
-            </div>
-          </Link>
+      <div className="boxes-filter" role="toolbar" aria-label="Filter">
+        {FILTERS.map((f) => (
+          <button
+            key={f}
+            type="button"
+            className={`boxes-filter__chip${filter === f ? " boxes-filter__chip--active" : ""}`}
+            onClick={() => setFilter(f)}
+          >
+            {f}
+          </button>
         ))}
-      </section>
+
+        <span className="boxes-filter__sep" aria-hidden="true" />
+
+        <button type="button" className="boxes-filter__chip" disabled>
+          <span className="material-symbols-outlined">tune</span>
+          Filter
+        </button>
+        <button type="button" className="boxes-filter__chip" disabled>
+          <span className="material-symbols-outlined">swap_vert</span>
+          Sortieren
+        </button>
+
+        <div className="boxes-filter__view" role="group" aria-label="Ansicht">
+          <button
+            type="button"
+            className={view === "list" ? "is-active" : ""}
+            onClick={() => setView("list")}
+            aria-label="Listenansicht"
+          >
+            <span className="material-symbols-outlined">view_list</span>
+          </button>
+          <button
+            type="button"
+            className={view === "grid" ? "is-active" : ""}
+            onClick={() => setView("grid")}
+            aria-label="Rasteransicht"
+          >
+            <span className="material-symbols-outlined">grid_view</span>
+          </button>
+        </div>
+      </div>
+
+      {error ? <div className="boxes-page__feedback">{error}</div> : null}
+
+      {isLoading ? (
+        <div className="boxes-page__feedback">Kisten werden geladen…</div>
+      ) : filtered.length === 0 ? (
+        <div className="boxes-page__feedback">
+          {boxes.length === 0 ? (
+            <>
+              Noch keine Behälter angelegt.{" "}
+              <Link to="/boxes/add">Ersten Behälter anlegen →</Link>
+            </>
+          ) : (
+            <>Keine Behälter im Filter „{filter}".</>
+          )}
+        </div>
+      ) : view === "list" ? (
+        <div className="boxes-table" role="table">
+          <div className="boxes-table__row boxes-table__row--head" role="row">
+            <div />
+            <div>#</div>
+            <div>Name</div>
+            <div>Standort</div>
+            <div style={{ textAlign: "right" }}>Items</div>
+            <div style={{ textAlign: "right" }}>Aktualisiert</div>
+            <div />
+          </div>
+
+          {filtered.map((box) => {
+            const thumb = resolveAssetUrl(box.thumbnailPath);
+            return (
+              <div
+                key={box.id}
+                role="row"
+                className="boxes-table__row boxes-table__row--body"
+                onClick={() => navigate(`/boxes/${box.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") navigate(`/boxes/${box.id}`);
+                }}
+                tabIndex={0}
+              >
+                <div className="boxes-table__thumb">
+                  {thumb ? (
+                    <img alt={box.name} src={thumb} />
+                  ) : (
+                    <span className="material-symbols-outlined">
+                      {CONTAINER_TYPE_ICONS[box.containerType] ?? "inventory_2"}
+                    </span>
+                  )}
+                </div>
+                <div className="boxes-table__num">
+                  #{String(box.number).padStart(3, "0")}
+                </div>
+                <div>
+                  <div className="boxes-table__name">{box.name}</div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: "var(--text-tertiary)",
+                      marginTop: 2,
+                    }}
+                  >
+                    {CONTAINER_TYPE_LABELS[box.containerType] ?? "Kiste"}
+                  </div>
+                </div>
+                <div className="boxes-table__loc">
+                  <span className="material-symbols-outlined">location_on</span>
+                  <span>{box.location || "—"}</span>
+                </div>
+                <div className="boxes-table__items">{formatItems(box.itemCount)}</div>
+                <div className="boxes-table__date">{formatDate(box.updatedAt)}</div>
+                <div className="boxes-table__chev">
+                  <span className="material-symbols-outlined">chevron_right</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="boxes-cards">
+          {filtered.map((box) => {
+            const thumb = resolveAssetUrl(box.thumbnailPath);
+            return (
+              <Link key={box.id} to={`/boxes/${box.id}`} className="boxes-card">
+                <div className="boxes-card__media">
+                  {thumb ? (
+                    <img alt={box.name} src={thumb} />
+                  ) : (
+                    <span className="material-symbols-outlined">
+                      {CONTAINER_TYPE_ICONS[box.containerType] ?? "inventory_2"}
+                    </span>
+                  )}
+                </div>
+                <div className="boxes-card__body">
+                  <div className="boxes-card__head">
+                    <span className="boxes-card__num">
+                      #{String(box.number).padStart(3, "0")}
+                    </span>
+                    <span className="boxes-card__count">{formatItems(box.itemCount)}</span>
+                  </div>
+                  <h2 className="boxes-card__title">{box.name}</h2>
+                  <div className="boxes-card__loc">
+                    <span className="material-symbols-outlined">location_on</span>
+                    <span>{box.location || "—"}</span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

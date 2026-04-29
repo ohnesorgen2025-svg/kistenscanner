@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Mockup C — Editorial / Produktkatalog</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0F1115;
+    --bg-1: #14171C;
+    --bg-2: #1B1F25;
+    --bg-3: #232831;
+    --border: rgba(255,255,255,0.06);
+    --border-strong: rgba(255,255,255,0.14);
+    --text: #F2F4F7;
+    --text-dim: #B3B9C2;
+    --text-mute: #6E747F;
+    --accent: #2E7CF6;
+    --accent-soft: rgba(46,124,246,0.12);
+    --radius: 16px;
+    --radius-lg: 24px;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    font-size: 22px;
+  }
+
+  /* ── Top bar ─────────────────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    height: 60px;
+    background: rgba(15,17,21,0.85);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar__inner {
+    max-width: 1440px; margin: 0 auto;
+    height: 100%; display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 32px;
+    padding: 0 32px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; font-size: 15.5px; letter-spacing: -0.01em;
+  }
+  .brand__mark {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--accent);
+    position: relative;
+    box-shadow: inset 0 -2px 0 rgba(0,0,0,0.15);
+  }
+  .brand__mark::after {
+    content: ""; position: absolute; inset: 6px;
+    background: white; border-radius: 2px; opacity: 0.95;
+  }
+  .topnav {
+    display: flex; align-items: center; gap: 0;
+    height: 60px;
+  }
+  .topnav__item {
+    height: 60px; padding: 0 18px;
+    display: inline-flex; align-items: center;
+    color: var(--text-dim); font-size: 14px; font-weight: 500;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    margin-bottom: -1px;
+    letter-spacing: -0.005em;
+  }
+  .topnav__item:hover { color: var(--text); }
+  .topnav__item--active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+  .top-actions { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+  .icon-btn {
+    width: 40px; height: 40px; display: grid; place-items: center;
+    border-radius: 10px; color: var(--text-dim);
+    background: transparent; border: 0; cursor: pointer;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .icon-btn .material-symbols-outlined { font-size: 22px; }
+  .top-actions .primary {
+    height: 40px; padding: 0 18px;
+    background: var(--accent); color: white;
+    border: 0; border-radius: 10px; font-weight: 500; font-size: 14px;
+    display: inline-flex; align-items: center; gap: 8px;
+    cursor: pointer;
+    letter-spacing: -0.005em;
+  }
+  .top-actions .primary .material-symbols-outlined { font-size: 19px; }
+
+  /* ── Hero ────────────────────────────────────────────── */
+  .hero {
+    max-width: 1440px; margin: 0 auto;
+    padding: 80px 32px 48px;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero__kicker {
+    color: var(--accent); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin: 0 0 16px;
+  }
+  .hero__title {
+    font-size: 64px; font-weight: 600;
+    letter-spacing: -0.035em; line-height: 1.02;
+    margin: 0 0 16px;
+    max-width: 14ch;
+  }
+  .hero__sub {
+    font-size: 18px; color: var(--text-dim);
+    max-width: 56ch; margin: 0 0 36px; line-height: 1.5;
+  }
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 0; padding: 24px 0 0;
+  }
+  .stat {
+    padding: 0 0 0 24px;
+    border-left: 1px solid var(--border);
+  }
+  .stat:first-child { border-left: 0; padding-left: 0; }
+  .stat__num {
+    font-size: 32px; font-weight: 600;
+    letter-spacing: -0.025em; line-height: 1;
+  }
+  .stat__label {
+    font-size: 13px; color: var(--text-mute);
+    margin-top: 8px;
+  }
+
+  /* ── Section ─────────────────────────────────────────── */
+  .section {
+    max-width: 1440px; margin: 0 auto;
+    padding: 64px 32px;
+  }
+  .section__head {
+    display: flex; align-items: end; justify-content: space-between;
+    margin-bottom: 32px; gap: 24px;
+  }
+  .section__title {
+    font-size: 32px; font-weight: 600;
+    letter-spacing: -0.025em; margin: 0;
+    line-height: 1.1;
+  }
+  .section__sub {
+    color: var(--text-dim); font-size: 15px;
+    margin: 6px 0 0;
+  }
+  .filters { display: flex; gap: 8px; align-items: center; }
+  .filter {
+    height: 36px; padding: 0 14px;
+    background: transparent; color: var(--text-dim);
+    border: 1px solid var(--border-strong);
+    border-radius: 999px;
+    font-size: 13.5px; font-weight: 500;
+    cursor: pointer;
+  }
+  .filter:hover { color: var(--text); border-color: var(--text-mute); }
+  .filter--active {
+    background: var(--text); color: var(--bg);
+    border-color: var(--text);
+  }
+
+  /* ── Grid ────────────────────────────────────────────── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+  .card {
+    background: var(--bg-1);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.3, 1), border-color 0.2s;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-strong);
+  }
+  .card__media {
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    position: relative;
+    background: var(--bg-2);
+  }
+  .card__media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s; }
+  .card:hover .card__media img { transform: scale(1.04); }
+  .card__num {
+    position: absolute; left: 16px; top: 16px;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+    color: white; font-size: 12px; font-weight: 500;
+    padding: 5px 10px; border-radius: 6px;
+    letter-spacing: 0.02em;
+  }
+  .card__count {
+    position: absolute; right: 16px; top: 16px;
+    background: rgba(255,255,255,0.96); color: var(--bg);
+    font-size: 12px; font-weight: 600;
+    padding: 5px 10px; border-radius: 6px;
+    letter-spacing: -0.005em;
+  }
+  .card__body { padding: 20px 22px 22px; }
+  .card__title {
+    font-size: 19px; font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0 0 6px; line-height: 1.25;
+  }
+  .card__loc {
+    color: var(--text-dim); font-size: 13.5px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .card__loc .material-symbols-outlined { font-size: 16px; color: var(--text-mute); }
+
+  /* ── Detail ──────────────────────────────────────────── */
+  .detail-section {
+    max-width: 1440px; margin: 0 auto;
+    padding: 80px 32px 96px;
+    border-top: 1px solid var(--border);
+  }
+  .detail-hero {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 48px;
+    align-items: center;
+    margin-bottom: 64px;
+  }
+  .detail-hero__photo {
+    aspect-ratio: 5/4;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .detail-hero__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .detail-hero__info {}
+  .detail-hero__kicker {
+    color: var(--accent); font-size: 13px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    margin: 0 0 14px;
+  }
+  .detail-hero__title {
+    font-size: 48px; font-weight: 600;
+    letter-spacing: -0.03em; line-height: 1.05;
+    margin: 0 0 16px;
+  }
+  .detail-hero__sub {
+    color: var(--text-dim); font-size: 16px;
+    line-height: 1.55; max-width: 50ch;
+    margin: 0 0 28px;
+  }
+  .detail-meta {
+    display: grid; grid-template-columns: repeat(2, auto);
+    gap: 16px 32px; margin-bottom: 28px;
+  }
+  .detail-meta dt { font-size: 12px; color: var(--text-mute); letter-spacing: 0.04em; text-transform: uppercase; margin: 0; }
+  .detail-meta dd { font-size: 15px; font-weight: 500; margin: 4px 0 0; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .btn {
+    height: 44px; padding: 0 20px;
+    border-radius: 10px; border: 1px solid var(--border-strong);
+    background: var(--bg-1); color: var(--text);
+    font-weight: 500; font-size: 14px; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px;
+    letter-spacing: -0.005em;
+  }
+  .btn:hover { background: var(--bg-2); }
+  .btn--primary { background: var(--accent); border-color: var(--accent); color: white; }
+  .btn--primary:hover { background: #1F6CE5; }
+  .btn .material-symbols-outlined { font-size: 19px; }
+
+  .items {}
+  .items__head {
+    display: flex; align-items: end; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .items__title {
+    font-size: 24px; font-weight: 600;
+    letter-spacing: -0.02em; margin: 0;
+  }
+  .items__count {
+    color: var(--text-mute); font-size: 14px;
+  }
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+  .item {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .item:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .item__media {
+    aspect-ratio: 4/3;
+    background: var(--bg-2);
+    display: grid; place-items: center;
+    color: var(--text-mute);
+  }
+  .item__media img { width: 100%; height: 100%; object-fit: cover; }
+  .item__media .material-symbols-outlined { font-size: 36px; }
+  .item__body { padding: 14px 16px 16px; }
+  .item__name { font-weight: 500; font-size: 14.5px; letter-spacing: -0.005em; line-height: 1.3; margin: 0 0 4px; }
+  .item__detail { color: var(--text-mute); font-size: 12.5px; }
+
+  /* mobile */
+  .mobile-frame {
+    margin: 96px auto 0;
+    width: 340px;
+    border: 1px solid var(--border-strong);
+    border-radius: 32px;
+    padding: 10px;
+    background: #000;
+  }
+  .mobile-frame__inner {
+    border-radius: 22px; overflow: hidden;
+    background: var(--bg);
+    height: 600px;
+    display: flex; flex-direction: column;
+  }
+  .mobile-top {
+    padding: 20px 20px 12px;
+  }
+  .mobile-top .kicker { color: var(--accent); font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+  .mobile-top h1 { font-size: 28px; font-weight: 600; letter-spacing: -0.025em; margin: 4px 0 0; line-height: 1; }
+  .mobile-list { flex: 1; overflow: hidden; padding: 4px 14px; display: flex; flex-direction: column; gap: 12px; }
+  .mobile-card {
+    border-radius: 14px; overflow: hidden;
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    display: grid; grid-template-columns: 96px 1fr;
+  }
+  .mobile-card img { width: 96px; height: 100%; object-fit: cover; aspect-ratio: 1/1; }
+  .mobile-card__body { padding: 10px 12px; display: flex; flex-direction: column; justify-content: center; }
+  .mobile-card__num { font-size: 10.5px; color: var(--text-mute); letter-spacing: 0.04em; text-transform: uppercase; }
+  .mobile-card__title { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; margin-top: 2px; }
+  .mobile-card__sub { font-size: 11.5px; color: var(--text-dim); margin-top: 2px; }
+  .mobile-bottom {
+    height: 64px; display: flex; align-items: center; justify-content: space-around;
+    border-top: 1px solid var(--border);
+    color: var(--text-mute);
+  }
+  .mobile-bottom .material-symbols-outlined { font-size: 24px; }
+  .mobile-bottom .is-active { color: var(--accent); }
+
+  .label-mockup {
+    position: fixed; left: 16px; top: 16px;
+    font-size: 11px;
+    color: var(--text-mute); opacity: 0.5;
+    pointer-events: none; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  @media (max-width: 1100px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+    .detail-hero { grid-template-columns: 1fr; }
+    .items-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .hero__title { font-size: 44px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <div class="brand">
+      <div class="brand__mark"></div>
+      <span>Kistenscanner</span>
+    </div>
+    <nav class="topnav">
+      <span class="topnav__item">Suchen</span>
+      <span class="topnav__item topnav__item--active">Behälter</span>
+      <span class="topnav__item">Hinzufügen</span>
+      <span class="topnav__item">Scannen</span>
+    </nav>
+    <div class="top-actions">
+      <button class="icon-btn"><span class="material-symbols-outlined">help</span></button>
+      <button class="icon-btn"><span class="material-symbols-outlined">settings</span></button>
+      <button class="primary"><span class="material-symbols-outlined">add</span>Behälter</button>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <p class="hero__kicker">Inventar · Stand 29.04.2026</p>
+  <h1 class="hero__title">Alles, was du besitzt — endlich auffindbar.</h1>
+  <p class="hero__sub">Zwölf Behälter, einhundertvierundachtzig Items, sortiert über Keller, Dachboden, Büro und Werkstatt. Ein Tippen auf einen Behälter zeigt dir, was drin ist.</p>
+  <div class="stats">
+    <div class="stat"><div class="stat__num">12</div><div class="stat__label">Behälter aktiv</div></div>
+    <div class="stat"><div class="stat__num">184</div><div class="stat__label">Items insgesamt</div></div>
+    <div class="stat"><div class="stat__num">4</div><div class="stat__label">Räume</div></div>
+    <div class="stat"><div class="stat__num">heute</div><div class="stat__label">Zuletzt geändert</div></div>
+  </div>
+</section>
+
+<!-- Grid section -->
+<section class="section">
+  <div class="section__head">
+    <div>
+      <h2 class="section__title">Alle Behälter</h2>
+      <p class="section__sub">Sortiert nach zuletzt geändert</p>
+    </div>
+    <div class="filters">
+      <button class="filter filter--active">Alle</button>
+      <button class="filter">Keller</button>
+      <button class="filter">Dachboden</button>
+      <button class="filter">Werkstatt</button>
+      <button class="filter">Büro</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="card__media">
+        <img src="https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=900&q=80" />
+        <span class="card__num">Nr. 003</span>
+        <span class="card__count">17 Items</span>
+      </div>
+      <div class="card__body">
+        <h3 class="card__title">Werkzeug Keller</h3>
+        <span class="card__loc"><span class="material-symbols-outlined">location_on</span>Keller · Regal A2</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__media">
+        <img src="https://images.unsplash.com/photo-1620283085439-39620a1e21c4?w=900&q=80" />
+        <span class="card__num">Nr. 007</span>
+        <span class="card__count">42 Items</span>
+      </div>
+      <div class="card__body">
+        <h3 class="card__title">Kabel & Adapter</h3>
+        <span class="card__loc"><span class="material-symbols-outlined">location_on</span>Büro · Schrank links</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__media">
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=80" />
+        <span class="card__num">Nr. 011</span>
+        <span class="card__count">23 Items</span>
+      </div>
+      <div class="card__body">
+        <h3 class="card__title">Winterkleidung</h3>
+        <span class="card__loc"><span class="material-symbols-outlined">location_on</span>Dachboden · Kiste 3</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__media">
+        <img src="https://images.unsplash.com/photo-1580974928064-f0aeef70895a?w=900&q=80" />
+        <span class="card__num">Nr. 004</span>
+        <span class="card__count">11 Items</span>
+      </div>
+      <div class="card__body">
+        <h3 class="card__title">Küche · Backen</h3>
+        <span class="card__loc"><span class="material-symbols-outlined">location_on</span>Küche · Schublade 4</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__media">
+        <img src="https://images.unsplash.com/photo-1535914254981-b5012eebbd15?w=900&q=80" />
+        <span class="card__num">Nr. 009</span>
+        <span class="card__count">9 Items</span>
+      </div>
+      <div class="card__body">
+        <h3 class="card__title">Fahrradzubehör</h3>
+        <span class="card__loc"><span class="material-symbols-outlined">location_on</span>Keller · Fahrradraum</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card__media">
+        <img src="https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?w=900&q=80" />
+        <span class="card__num">Nr. 006</span>
+        <span class="card__count">14 Items</span>
+      </div>
+      <div class="card__body">
+        <h3 class="card__title">Foto-Equipment</h3>
+        <span class="card__loc"><span class="material-symbols-outlined">location_on</span>Büro · Regal oben</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Detail -->
+<section class="detail-section">
+  <div class="detail-hero">
+    <div class="detail-hero__photo">
+      <img src="https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=1600&q=85" />
+    </div>
+    <div class="detail-hero__info">
+      <p class="detail-hero__kicker">Behälter Nr. 003</p>
+      <h2 class="detail-hero__title">Werkzeug Keller</h2>
+      <p class="detail-hero__sub">Eine Faltbox voller Werkzeug für die meisten Heim­werker-Aufgaben — Akku­schrauber, Schraubendreher, Mess­geräte und Kleinteile.</p>
+      <dl class="detail-meta">
+        <div><dt>Standort</dt><dd>Keller · Regal A2</dd></div>
+        <div><dt>Items</dt><dd>17</dd></div>
+        <div><dt>Typ</dt><dd>Faltbox</dd></div>
+        <div><dt>Geändert</dt><dd>heute, 14:02</dd></div>
+      </dl>
+      <div class="actions">
+        <button class="btn btn--primary"><span class="material-symbols-outlined">add</span>Item hinzufügen</button>
+        <button class="btn"><span class="material-symbols-outlined">qr_code_2</span>Etikett drucken</button>
+        <button class="btn"><span class="material-symbols-outlined">edit</span>Bearbeiten</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="items">
+    <div class="items__head">
+      <h3 class="items__title">Inhalt</h3>
+      <div class="items__count">17 Items</div>
+    </div>
+    <div class="items-grid">
+      <div class="item">
+        <div class="item__media"><img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=600&q=80" /></div>
+        <div class="item__body">
+          <div class="item__name">Bosch GSR 18V Akku­schrauber</div>
+          <div class="item__detail">2× Akku 4.0 Ah, Koffer</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__media"><img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=600&q=80" /></div>
+        <div class="item__body">
+          <div class="item__name">Wera Schraubendreher-Set</div>
+          <div class="item__detail">12-teilig · PH/PZ/TX</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__media"><span class="material-symbols-outlined">straighten</span></div>
+        <div class="item__body">
+          <div class="item__name">Bosch GLM 50-23 G</div>
+          <div class="item__detail">Laser-Distanz · 50 m</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__media"><span class="material-symbols-outlined">build</span></div>
+        <div class="item__body">
+          <div class="item__name">Hammer 500g</div>
+          <div class="item__detail">Schreinerhammer</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__media"><span class="material-symbols-outlined">construction</span></div>
+        <div class="item__body">
+          <div class="item__name">Wasserwaage 60cm</div>
+          <div class="item__detail">Stabila · magnetisch</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__media"><img src="https://images.unsplash.com/photo-1620283085439-39620a1e21c4?w=600&q=80" /></div>
+        <div class="item__body">
+          <div class="item__name">Bit-Set</div>
+          <div class="item__detail">32-teilig</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__media"><span class="material-symbols-outlined">handyman</span></div>
+        <div class="item__body">
+          <div class="item__name">Knipex Zangen-Set</div>
+          <div class="item__detail">3-teilig</div>
+        </div>
+      </div>
+      <div class="item">
+        <div class="item__media"><span class="material-symbols-outlined">flashlight_on</span></div>
+        <div class="item__body">
+          <div class="item__name">Petzl Stirnlampe</div>
+          <div class="item__detail">350 Lumen, USB-C</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Mobile -->
+<div class="mobile-frame">
+  <div class="mobile-frame__inner">
+    <div class="mobile-top">
+      <div class="kicker">Inventar</div>
+      <h1>Behälter</h1>
+    </div>
+    <div class="mobile-list">
+      <div class="mobile-card">
+        <img src="https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=400&q=70" />
+        <div class="mobile-card__body">
+          <div class="mobile-card__num">Nr. 003</div>
+          <div class="mobile-card__title">Werkzeug Keller</div>
+          <div class="mobile-card__sub">Keller · Regal A2 · 17 Items</div>
+        </div>
+      </div>
+      <div class="mobile-card">
+        <img src="https://images.unsplash.com/photo-1620283085439-39620a1e21c4?w=400&q=70" />
+        <div class="mobile-card__body">
+          <div class="mobile-card__num">Nr. 007</div>
+          <div class="mobile-card__title">Kabel & Adapter</div>
+          <div class="mobile-card__sub">Büro · Schrank links · 42 Items</div>
+        </div>
+      </div>
+      <div class="mobile-card">
+        <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400&q=70" />
+        <div class="mobile-card__body">
+          <div class="mobile-card__num">Nr. 011</div>
+          <div class="mobile-card__title">Winterkleidung</div>
+          <div class="mobile-card__sub">Dachboden · 23 Items</div>
+        </div>
+      </div>
+    </div>
+    <div class="mobile-bottom">
+      <span class="material-symbols-outlined">search</span>
+      <span class="material-symbols-outlined is-active">inventory_2</span>
+      <span class="material-symbols-outlined">add_circle</span>
+      <span class="material-symbols-outlined">qr_code_scanner</span>
+      <span class="material-symbols-outlined">person</span>
+    </div>
+  </div>
+</div>
+
+<div class="label-mockup">Mockup C · Editorial</div>
+</body>
+</html>

@@ -1,371 +1,182 @@
 # Design System: Kistenscanner
 
-## 1. Visual Theme & Atmosphere
+> **Stand 2026-04-30** — Visuelles Redesign nach Mockup A („Tool / Engineering"-Ästhetik).
+> Frühere Iterationen (Linear/Apple-Blue, Top-Bar 48px icons-only) sind abgelöst und nicht mehr maßgeblich. Quelle der Wahrheit ist `client/src/index.css` + `client/src/App.css`.
 
-Kistenscanner is a dark-mode-native inventory tool for scanning, cataloging and finding physical objects stored in boxes. The interface must feel like a precision instrument — calm, structured, invisible until needed. Darkness is the native medium, not a theme applied over a light design. Content emerges from a near-black canvas through carefully calibrated luminance steps.
+## 1. Visual Direction
 
-The design philosophy borrows from Linear's engineering precision: semi-transparent borders instead of hard edges, background luminance stacking instead of shadows, and a single accent color reserved strictly for interactive elements. Photography of box contents is the only "color" in the interface — the UI itself stays achromatic with one blue accent.
+Kistenscanner ist ein Inventar-Werkzeug, kein Konsumentenprodukt. Die Oberfläche soll wie ein präzises Werkzeug wirken: ruhig, technisch, mit klar lesbaren IDs/Codes. Dunkel ist Standard. Akzentfarbe ist ein gedämpftes Blau, JetBrains Mono macht alle technischen Zeichen (Box-#, Item-Codes, Tastenkürzel) sofort als „Daten" lesbar.
 
-This is a mobile-first tool used on phones for scanning QR codes and photographing box contents, and on desktop/tablet for browsing inventory and printing labels. Every component must work flawlessly at 320px and scale gracefully to 1440px+.
+Layout-Idee: oben eine schmale **AppBar** (Brand · Breadcrumb · ⌘K · Icon-Aktionen · Avatar), darunter eine **SubNav** mit Routen-Tabs und rechts den primären Aktionen (Scan, +Behälter). Beide sticky. Inhalt zentriert auf max. **1240 px**, mobile bleibt einspaltig mit Bottom-Nav.
 
-**Key Characteristics:**
-- Dark-mode-native: `#08090a` base, `#0f1011` panels, `#161718` cards, `#1c1d1f` elevated surfaces
-- Single accent color: Apple Blue `#0071e3` (interactive), `#2997ff` (on dark backgrounds), `#005bb5` (pressed)
-- Inter Variable with OpenType features `"cv01", "ss03"` — geometric alternates for clean, tool-like character
-- Semi-transparent white borders throughout: `rgba(255,255,255,0.06)` default, `rgba(255,255,255,0.10)` hover
-- Luminance stacking for depth — no drop shadows on dark surfaces
-- Item photography is the only source of color — UI chrome stays neutral
-- Mobile: bottom nav with icons only, no labels
-- Desktop: fixed 48px top bar with icons only, no labels; never use a left sidebar
+## 2. Color Tokens
 
-## 2. Color Palette & Roles
+Definiert in `client/src/index.css`.
 
-### Background Surfaces (4-tier luminance stack)
+### Surfaces (4-Stufen-Stack)
 
 | Token | Hex | Use |
 |-------|-----|-----|
-| `--bg-base` | `#08090a` | Page canvas, deepest background |
-| `--bg-panel` | `#0f1011` | Top bar, bottom nav, fixed panels |
-| `--bg-card` | `#161718` | Cards, list items, content containers |
-| `--bg-elevated` | `#1c1d1f` | Hover states, dropdowns, popovers, modals |
+| `--bg-base` | `#0B0D10` | Page-Canvas |
+| `--bg-panel` | `#111418` | AppBar, Karten-Header, Modale, Bottom-Nav |
+| `--bg-card` | `#161A1F` | Panels, Listenkarten, Inputs |
+| `--bg-elevated` | `#1C2127` | Hover, Popover, Dropdowns |
 
-### Text (4-tier opacity hierarchy)
+### Text (4-Stufen-Hierarchie)
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| `--text-primary` | `#f0f1f2` | Headings, primary content — NOT pure white |
-| `--text-secondary` | `#a0a4ab` | Body text, descriptions, metadata |
-| `--text-tertiary` | `#6b7080` | Placeholders, hints, timestamps |
-| `--text-quaternary` | `#484c54` | Disabled states, decorative labels |
+| Token | Hex |
+|-------|-----|
+| `--text-primary` | `#E6E8EB` |
+| `--text-secondary` | `#9097A0` |
+| `--text-tertiary` | `#6E747F` |
+| `--text-quaternary` | `#5F6770` |
 
-### Accent (Apple Blue)
+### Accent
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| `--accent` | `#0071e3` | Primary CTA backgrounds, focus rings |
-| `--accent-bright` | `#2997ff` | Links on dark backgrounds, active nav icon |
-| `--accent-hover` | `#0077ed` | Button hover state |
-| `--accent-pressed` | `#005bb5` | Button active/pressed state |
-| `--accent-muted` | `rgba(0,113,227,0.12)` | Active nav item background, subtle highlights |
+| Token | Hex |
+|-------|-----|
+| `--accent` | `#4A8DFF` |
+| `--accent-bright` | `#6EA8FF` |
+| `--accent-hover` | `#5C99FF` |
+| `--accent-pressed` | `#3877E5` |
+| `--accent-muted` | `rgba(74,141,255,0.10)` |
 
 ### Status
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| `--success` | `#30d158` | Item count badges, success states |
-| `--warning` | `#ffd60a` | Warnings only |
-| `--danger` | `#ff453a` | Delete actions, errors |
+| Token | Hex |
+|-------|-----|
+| `--success` | `#4ADE80` |
+| `--warning` | `#FB923C` |
+| `--danger` | `#F87171` |
 
-### Border & Divider
+### Borders
 
-| Token | Value | Use |
-|-------|-------|-----|
-| `--border-subtle` | `rgba(255,255,255,0.06)` | Default card/container borders |
-| `--border-default` | `rgba(255,255,255,0.10)` | Input borders, hover state borders |
-| `--border-strong` | `rgba(255,255,255,0.16)` | Active/focus input borders |
+| Token | Wert |
+|-------|------|
+| `--border-subtle` | `rgba(255,255,255,0.06)` |
+| `--border-default` | `rgba(255,255,255,0.10)` |
+| `--border-strong` | `rgba(255,255,255,0.16)` |
 
-## 3. Typography Rules
+## 3. Typography
 
-### Font Family
-- **Primary**: `'Inter Variable', 'Inter', -apple-system, system-ui, sans-serif`
-- **OpenType Features**: `font-feature-settings: "cv01", "ss03"` on `html` — applied globally, non-negotiable
-- No monospace font needed in this app
+- **Sans**: `Inter` (400/500/600), Standard 13 px, Body 12.5 px, Subtext 11.5 px, Page-Title 22 px / 600 / -0.015em.
+- **Mono**: `JetBrains Mono` (`var(--mono)`) — verpflichtend für: Box-IDs (`#1234`), Item-Codes, Standort-Pfade in der Breadcrumb, Tastenkürzel-Chips (`⌘K`), Stats-Zahlen.
+- **Section-Kicker**: 11 px / 600 / `letter-spacing: 0.08em`, `--text-tertiary`, immer `text-transform: uppercase`. Klasse `.section-kicker`.
+- Keine Schriftgröße unter 11 px, kein Gewicht über 600.
 
-### Hierarchy
+## 4. Layout Shell
 
-| Role | Size | Weight | Line Height | Letter Spacing | Use |
-|------|------|--------|-------------|----------------|-----|
-| Page title | 24px (1.5rem) | 600 | 1.15 | -0.48px | "Behälter", "Scannen" — one per page |
-| Section label | 11px (0.688rem) | 600 | 1.2 | 0.08em | Uppercase kickers: "INVENTAR", "STANDORT", "ITEMS" |
-| Card title | 16px (1rem) | 500 | 1.3 | -0.18px | Box name, item name |
-| Body | 14px (0.875rem) | 400 | 1.5 | -0.1px | Descriptions, metadata values |
-| Small | 12px (0.75rem) | 400 | 1.4 | normal | Badges, timestamps, tertiary info |
-| Button | 14px (0.875rem) | 500 | 1.0 | -0.08px | All button labels |
+Komponenten in `client/src/App.tsx`:
 
-### Principles
-- **Two weights in practice**: 400 (reading) and 500 (emphasis/interactive). 600 only for page titles and section kickers.
-- **Negative letter-spacing** at 16px+ — tighter text feels engineered, not designed.
-- **Section kickers** are always uppercase, 11px, weight 600, `--text-tertiary` color, `letter-spacing: 0.08em`.
-- No font size below 11px. No weight above 600.
+### AppBar (Desktop, ≥ 1024 px)
 
-## 4. Component Stylings
+- Sticky, `top: 0`, `z-index: 50`, Höhe **44 px**, Hintergrund `--bg-panel`.
+- 3-Spalten-Grid `1fr auto 1fr`, max-width **1240 px**, padding `0 24px`.
+- Links: Brand-Mark (24×24, Gradient) + Breadcrumb in Mono.
+- Mitte: `.cmdk` Button (`⌘K`), öffnet Suche.
+- Rechts: Icon-Aktionen (Add, Scan, Help, Settings) à 28×28 + Avatar.
+
+### SubNav (Desktop, ≥ 1024 px)
+
+- Sticky, `top: 44px`, Höhe **38 px**, Hintergrund `--bg-base`, untere `border-subtle`.
+- Tabs links (Behälter, Suchen, Aktivität — letzteres derzeit `disabled`).
+- Rechts: primäre Page-Actions als Pills (Scan, +Behälter).
+
+### MobileBottomNav (< 1024 px)
+
+- Sticky bottom, 56 px + safe-area, `bg-panel`.
+- Icons-only, max 5 Items.
+- Aktiver Tab: `accent-bright` Farbe + `accent-muted` Hintergrund.
+
+### Page Shell
+
+```
+.page-shell--app           // alle App-Routen, max-width 1240px
+.page-shell--detail        // BoxDetail/ItemDetail
+.page-stack--route         // vertikales Stack der Sektionen, gap 16px
+```
+
+Jede Page hat eine Scope-Klasse (`.boxes-page`, `.search-page`, `.box-detail-page`, `.settings-page`, `.help-page`, `.scan-page`, `.add-box-page`, `.item-detail-page`) auf dem äußeren Wrapper für lokale Overrides.
+
+## 5. Components
+
+### Panel
+
+```
+.panel { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 16px; }
+.panel-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+```
 
 ### Buttons
 
-**Primary (CTA)**
-- Background: `var(--accent)` (`#0071e3`)
-- Color: `#ffffff`
-- Border: none
-- Border-radius: 8px
-- Padding: 0 16px
-- Height: 40px
-- Font: 14px, weight 500
-- Hover: `var(--accent-hover)` (`#0077ed`)
-- Active: `var(--accent-pressed)` (`#005bb5`)
-- Transition: background 0.15s ease
+| Klasse | Look |
+|--------|------|
+| `.button` (default Primary) | `bg: --accent`, `color: white`, `radius: --radius-md` (6px), Höhe 32 px |
+| `.button.button--ghost` | `bg: transparent`, `border: 1px solid --border-default`, hover füllt mit `bg-elevated` |
+| `.button.button--danger` | Text in `--danger`, dezent transparenter Hintergrund |
 
-**Ghost (Secondary)**
-- Background: `rgba(255,255,255,0.03)`
-- Color: `var(--text-secondary)`
-- Border: `1px solid var(--border-subtle)`
-- Border-radius: 8px
-- Padding: 0 16px
-- Height: 40px
-- Font: 14px, weight 500
-- Hover: background `rgba(255,255,255,0.06)`, border `var(--border-default)`, color `var(--text-primary)`
+Mindesthöhe interaktiv: **32 px Desktop / 40 px Mobile**.
+Toolbar-Aktionen (BoxDetail) sind horizontale Chip-Buttons mit `::after`-Label (Bearbeiten, Foto, Label, Teilen, Zurück, Löschen).
 
-**Danger**
-- Background: transparent
-- Color: `var(--danger)` (`#ff453a`)
-- Border: `1px solid rgba(255,69,58,0.3)`
-- Border-radius: 8px
-- Height: 40px
-- Hover: background `rgba(255,69,58,0.1)`
+### Chips (`.chip`)
 
-**Icon Button (square, for toolbars)**
-- Background: `rgba(255,255,255,0.03)`
-- Color: `var(--text-secondary)`
-- Border: `1px solid var(--border-subtle)`
-- Border-radius: 8px
-- Size: 40×40px, flex centered
-- Hover: background `rgba(255,255,255,0.06)`, color `var(--text-primary)`
-
-**Button Rules:**
-- Minimum touch target: 40px height
-- 1 button = full container width
-- 2 buttons = 50/50 flex (`flex: 1` each)
-- 3+ buttons = icon-only or overflow menu (⋯)
-- Toolbar actions (edit, print, share, delete) are ALWAYS icon-only `btn-icon`, never stretched
-- Primary + Ghost side by side: Primary left, Ghost right
-
-### Cards
-
-**Standard card (box overview, item card)**
-- Background: `var(--bg-card)` (`#161718`)
-- Border: `1px solid var(--border-subtle)`
-- Border-radius: 10px
-- Overflow: hidden
-- Hover: border-color transitions to `var(--border-default)`
-- **No drop shadows.** Depth comes from luminance difference between `--bg-base` and `--bg-card`.
+- 11.5 px, mono für Codes, `bg: --bg-elevated`, Border `--border-subtle`, radius 4 px.
+- Varianten: `.chip--accent`, `.chip--success`, `.chip--warning`, `.chip--danger`, `.chip--move`, `.chip--merge`, `.chip--split`, `.chip--neutral`.
 
 ### Inputs
 
-- Background: `rgba(255,255,255,0.03)`
-- Color: `var(--text-primary)`
-- Border: `1px solid var(--border-default)`
-- Border-radius: 8px
-- Padding: 10px 12px
-- Font: 14px, weight 400
-- Height: 40px
-- Focus: border-color `var(--accent)`, box-shadow `0 0 0 3px var(--accent-muted)`
-- Placeholder color: `var(--text-tertiary)`
+- `bg: rgba(255,255,255,0.03)`, Border `--border-default`, Radius 6 px, Höhe 32 px Desktop.
+- Focus: Border `--accent`, `box-shadow: 0 0 0 3px var(--accent-muted)`.
 
-### Badges
+### Cards
 
-**Item count badge (e.g. "8 Items")**
-- Background: `rgba(0,113,227,0.12)`
-- Color: `var(--accent-bright)` (`#2997ff`)
-- Font: 11px, weight 600
-- Padding: 2px 8px
-- Border-radius: 6px
-- Letter-spacing: 0.04em
+- BoxCard: Bild oben (Aspect-Ratio 4:3), darunter Header mit Box-# (mono), Name, Standort, Item-Count.
+- Suggestion-Card: kleine Karte mit `chip--{type}` + Beschreibung.
 
-### Context Menu (replaces scattered icon buttons)
+### Filter-Chips (Boxes)
 
-Item actions (edit, upload photo, move, delete) are hidden behind a single ⋯ icon button that opens a context menu:
+`.filters` Reihe mit Chip-Buttons. Aktiver Filter: `bg: --accent-muted`, `color: --accent-bright`, Border `--accent`.
 
-- Container: `var(--bg-elevated)`, `1px solid var(--border-default)`, border-radius 10px, padding 4px, min-width 180px
-- Shadow: `0 8px 24px rgba(0,0,0,0.4)` — floating elements are the ONLY place shadows are allowed
-- Menu item: flex row, gap 10px, padding 8px 12px, border-radius 6px, font 14px, color `var(--text-secondary)`
-- Menu item hover: background `rgba(255,255,255,0.06)`, color `var(--text-primary)`
-- Danger item: color `var(--danger)`
+## 6. Routes & IA
 
-### Navigation
+| Route | Tab in SubNav | Page-Class |
+|-------|---------------|------------|
+| `/boxes`, `/boxes/add` | Behälter | `.boxes-page`, `.add-box-page` |
+| `/boxes/:id` | (Detail) | `.box-detail-page` |
+| `/items/:id` | (Detail) | `.item-detail-page` |
+| `/` (Suche) | Suchen | `.search-page` |
+| `/scan` | (Action) | `.scan-page` |
+| `/settings` | (AppBar-Icon) | `.settings-page` |
+| `/help` | (AppBar-Icon) | `.help-page` |
 
-**Mobile — Bottom nav bar (below 1024px)**
-- Position: fixed bottom, full width
-- Height: 56px + `env(safe-area-inset-bottom)`
-- Background: `var(--bg-panel)`
-- Border-top: `1px solid var(--border-subtle)`
-- Layout: flex, space-around
-- Items: 44×44px tap area, border-radius 10px
-- Default: color `var(--text-tertiary)`
-- Active: color `var(--accent-bright)`, background `var(--accent-muted)`
-- **Icons only, no text labels on mobile**
-- Maximum 7 items in one row
+Aktivität-Tab ist sichtbar, aber `disabled` — wird in einer späteren Phase verdrahtet.
+**Kein `/dashboard`** — abgeschafft am 2026-04-30. Smart-Reorganisation lebt jetzt unter Settings → „Werkzeuge". Loans laufen über Box- und Item-Detail.
 
-**Desktop — Top bar (1024px and above)**
-- Position: fixed top, full width
-- Height: 48px
-- Background: `var(--bg-panel)`
-- Border-bottom: `1px solid var(--border-subtle)`
-- Layout: flex row, centered, gap 8px, padding 4px 16px
-- Items: 40×40px tap area, border-radius 10px
-- Icon: 20px
-- Default: color `var(--text-tertiary)`
-- Active: color `var(--accent-bright)`, background `var(--accent-muted)`
-- Hover: color `var(--text-primary)`, background `rgba(255,255,255,0.04)`
-- **Icons only, no text labels on desktop**
-- **No left sidebar on desktop**
+## 7. Spacing / Radius
 
-### Image Treatment
+- Spacing: 4 / 8 / 12 / 16 / 24 / 32 px. Standard-Gap zwischen Panels = 16 px.
+- Radius-Tokens: `--radius-sm 4`, `--radius-md 6`, `--radius-lg 8`, `--radius-xl 10`. Nichts >10 px.
 
-- Item thumbnails: border-radius 6px, object-fit cover
-- Box overview photos: fill top of card, border-radius 10px 10px 0 0
-- Missing image placeholder: `var(--bg-elevated)` background, centered Material Symbol icon (24px), `var(--text-quaternary)` color
-- No borders on images — the dark card background provides natural framing
+## 8. Do / Don't
 
-## 5. Layout Principles
+**Do**
+- Inter + JetBrains Mono konsequent — Mono für alles, was wie ein Identifier aussieht.
+- Eine Akzentfarbe (`#4A8DFF`). Status-Farben nur für Status.
+- Page-Scope-Klasse anlegen, statt globale Selektoren zu kapern.
+- Sticky AppBar + SubNav nicht mit weiteren sticky Elementen oben überlagern.
+- Max. zwei sichtbare Aktionen pro Karte; weiteres in Kontextmenü oder Detail.
 
-### Spacing System
+**Don't**
+- Kein reines Weiß. Kein Gewicht > 600.
+- Keine Drop-Shadows auf Karten — Tiefe entsteht durch `bg-card` ↔ `bg-base`.
+- Keine zusätzlichen Akzentfarben einführen.
+- Keine breiten Container über 1240 px.
+- Keine Stat-Kacheln-Wand auf Listen-Seiten — Inventar ist die Hauptansicht.
 
-Base unit: 8px. All spacing values are multiples of 4px.
+## 9. Outstanding (Phase 2)
 
-| Token | Value | Use |
-|-------|-------|-----|
-| `--space-xs` | 4px | Inline gaps, badge padding |
-| `--space-sm` | 8px | Tight gaps inside cards |
-| `--space-md` | 12px | Standard gaps, card padding |
-| `--space-lg` | 16px | Section gaps, larger padding |
-| `--space-xl` | 24px | Between sections |
-| `--space-2xl` | 32px | Page-level spacing |
-
-### Content Widths by Route
-
-| Route | Mobile | Tablet (≥768px) | Desktop (≥1024px) | Large (≥1280px) |
-|-------|--------|-----------------|-------------------|-----------------|
-| All app pages | 100% - 16px padding | max 640px centered | max 720px | max 800px |
-| Box detail | 100% - 16px padding | max 640px centered | max 840px | max 960px |
-| Box grid (Kisten) | 100% - 16px padding | 2-col grid | 3-col grid | 4-col grid |
-
-- Desktop page offset: `margin-left: 0` (sidebar removed)
-- Desktop page top pad: `padding-top: 64px` (48px fixed top bar + 16px spacing)
-- Mobile page bottom pad: `padding-bottom: 72px` (bottom nav + safe area)
-
-### Box Overview Grid
-
-- Mobile: `grid-template-columns: 1fr`
-- ≥640px: `repeat(2, 1fr)`
-- ≥1024px: `repeat(3, 1fr)`
-- ≥1280px: `repeat(4, 1fr)`
-- Gap: 12px
-
-### Page Header Pattern
-
-Every page uses the same header structure:
-[Section kicker — 11px, uppercase, --text-tertiary]
-[Page title — 24px, weight 600, --text-primary]    [Optional action button, right-aligned]
-
-## 7. Do's and Don'ts
-
-### Do
-- Use Inter Variable with `"cv01", "ss03"` on ALL text — non-negotiable
-- Use semi-transparent white borders `rgba(255,255,255,0.06)` instead of solid dark borders
-- Keep button backgrounds nearly transparent for ghost buttons
-- Reserve Apple Blue (`#0071e3` / `#2997ff`) for interactive elements ONLY
-- Use `--text-primary` (`#f0f1f2`) for headings — NOT pure `#ffffff`
-- Use the 4-tier luminance stack for depth instead of shadows
-- Hide item actions behind a context menu (⋯) — max 1-2 visible quick actions
-- Use consistent 40px touch targets for all interactive elements
-- Keep page headers to kicker + title + optional action — nothing more
-
-### Don't
-- Don't use pure white (`#ffffff`) as text or backgrounds
-- Don't use solid colored backgrounds on cards — `--bg-card` is the only card fill
-- Don't use drop shadows on cards or panels — only on floating/overlay elements
-- Don't show more than 2 action icons per item card without a context menu
-- Don't use text labels on mobile bottom nav — icons only
-- Don't add explanatory paragraphs or step-summary cards to page headers
-- Don't use border-radius larger than 12px on rectangular elements
-- Don't use weight 700 (bold) — maximum is 600 for page titles and kickers
-- Don't introduce additional accent colors — Apple Blue is the only chromatic color
-- Don't use solid opaque borders — all borders are semi-transparent white on dark
-
-## 8. Responsive Behavior
-
-### Breakpoints
-
-| Name | Width | Key Changes |
-|------|-------|-------------|
-| Mobile | <640px | Bottom nav (icons only), single column, 16px page padding |
-| Tablet | 640–1023px | Bottom nav, 2-column box grid, centered content max 640px |
-| Desktop | 1024–1279px | Top bar (48px), 3-column box grid, content max 720–840px |
-| Large | ≥1280px | Top bar (48px), 4-column box grid, content max 800–960px |
-
-### Navigation Switch
-- Below 1024px: Bottom nav bar (fixed, 56px height, icons only)
-- 1024px and above: Top bar (fixed, 48px height, icons only)
-
-### Touch Targets
-- All buttons: 40px minimum height
-- Nav items: 44×44px tap area on mobile, 40×40px tap area on desktop
-- Item cards: entire card is tappable to open detail
-- Context menu trigger (⋯): 40×40px
-
-### Collapsing Strategy
-- Page titles stay at 24px across all breakpoints
-- Box grid: 4 → 3 → 2 → 1 column
-- BoxDetail toolbar: icon buttons stay 40×40, scroll horizontally if overflow
-- BoxDetail item list: always single column, never grid on mobile
-- Sticker print section: collapsed by default, full-width when open
-- Search input: always full width within content area
-
-## 9. Screen-Specific Guidelines
-
-### Suchen (Search)
-- Search input at top, full width, with search icon left and optional filter icon right
-- Live results appear as item cards below (thumbnail + name + box name + location)
-- Empty state: centered icon + "Mindestens 2 Zeichen eingeben" in `--text-tertiary`
-
-### Scannen (Scanner)
-- Camera viewfinder takes full available height above bottom nav
-- QR/Barcode toggle: 2 ghost buttons, 50/50 width, active button gets `--accent-muted` background
-- Fallback state (no camera): centered camera icon + message + 2 buttons (50/50)
-
-### Hinzufügen (Add Box)
-- Step 1: Photo capture area (camera or upload)
-- Step 2: AI analysis results as editable item cards
-- Step 3: Box metadata form (name, location) + save button (full width, primary)
-- No step indicators or summary cards at top
-
-### Kisten (Box Overview)
-- Page header: "INVENTAR" kicker + "Behälter" title + "Behälter hinzufügen" ghost button right-aligned
-- Grid of box cards, each showing: photo (top), metadata row (type badge + item count badge), box name, location
-
-### Box Detail
-- **Header**: Compact single row — QR code (48×48) left, then: location as primary text (16px, weight 500), metadata row below (Kiste #, Name, Items count) in `--text-secondary` 12px
-- **Toolbar**: Row of `btn-icon` buttons (40×40): Bearbeiten, Foto, Drucken, Teilen, Zurück. Delete button last with `--danger` color. Horizontal scroll if overflow.
-- **Sticker section**: Collapsed by default. Label "Stickerdruck" + "Aufklappen" ghost button.
-- **Item list**: Section kicker "ITEMS" + "Inhalt" title + grid/list toggle icon + add button (icon)
-  - Each item row: thumbnail (48×48, radius 6px) + name (16px, weight 500) + description (14px, `--text-secondary`) + context menu button (⋯)
-  - Context menu contains: Bearbeiten, Foto hochladen, Verschieben, Löschen (danger)
-
-### Dashboard
-- Stats cards in 2-column grid: total boxes, total items, recent activity
-- Cards use `--bg-card` with standard border treatment
-
-### Einstellungen (Settings)
-- Simple list of setting rows with labels and controls
-- Model picker: select input, full width within content area
-
-## 10. Border Radius Scale
-
-| Token | Value | Use |
-|-------|-------|-----|
-| `--radius-sm` | 6px | Badges, thumbnails, inline elements |
-| `--radius-md` | 8px | Buttons, inputs, small containers |
-| `--radius-lg` | 10px | Cards, panels, nav items |
-| `--radius-xl` | 12px | Modals, large panels |
-
-No radius larger than 12px on rectangular elements. 9999px only for pill badges if needed.
-
-## 11. Transitions
-
-All interactive state changes: `transition: all 0.15s ease` or individual properties at 0.15s. No animations longer than 0.3s. No spring or bounce effects.
-
-## 12. Icons
-
-- Icon set: Material Symbols Outlined
-- Default size: 20px in nav, 18px in buttons, 24px in empty states
-- Weight: 300 (light variant for clean look)
-- Color: inherits from parent text color
+- Echte Standort-Filter auf `/boxes` (derzeit nur Demo-Chips).
+- Sortierung im List-View (Letzte Änderung / Items / Name).
+- ⌘K-Palette mit Quick-Find statt simpler Routen-Wechsel.
+- Aktivität-Tab funktional anbinden (Audit-Log oder Recent-Activity).
+- Optional: „Verliehen"-Filter-Chip auf `/boxes`, falls Loans-Nutzung steigt.

@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Mockup A — Tool / Dev-Console</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0B0D10;
+    --bg-elev-1: #111418;
+    --bg-elev-2: #161A1F;
+    --bg-elev-3: #1C2127;
+    --border: rgba(255,255,255,0.06);
+    --border-strong: rgba(255,255,255,0.12);
+    --text: #E6E8EB;
+    --text-dim: #9097A0;
+    --text-mute: #5F6770;
+    --accent: #4A8DFF;
+    --accent-bg: rgba(74,141,255,0.10);
+    --green: #4ADE80;
+    --orange: #FB923C;
+    --radius-sm: 4px;
+    --radius: 6px;
+    --radius-lg: 8px;
+    --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    font-size: 18px;
+  }
+
+  /* ── Top bar ─────────────────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    height: 44px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
+    padding: 0 16px;
+    background: var(--bg-elev-1);
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-weight: 600; letter-spacing: -0.01em;
+  }
+  .brand__mark {
+    width: 22px; height: 22px; border-radius: 5px;
+    background: linear-gradient(135deg, var(--accent), #6EA8FF);
+    display: grid; place-items: center; color: #0B0D10;
+    font-family: var(--mono); font-size: 12px; font-weight: 600;
+  }
+  .brand__sep { color: var(--text-mute); margin: 0 2px; }
+  .brand__path { color: var(--text-dim); font-family: var(--mono); font-size: 12px; }
+  .brand__path b { color: var(--text); font-weight: 500; }
+
+  .cmdk {
+    width: min(420px, 50vw);
+    display: flex; align-items: center; gap: 8px;
+    height: 28px; padding: 0 10px;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    color: var(--text-dim);
+    cursor: text;
+  }
+  .cmdk:hover { border-color: rgba(255,255,255,0.18); }
+  .cmdk .material-symbols-outlined { font-size: 15px; color: var(--text-mute); }
+  .cmdk__placeholder { font-size: 12.5px; flex: 1; }
+  .cmdk__kbd {
+    font-family: var(--mono); font-size: 10.5px;
+    color: var(--text-mute);
+    background: rgba(255,255,255,0.04);
+    padding: 1px 5px; border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .top-actions {
+    display: flex; align-items: center; gap: 4px; justify-content: flex-end;
+  }
+  .icon-btn {
+    width: 28px; height: 28px; display: grid; place-items: center;
+    border-radius: var(--radius); color: var(--text-dim);
+    cursor: pointer; background: transparent; border: 0;
+  }
+  .icon-btn:hover { background: var(--bg-elev-2); color: var(--text); }
+  .avatar {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: linear-gradient(135deg, #FB923C, #F472B6);
+    margin-left: 4px;
+  }
+
+  /* ── Sub-nav (breadcrumb tabs) ───────────────────────── */
+  .subnav {
+    display: flex; align-items: center; gap: 2px;
+    height: 38px; padding: 0 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 44px; z-index: 49;
+  }
+  .subnav__tab {
+    display: inline-flex; align-items: center; gap: 6px;
+    height: 38px; padding: 0 10px;
+    color: var(--text-dim); font-size: 12.5px; font-weight: 500;
+    border-bottom: 1px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+  }
+  .subnav__tab .material-symbols-outlined { font-size: 15px; }
+  .subnav__tab:hover { color: var(--text); }
+  .subnav__tab--active { color: var(--text); border-bottom-color: var(--accent); }
+  .subnav__count {
+    font-family: var(--mono); font-size: 11px; color: var(--text-mute);
+    background: var(--bg-elev-2); padding: 1px 5px; border-radius: 3px;
+  }
+  .subnav__spacer { flex: 1; }
+  .subnav__btn {
+    height: 26px; padding: 0 10px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--bg-elev-2); border: 1px solid var(--border-strong);
+    color: var(--text); border-radius: var(--radius);
+    font-size: 12px; font-weight: 500;
+    cursor: pointer;
+  }
+  .subnav__btn--primary {
+    background: var(--accent); border-color: var(--accent);
+    color: #0B0D10;
+  }
+  .subnav__btn .material-symbols-outlined { font-size: 14px; }
+
+  /* ── Page layout ─────────────────────────────────────── */
+  .page {
+    padding: 20px 16px 64px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  /* Filter bar */
+  .filterbar {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    height: 26px; padding: 0 9px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--bg-elev-1); border: 1px solid var(--border);
+    color: var(--text-dim); font-size: 12px;
+    border-radius: 99px;
+    cursor: pointer;
+  }
+  .chip:hover { color: var(--text); border-color: var(--border-strong); }
+  .chip--active {
+    background: var(--accent-bg); border-color: rgba(74,141,255,0.4);
+    color: var(--accent);
+  }
+  .chip .material-symbols-outlined { font-size: 13px; }
+  .filterbar__sep { width: 1px; height: 18px; background: var(--border); margin: 0 4px; }
+  .filterbar__view {
+    margin-left: auto;
+    display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .filterbar__view button {
+    width: 28px; height: 26px; display: grid; place-items: center;
+    background: transparent; border: 0; color: var(--text-mute);
+    cursor: pointer;
+  }
+  .filterbar__view button.is-active {
+    background: var(--bg-elev-2); color: var(--text);
+  }
+  .filterbar__view .material-symbols-outlined { font-size: 15px; }
+
+  /* Table view */
+  .table {
+    width: 100%;
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .table__row {
+    display: grid;
+    grid-template-columns: 56px 64px minmax(0,1.4fr) minmax(0,1fr) 80px 110px 30px;
+    align-items: center;
+    gap: 16px;
+    padding: 0 16px;
+    height: 52px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.08s;
+  }
+  .table__row:last-child { border-bottom: 0; }
+  .table__head {
+    height: 32px;
+    background: var(--bg-elev-2);
+    color: var(--text-mute);
+    font-size: 11px; font-weight: 500; text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .table__row.table__body:hover { background: var(--bg-elev-2); cursor: pointer; }
+  .cell-thumb {
+    width: 36px; height: 36px; border-radius: var(--radius);
+    overflow: hidden;
+    background: var(--bg-elev-3);
+    display: grid; place-items: center;
+  }
+  .cell-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .cell-thumb .material-symbols-outlined { color: var(--text-mute); }
+  .cell-num {
+    font-family: var(--mono); font-size: 12.5px; color: var(--text-dim);
+  }
+  .cell-name { font-weight: 500; color: var(--text); }
+  .cell-name__sub { font-size: 11.5px; color: var(--text-mute); margin-top: 1px; }
+  .cell-loc { color: var(--text-dim); display: inline-flex; align-items: center; gap: 6px; }
+  .cell-loc .material-symbols-outlined { font-size: 14px; color: var(--text-mute); }
+  .cell-items {
+    font-family: var(--mono); font-size: 12px; color: var(--text);
+    text-align: right;
+  }
+  .cell-date {
+    font-family: var(--mono); font-size: 11.5px; color: var(--text-mute);
+    text-align: right;
+  }
+  .cell-actions { color: var(--text-mute); }
+
+  /* Box detail */
+  .detail {
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 24px;
+  }
+  .detail__card {
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+  }
+  .detail__photo {
+    aspect-ratio: 4/3;
+    background: var(--bg-elev-3);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .detail__photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .detail__id {
+    font-family: var(--mono); font-size: 11px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 4px;
+  }
+  .detail__title { font-size: 18px; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .detail__loc { color: var(--text-dim); font-size: 12.5px; margin-bottom: 12px; display: inline-flex; gap: 6px; align-items: center; }
+  .detail__loc .material-symbols-outlined { font-size: 14px; }
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+  .meta-grid dt { font-size: 10.5px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+  .meta-grid dd { font-family: var(--mono); font-size: 12px; color: var(--text); margin: 2px 0 0; }
+
+  .items {
+    background: var(--bg-elev-1);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .items__head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .items__head h3 {
+    margin: 0; font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .items__head .badge {
+    font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+    background: var(--bg-elev-2); padding: 1px 6px; border-radius: 3px;
+  }
+  .item-row {
+    display: grid;
+    grid-template-columns: 48px minmax(0,1.6fr) minmax(0,1fr) 80px;
+    align-items: center; gap: 14px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .item-row:last-child { border-bottom: 0; }
+  .item-row:hover { background: var(--bg-elev-2); cursor: pointer; }
+  .item-thumb {
+    width: 40px; height: 40px; border-radius: var(--radius);
+    background: var(--bg-elev-3); overflow: hidden;
+    display: grid; place-items: center; color: var(--text-mute);
+  }
+  .item-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .item-name { font-weight: 500; font-size: 13px; }
+  .item-desc { font-size: 11.5px; color: var(--text-mute); margin-top: 1px; }
+  .item-detail { color: var(--text-dim); font-size: 12px; font-family: var(--mono); }
+  .item-tag {
+    font-size: 10.5px; color: var(--text-mute); text-transform: uppercase;
+    letter-spacing: 0.05em; text-align: right;
+  }
+
+  /* mobile skizze */
+  .mobile-frame {
+    margin: 64px auto 0;
+    width: 320px;
+    border: 1px solid var(--border-strong);
+    border-radius: 24px;
+    padding: 8px;
+    background: #000;
+  }
+  .mobile-frame__inner {
+    border-radius: 18px; overflow: hidden;
+    background: var(--bg);
+    height: 568px;
+    display: flex; flex-direction: column;
+  }
+  .mobile-top {
+    height: 44px; display: flex; align-items: center; gap: 8px;
+    padding: 0 12px; background: var(--bg-elev-1);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; font-weight: 600;
+  }
+  .mobile-top .brand__mark { width: 18px; height: 18px; font-size: 10px; border-radius: 4px; }
+  .mobile-list { flex: 1; overflow: hidden; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .mobile-list .table__row {
+    grid-template-columns: 36px 1fr 50px;
+    height: 44px; padding: 0 8px; border-radius: 6px;
+    border-bottom: 0; background: var(--bg-elev-1);
+  }
+  .mobile-bottom {
+    height: 50px; display: flex; align-items: center; justify-content: space-around;
+    border-top: 1px solid var(--border); background: var(--bg-elev-1);
+    color: var(--text-mute);
+  }
+  .mobile-bottom .material-symbols-outlined { font-size: 22px; }
+  .mobile-bottom .is-active { color: var(--accent); }
+
+  /* Section heading */
+  .section-h {
+    font-size: 11px; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin: 0 0 8px;
+  }
+
+  .label-mockup {
+    position: fixed; left: 16px; top: 16px;
+    font-family: var(--mono); font-size: 11px;
+    color: var(--text-mute); opacity: 0.5;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand__mark">K</div>
+    <span>Kistenscanner</span>
+    <span class="brand__sep">/</span>
+    <span class="brand__path">stefan / <b>inventar</b></span>
+  </div>
+  <div class="cmdk" role="search">
+    <span class="material-symbols-outlined">search</span>
+    <span class="cmdk__placeholder">Suchen oder Befehl ausführen…</span>
+    <span class="cmdk__kbd">⌘K</span>
+  </div>
+  <div class="top-actions">
+    <button class="icon-btn" title="Hinzufügen"><span class="material-symbols-outlined">add</span></button>
+    <button class="icon-btn" title="Scan"><span class="material-symbols-outlined">qr_code_scanner</span></button>
+    <button class="icon-btn" title="Hilfe"><span class="material-symbols-outlined">help</span></button>
+    <button class="icon-btn" title="Einstellungen"><span class="material-symbols-outlined">settings</span></button>
+    <div class="avatar"></div>
+  </div>
+</header>
+
+<nav class="subnav">
+  <span class="subnav__tab subnav__tab--active">
+    <span class="material-symbols-outlined">inventory_2</span>Behälter
+    <span class="subnav__count">12</span>
+  </span>
+  <span class="subnav__tab">
+    <span class="material-symbols-outlined">search</span>Suchen
+  </span>
+  <span class="subnav__tab">
+    <span class="material-symbols-outlined">space_dashboard</span>Übersicht
+  </span>
+  <span class="subnav__tab">
+    <span class="material-symbols-outlined">history</span>Aktivität
+  </span>
+  <span class="subnav__spacer"></span>
+  <button class="subnav__btn"><span class="material-symbols-outlined">qr_code_scanner</span>Scan</button>
+  <button class="subnav__btn subnav__btn--primary"><span class="material-symbols-outlined">add</span>Behälter</button>
+</nav>
+
+<main class="page">
+
+  <!-- Filter bar -->
+  <div class="filterbar">
+    <span class="chip chip--active">Alle</span>
+    <span class="chip">Keller</span>
+    <span class="chip">Dachboden</span>
+    <span class="chip">Werkstatt</span>
+    <span class="chip">Büro</span>
+    <span class="filterbar__sep"></span>
+    <span class="chip"><span class="material-symbols-outlined">filter_list</span>Filter</span>
+    <span class="chip"><span class="material-symbols-outlined">sort</span>Zuletzt geändert</span>
+    <div class="filterbar__view">
+      <button class="is-active" title="Liste"><span class="material-symbols-outlined">list</span></button>
+      <button title="Raster"><span class="material-symbols-outlined">grid_view</span></button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table">
+    <div class="table__row table__head">
+      <div></div>
+      <div>Nr.</div>
+      <div>Behälter</div>
+      <div>Standort</div>
+      <div style="text-align:right">Items</div>
+      <div style="text-align:right">Geändert</div>
+      <div></div>
+    </div>
+
+    <div class="table__row table__body">
+      <div class="cell-thumb"><img src="https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=200&q=70" /></div>
+      <div class="cell-num">#003</div>
+      <div>
+        <div class="cell-name">Werkzeug Keller</div>
+        <div class="cell-name__sub">Schraubendreher, Akku­schrauber, Messwerkzeuge</div>
+      </div>
+      <div class="cell-loc"><span class="material-symbols-outlined">location_on</span>Keller · Regal A2</div>
+      <div class="cell-items">17</div>
+      <div class="cell-date">heute · 14:02</div>
+      <div class="cell-actions"><span class="material-symbols-outlined">chevron_right</span></div>
+    </div>
+
+    <div class="table__row table__body">
+      <div class="cell-thumb"><img src="https://images.unsplash.com/photo-1620283085439-39620a1e21c4?w=200&q=70" /></div>
+      <div class="cell-num">#007</div>
+      <div>
+        <div class="cell-name">Kabel & Adapter</div>
+        <div class="cell-name__sub">USB-C, HDMI, Netzteile, Adapter</div>
+      </div>
+      <div class="cell-loc"><span class="material-symbols-outlined">location_on</span>Büro · Schrank links</div>
+      <div class="cell-items">42</div>
+      <div class="cell-date">gestern · 18:21</div>
+      <div class="cell-actions"><span class="material-symbols-outlined">chevron_right</span></div>
+    </div>
+
+    <div class="table__row table__body">
+      <div class="cell-thumb"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=200&q=70" /></div>
+      <div class="cell-num">#011</div>
+      <div>
+        <div class="cell-name">Winterkleidung</div>
+        <div class="cell-name__sub">Jacken, Mützen, Handschuhe</div>
+      </div>
+      <div class="cell-loc"><span class="material-symbols-outlined">location_on</span>Dachboden · Kiste 3</div>
+      <div class="cell-items">23</div>
+      <div class="cell-date">vor 2 Tagen</div>
+      <div class="cell-actions"><span class="material-symbols-outlined">chevron_right</span></div>
+    </div>
+
+    <div class="table__row table__body">
+      <div class="cell-thumb"><img src="https://images.unsplash.com/photo-1580974928064-f0aeef70895a?w=200&q=70" /></div>
+      <div class="cell-num">#004</div>
+      <div>
+        <div class="cell-name">Küche · Backen</div>
+        <div class="cell-name__sub">Springform, Waage, Tüllen, Silikonmatten</div>
+      </div>
+      <div class="cell-loc"><span class="material-symbols-outlined">location_on</span>Küche · Schublade 4</div>
+      <div class="cell-items">11</div>
+      <div class="cell-date">vor 5 Tagen</div>
+      <div class="cell-actions"><span class="material-symbols-outlined">chevron_right</span></div>
+    </div>
+
+    <div class="table__row table__body">
+      <div class="cell-thumb"><span class="material-symbols-outlined">inventory_2</span></div>
+      <div class="cell-num">#012</div>
+      <div>
+        <div class="cell-name">Dokumente Archiv</div>
+        <div class="cell-name__sub">Verträge 2018-2024, Steuer­unterlagen</div>
+      </div>
+      <div class="cell-loc"><span class="material-symbols-outlined">location_on</span>Büro · Aktenschrank</div>
+      <div class="cell-items">8</div>
+      <div class="cell-date">vor 1 Woche</div>
+      <div class="cell-actions"><span class="material-symbols-outlined">chevron_right</span></div>
+    </div>
+
+    <div class="table__row table__body">
+      <div class="cell-thumb"><img src="https://images.unsplash.com/photo-1535914254981-b5012eebbd15?w=200&q=70" /></div>
+      <div class="cell-num">#009</div>
+      <div>
+        <div class="cell-name">Fahrradzubehör</div>
+        <div class="cell-name__sub">Schloss, Helm, Pumpe, Werkzeug</div>
+      </div>
+      <div class="cell-loc"><span class="material-symbols-outlined">location_on</span>Keller · Fahrradraum</div>
+      <div class="cell-items">9</div>
+      <div class="cell-date">vor 2 Wochen</div>
+      <div class="cell-actions"><span class="material-symbols-outlined">chevron_right</span></div>
+    </div>
+  </div>
+
+  <!-- Box detail -->
+  <h2 class="section-h" style="margin-top:48px">Detail · #003 · Werkzeug Keller</h2>
+  <div class="detail">
+    <div class="detail__card">
+      <div class="detail__photo">
+        <img src="https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=600&q=80" />
+      </div>
+      <div class="detail__id">BOX · #003</div>
+      <h3 class="detail__title">Werkzeug Keller</h3>
+      <div class="detail__loc"><span class="material-symbols-outlined">location_on</span>Keller · Regal A2</div>
+      <dl class="meta-grid">
+        <dt>Erstellt</dt><dd>2026-03-08</dd>
+        <dt>Geändert</dt><dd>heute 14:02</dd>
+        <dt>Items</dt><dd>17</dd>
+        <dt>Typ</dt><dd>Faltbox</dd>
+      </dl>
+    </div>
+
+    <div class="items">
+      <div class="items__head">
+        <h3>Items <span class="badge">17</span></h3>
+        <button class="subnav__btn"><span class="material-symbols-outlined">add</span>Hinzufügen</button>
+      </div>
+
+      <div class="item-row">
+        <div class="item-thumb"><img src="https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=200&q=70" /></div>
+        <div>
+          <div class="item-name">Bosch GSR 18V Akkuschrauber</div>
+          <div class="item-desc">2× Akku 4.0 Ah, Ladegerät, Koffer</div>
+        </div>
+        <div class="item-detail">18V · 4.0 Ah</div>
+        <div class="item-tag">Werkzeug</div>
+      </div>
+
+      <div class="item-row">
+        <div class="item-thumb"><img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=200&q=70" /></div>
+        <div>
+          <div class="item-name">Schraubendreher-Set Wera</div>
+          <div class="item-desc">12-teilig, Schlitz, Kreuz, Torx</div>
+        </div>
+        <div class="item-detail">12 Stk</div>
+        <div class="item-tag">Hand­werkzeug</div>
+      </div>
+
+      <div class="item-row">
+        <div class="item-thumb"><span class="material-symbols-outlined">straighten</span></div>
+        <div>
+          <div class="item-name">Bosch Laser-Entfernungsmesser</div>
+          <div class="item-desc">GLM 50-23 G, grüner Laser, bis 50m</div>
+        </div>
+        <div class="item-detail">50 m</div>
+        <div class="item-tag">Mess­werkzeug</div>
+      </div>
+
+      <div class="item-row">
+        <div class="item-thumb"><span class="material-symbols-outlined">build</span></div>
+        <div>
+          <div class="item-name">Hammer 500g</div>
+          <div class="item-desc">Schreinerhammer, Holzstiel</div>
+        </div>
+        <div class="item-detail">500 g</div>
+        <div class="item-tag">Hand­werkzeug</div>
+      </div>
+
+      <div class="item-row">
+        <div class="item-thumb"><span class="material-symbols-outlined">construction</span></div>
+        <div>
+          <div class="item-name">Wasserwaage 60cm</div>
+          <div class="item-desc">Stabila, magnetisch</div>
+        </div>
+        <div class="item-detail">60 cm</div>
+        <div class="item-tag">Mess­werkzeug</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile -->
+  <div class="mobile-frame">
+    <div class="mobile-frame__inner">
+      <div class="mobile-top">
+        <div class="brand__mark">K</div>
+        <span>Behälter</span>
+        <span style="margin-left:auto" class="brand__path">12</span>
+      </div>
+      <div class="mobile-list">
+        <div class="table__row">
+          <div class="cell-thumb" style="width:32px;height:32px"><img src="https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=120&q=70" /></div>
+          <div>
+            <div class="cell-name" style="font-size:12.5px">Werkzeug Keller</div>
+            <div class="cell-name__sub" style="font-size:10.5px">Keller · Regal A2</div>
+          </div>
+          <div class="cell-items" style="font-size:11px">17</div>
+        </div>
+        <div class="table__row">
+          <div class="cell-thumb" style="width:32px;height:32px"><img src="https://images.unsplash.com/photo-1620283085439-39620a1e21c4?w=120&q=70" /></div>
+          <div>
+            <div class="cell-name" style="font-size:12.5px">Kabel & Adapter</div>
+            <div class="cell-name__sub" style="font-size:10.5px">Büro · Schrank links</div>
+          </div>
+          <div class="cell-items" style="font-size:11px">42</div>
+        </div>
+        <div class="table__row">
+          <div class="cell-thumb" style="width:32px;height:32px"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=120&q=70" /></div>
+          <div>
+            <div class="cell-name" style="font-size:12.5px">Winterkleidung</div>
+            <div class="cell-name__sub" style="font-size:10.5px">Dachboden · Kiste 3</div>
+          </div>
+          <div class="cell-items" style="font-size:11px">23</div>
+        </div>
+        <div class="table__row">
+          <div class="cell-thumb" style="width:32px;height:32px"><img src="https://images.unsplash.com/photo-1580974928064-f0aeef70895a?w=120&q=70" /></div>
+          <div>
+            <div class="cell-name" style="font-size:12.5px">Küche · Backen</div>
+            <div class="cell-name__sub" style="font-size:10.5px">Küche · Schublade 4</div>
+          </div>
+          <div class="cell-items" style="font-size:11px">11</div>
+        </div>
+      </div>
+      <div class="mobile-bottom">
+        <span class="material-symbols-outlined">search</span>
+        <span class="material-symbols-outlined is-active">inventory_2</span>
+        <span class="material-symbols-outlined">add_box</span>
+        <span class="material-symbols-outlined">qr_code_scanner</span>
+        <span class="material-symbols-outlined">settings</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="label-mockup">MOCKUP A · TOOL / DEV-CONSOLE</div>
+</body>
+</html>
