@@ -19,7 +19,6 @@ import {
   type ContainerType,
   type ModelSummary,
 } from "../lib/api";
-import { PageHeader } from "../components/PageHeader";
 
 type ReviewItem = AnalysisItem & {
   detail: string;
@@ -161,7 +160,7 @@ export function AddBoxPage() {
     }
 
     void QRCode.toDataURL(buildQrValue(savedBox), {
-      color: { dark: "#0F0F0F", light: "#FFFFFF" },
+      color: { dark: "black", light: "white" },
       margin: 1,
       width: 256,
     })
@@ -400,18 +399,20 @@ export function AddBoxPage() {
   }
 
   return (
-    <div className="page-stack">
-      <PageHeader kicker="Speicher-Workflow" title="Behälter hinzufügen" />
+    <div className="page-stack add-box-screen">
+      <header className="screen-header">
+        <p className="screen-kicker">Neu</p>
+        <h1 className="screen-title">Hinzufügen</h1>
+      </header>
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Schritt 1</p>
             <h2>Fotos erfassen</h2>
           </div>
-          <div className="action-row">
+          <div className="action-row add-box-photo-actions">
             <button
               className="button button--ghost"
               disabled={isCameraStarting}
@@ -502,7 +503,6 @@ export function AddBoxPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Schritt 2</p>
             <h2>KI-Analyse</h2>
           </div>
           <div className="field field--compact">
@@ -535,7 +535,6 @@ export function AddBoxPage() {
       <section className="panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Schritt 3</p>
             <h2>Items prüfen</h2>
           </div>
           <button
@@ -620,7 +619,6 @@ export function AddBoxPage() {
       <section className="panel add-box-save-panel">
         <div className="panel-header">
           <div>
-            <p className="section-kicker">Schritt 4</p>
             <h2>Behälter speichern</h2>
           </div>
         </div>
@@ -701,7 +699,6 @@ export function AddBoxPage() {
         <section className="panel">
           <div className="panel-header">
             <div>
-              <p className="section-kicker">Schritt 5</p>
               <h2>Gespeicherte Kiste</h2>
             </div>
             <Link className="button button--ghost" to={`/boxes/${savedBox.id}`}>

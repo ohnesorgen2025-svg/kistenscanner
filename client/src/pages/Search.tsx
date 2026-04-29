@@ -1,7 +1,6 @@
 import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { PageHeader } from "../components/PageHeader";
 import {
   CONTAINER_TYPE_ICONS,
   resolveAssetUrl,
@@ -102,10 +101,13 @@ export function SearchPage() {
   }
 
   return (
-    <div className="page-stack">
-      <PageHeader kicker="Inventar" title="Wo ist mein…?" />
+    <div className="page-stack search-screen">
+      <header className="screen-header">
+        <p className="screen-kicker">Inventar</p>
+        <h1 className="screen-title">Wo ist mein...?</h1>
+      </header>
 
-      <section className="panel search-panel">
+      <section className="search-panel">
         <div className="search-input-wrap">
           <div className="search-input-wrap__field">
             <span className="material-symbols-outlined search-input-wrap__icon">search</span>
@@ -157,14 +159,14 @@ export function SearchPage() {
       {isLoading ? <div className="feedback">Suche lädt…</div> : null}
 
       {showHint ? (
-        <section className="panel empty-state">
+        <section className="empty-state search-empty-state">
           <p className="section-kicker">Live-Suche</p>
           <h2>Mindestens 2 Zeichen eingeben.</h2>
         </section>
       ) : null}
 
       {showEmptyState ? (
-        <section className="panel empty-state">
+        <section className="empty-state search-empty-state">
           <p className="section-kicker">Keine Treffer</p>
           <h2>Noch nichts gefunden</h2>
         </section>

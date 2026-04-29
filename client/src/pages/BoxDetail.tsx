@@ -10,6 +10,7 @@ import {
   createItem,
   createLoan,
   deleteBox,
+  deleteItem,
   getBox,
   getLoansForItem,
   getSettings,
@@ -28,7 +29,6 @@ import {
   type ItemRecord,
   type LoanRecord,
   type ModelSummary,
-  type PathSegment,
   type RescanResult,
   updateItem,
   uploadItemImage,
@@ -223,10 +223,10 @@ function StickerArtwork({
     >
       <text
         dominantBaseline="middle"
-        fill="#111111"
-        fontFamily="Space Grotesk, sans-serif"
+        fill="black"
+        fontFamily="Inter, -apple-system, system-ui, sans-serif"
         fontSize={geometry.numberFontSize}
-        fontWeight="700"
+        fontWeight="600"
         textAnchor="middle"
         x={geometry.numberCenterX}
         y={geometry.contentCenterY}
@@ -298,9 +298,7 @@ export function BoxDetailPage() {
   const [addItemName, setAddItemName] = useState("");
   const [addItemDescription, setAddItemDescription] = useState("");
   const [isAddItemSaving, setIsAddItemSaving] = useState(false);
-  const [viewMode, setViewMode] = useState<"grid" | "list">(
-    () => (localStorage.getItem("item-view-mode") === "list" ? "list" : "grid"),
-  );
+  const [openItemMenuId, setOpenItemMenuId] = useState<number | null>(null);
 
   async function handleAddItem(event: React.FormEvent) {
     event.preventDefault();
@@ -321,14 +319,6 @@ export function BoxDetailPage() {
     } finally {
       setIsAddItemSaving(false);
     }
-  }
-
-  function toggleViewMode() {
-    setViewMode((current) => {
-      const next = current === "grid" ? "list" : "grid";
-      localStorage.setItem("item-view-mode", next);
-      return next;
-    });
   }
 
   useEffect(() => {
@@ -359,8 +349,8 @@ export function BoxDetailPage() {
         const [boxData, boxSummaries, loadedModels, settings] = await Promise.all([
           getBox(boxId),
           listBoxes(),
-          listModels(),
-          getSettings(),
+          listModels().catch(() => [] as ModelSummary[]),
+          getSettings().catch(() => ({ activeModelId: "" })),
         ]);
         if (!isMounted) {
           return;
@@ -422,7 +412,7 @@ export function BoxDetailPage() {
     }
 
     void QRCode.toDataURL(buildQrValue(box), {
-      color: { dark: "#0F0F0F", light: "#FFFFFF" },
+      color: { dark: "black", light: "white" },
       margin: 1,
       width: 220,
     })
@@ -592,6 +582,7 @@ export function BoxDetailPage() {
   }
 
   function beginEdit(item: ItemRecord) {
+    setOpenItemMenuId(null);
     setEditingItemId(item.id);
     setDraft({
       name: item.name,
@@ -617,6 +608,7 @@ export function BoxDetailPage() {
   }
 
   function openMoveMenu(itemId: number) {
+    setOpenItemMenuId(null);
     setMovingItemId(itemId);
     setSelectedTargetBoxId(null);
     setError(null);
@@ -664,6 +656,7 @@ export function BoxDetailPage() {
   }
 
   async function handleImageUpload(itemId: number, file: File | null) {
+    setOpenItemMenuId(null);
     if (!file) {
       return;
     }
@@ -674,6 +667,24 @@ export function BoxDetailPage() {
       setError(null);
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Zusatzbild konnte nicht hochgeladen werden.");
+    }
+  }
+
+  async function handleDeleteItem(item: ItemRecord) {
+    setOpenItemMenuId(null);
+    const confirmed = window.confirm(`"${item.name}" wirklich löschen?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteItem(item.id);
+      await refreshBox();
+      setError(null);
+      showConfirmation("Item wurde gelöscht.");
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "Item konnte nicht gelöscht werden.");
     }
   }
 
@@ -710,13 +721,6 @@ export function BoxDetailPage() {
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Menge konnte nicht geändert werden.");
     }
-  }
-
-  function openLendDialog(itemId: number) {
-    setLendingItemId(itemId);
-    setLendingBorrower("");
-    setLendingDueDate("");
-    setLendingNotes("");
   }
 
   function closeLendDialog() {
@@ -885,114 +889,90 @@ export function BoxDetailPage() {
   } as CSSProperties;
 
   return (
-    <div className="page-stack">
+    <div className="page-stack box-detail-page">
       {isLoading ? <div className="feedback">Kiste wird geladen…</div> : null}
       {confirmation ? <div className="feedback">{confirmation}</div> : null}
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
       {box ? (
         <>
-          {box.path && box.path.length > 0 ? (
-            <nav className="breadcrumb-path" aria-label="Pfad">
-              {box.path.map((seg: PathSegment, idx: number) => (
-                <span key={seg.id} className="breadcrumb-path__segment">
-                  {idx > 0 ? <span className="breadcrumb-path__separator"> › </span> : null}
-                  <Link to={`/boxes/${seg.id}`} className="breadcrumb-path__link">
-                    <span className="material-symbols-outlined breadcrumb-path__icon">{CONTAINER_TYPE_ICONS[seg.containerType] || "inventory_2"}</span>
-                    {seg.name}
-                  </Link>
-                </span>
-              ))}
-            </nav>
-          ) : null}
+          <nav className="breadcrumb-path box-detail-breadcrumb" aria-label="Pfad">
+            <Link to="/boxes" className="breadcrumb-path__link">Behälter</Link>
+            <span className="breadcrumb-path__separator"> / </span>
+            <span>{box.name}</span>
+          </nav>
 
-          <section className="panel box-detail-header">
+          <section className="box-detail-header">
             <div className="box-detail-header__identity">
-              <div className="box-detail-header__code">
-                <div className="qr-panel box-detail-header__qr-panel">
-                  {qrCodeDataUrl ? <img alt={`QR-Code für ${CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} ${box.number}`} src={qrCodeDataUrl} /> : null}
-                </div>
+              <div className="box-detail-header__qr-panel">
+                {qrCodeDataUrl ? <img alt={`QR-Code für ${CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} ${box.number}`} src={qrCodeDataUrl} /> : null}
               </div>
 
               <div className="box-detail-header__summary">
-                <p className="section-kicker">Standort</p>
                 <h1 className="box-detail-header__location">{box.location}</h1>
-                <div className="box-detail-header__facts">
-                  <div className="box-detail-header__fact">
-                    <span className="box-detail-header__fact-label">{CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"}</span>
-                    <strong className="box-detail-header__fact-value">#{box.number}</strong>
-                  </div>
-                  <div className="box-detail-header__fact">
-                    <span className="box-detail-header__fact-label">Name</span>
-                    <strong className="box-detail-header__fact-value">{box.name}</strong>
-                  </div>
-                  <div className="box-detail-header__fact">
-                    <span className="box-detail-header__fact-label">Items</span>
-                    <strong className="box-detail-header__fact-value">{box.itemCount}</strong>
-                  </div>
-                </div>
+                <p className="box-detail-header__meta">
+                  {CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} #{box.number}
+                  <span> · </span>
+                  {box.name}
+                  <span> · </span>
+                  {box.itemCount} Items
+                </p>
               </div>
             </div>
 
             <div className="box-detail-toolbar" role="toolbar" aria-label="Kistenaktionen">
               <button
                 aria-label="Kiste bearbeiten"
-                className={`button button--ghost box-detail-toolbar__action${isBoxEditing ? " button--active" : ""}`}
+                className={`box-detail-toolbar__action${isBoxEditing ? " button--active" : ""}`}
                 onClick={openBoxEdit}
                 title="Kiste bearbeiten"
                 type="button"
               >
                 <span className="material-symbols-outlined">edit</span>
-                <span className="box-detail-toolbar__text">Bearbeiten</span>
               </button>
               <button
                 aria-label="Foto hinzufügen"
-                className={`button button--ghost box-detail-toolbar__action${isRescanOpen ? " button--active" : ""}`}
+                className={`box-detail-toolbar__action${isRescanOpen ? " button--active" : ""}`}
                 onClick={openRescan}
                 title="Re-Scan: Neue Fotos analysieren"
                 type="button"
               >
                 <span className="material-symbols-outlined">add_a_photo</span>
-                <span className="box-detail-toolbar__text">Re-Scan</span>
               </button>
               <button
                 aria-label="Label drucken"
-                className={`button button--ghost box-detail-toolbar__action${isLabelPanelOpen ? " button--active" : ""}`}
+                className={`box-detail-toolbar__action${isLabelPanelOpen ? " button--active" : ""}`}
                 onClick={openLabelPanel}
                 title="Label drucken"
                 type="button"
               >
                 <span className="material-symbols-outlined">print</span>
-                <span className="box-detail-toolbar__text">Label drucken</span>
               </button>
               <button
                 aria-label="Packliste teilen"
-                className="button button--ghost box-detail-toolbar__action"
+                className="box-detail-toolbar__action"
                 onClick={() => void handleShare()}
                 title="Inhalt teilen / Packliste kopieren"
                 type="button"
               >
                 <span className="material-symbols-outlined">ios_share</span>
-                <span className="box-detail-toolbar__text">Teilen</span>
               </button>
               <Link
                 aria-label="Zurück zu den Kisten"
-                className="button button--ghost box-detail-toolbar__action"
+                className="box-detail-toolbar__action"
                 title="Zurück zu den Kisten"
                 to="/boxes"
               >
                 <span className="material-symbols-outlined">arrow_back</span>
-                <span className="box-detail-toolbar__text">Zurück</span>
               </Link>
               <button
                 aria-label="Kiste löschen"
-                className="button button--ghost box-detail-toolbar__action box-detail-toolbar__action--danger"
+                className="box-detail-toolbar__action box-detail-toolbar__action--danger"
                 onClick={() => void handleDeleteBox()}
                 title="Kiste löschen"
                 type="button"
               >
                 <span className="material-symbols-outlined">delete</span>
-                <span className="box-detail-toolbar__text">Löschen</span>
               </button>
             </div>
           </section>
@@ -1424,39 +1404,16 @@ export function BoxDetailPage() {
             </section>
           ) : null}
 
-          <section className="panel">
-            <div className="panel-header">
+          <section className="panel box-detail-items">
+            <div className="panel-header box-detail-items__header">
               <div>
                 <p className="section-kicker">Items</p>
                 <h2>Inhalt</h2>
               </div>
-              <div className="page-header__actions">
-                {box.items.length > 0 ? (
-                  <>
-                    <button
-                      aria-label={viewMode === "grid" ? "Listenansicht" : "Kachelansicht"}
-                      className="button button--ghost"
-                      onClick={toggleViewMode}
-                      title={viewMode === "grid" ? "Listenansicht" : "Kachelansicht"}
-                      type="button"
-                    >
-                      <span className="material-symbols-outlined">
-                        {viewMode === "grid" ? "view_list" : "grid_view"}
-                      </span>
-                    </button>
-                    <button
-                      className={`button button--ghost${isBatchMode ? " button--active" : ""}`}
-                      onClick={() => isBatchMode ? exitBatchMode() : setIsBatchMode(true)}
-                      type="button"
-                    >
-                      <span className="material-symbols-outlined">checklist</span>
-                      {isBatchMode ? "Auswahl beenden" : "Mehrfachauswahl"}
-                    </button>
-                  </>
-                ) : null}
+              <div className="box-detail-items__actions">
                 <button
                   aria-label="Item hinzufügen"
-                  className={`button button--ghost${isAddingItem ? " button--active" : ""}`}
+                  className={`box-detail-toolbar__action${isAddingItem ? " button--active" : ""}`}
                   onClick={() => {
                     setIsAddingItem((v) => !v);
                     setAddItemName("");
@@ -1570,7 +1527,7 @@ export function BoxDetailPage() {
               </div>
             ) : null}
 
-            <div className={`review-list${viewMode === "list" ? " review-list--list" : ""}`}>
+            <div className="review-list box-detail-item-list">
               {box.items.map((item) => {
                 const isEditing = editingItemId === item.id && draft;
                 const isMoving = movingItemId === item.id;
@@ -1715,18 +1672,59 @@ export function BoxDetailPage() {
                     </div>
 
                     {!isEditing && !isBatchMode ? (
-                      <div className="review-card__actions">
+                      <div className="review-card__actions item-context">
                         <button
-                          className="icon-btn"
-                          onClick={() => beginEdit(item)}
-                          title="Bearbeiten"
+                          aria-expanded={openItemMenuId === item.id}
+                          aria-haspopup="menu"
+                          aria-label="Item-Aktionen"
+                          className="box-detail-toolbar__action item-context__trigger"
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setOpenItemMenuId((current) => current === item.id ? null : item.id);
+                          }}
                           type="button"
                         >
-                          <span className="material-symbols-outlined">edit</span>
+                          <span className="material-symbols-outlined">more_horiz</span>
                         </button>
-                        <label className="icon-btn" htmlFor={`item-upload-${item.id}`} title="Foto hinzufügen">
-                          <span className="material-symbols-outlined">add_photo_alternate</span>
-                        </label>
+                        {openItemMenuId === item.id ? (
+                          <>
+                            <button
+                              aria-label="Menü schließen"
+                              className="item-context__backdrop"
+                              onClick={() => setOpenItemMenuId(null)}
+                              type="button"
+                            />
+                            <div className="context-menu open" role="menu">
+                              <button className="ctx-item" onClick={() => beginEdit(item)} role="menuitem" type="button">
+                                <span className="material-symbols-outlined">edit</span>
+                                <span>Bearbeiten</span>
+                              </button>
+                              <label className="ctx-item" htmlFor={`item-upload-${item.id}`} role="menuitem">
+                                <span className="material-symbols-outlined">add_a_photo</span>
+                                <span>Foto</span>
+                              </label>
+                              <button
+                                className="ctx-item"
+                                disabled={availableMoveTargets.length === 0}
+                                onClick={() => openMoveMenu(item.id)}
+                                role="menuitem"
+                                type="button"
+                              >
+                                <span className="material-symbols-outlined">drive_file_move</span>
+                                <span>Verschieben</span>
+                              </button>
+                              <button
+                                className="ctx-item ctx-item--danger"
+                                onClick={() => void handleDeleteItem(item)}
+                                role="menuitem"
+                                type="button"
+                              >
+                                <span className="material-symbols-outlined">delete</span>
+                                <span>Löschen</span>
+                              </button>
+                            </div>
+                          </>
+                        ) : null}
                         <input
                           accept="image/*"
                           className="sr-only"
@@ -1736,23 +1734,6 @@ export function BoxDetailPage() {
                           }
                           type="file"
                         />
-                        <button
-                          className="icon-btn"
-                          disabled={availableMoveTargets.length === 0}
-                          onClick={() => openMoveMenu(item.id)}
-                          title="Verschieben"
-                          type="button"
-                        >
-                          <span className="material-symbols-outlined">drive_file_move</span>
-                        </button>
-                        <button
-                          className="icon-btn"
-                          onClick={() => openLendDialog(item.id)}
-                          title="Verleihen"
-                          type="button"
-                        >
-                          <span className="material-symbols-outlined">share</span>
-                        </button>
                       </div>
                     ) : null}
 

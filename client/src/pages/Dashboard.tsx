@@ -225,12 +225,12 @@ export function DashboardPage() {
                 {stats.locationBreakdown.map((entry) => (
                   <div className="location-row" key={entry.location}>
                     <span className="location-row__name">{entry.location}</span>
-                    <div className="location-row__bar-wrap">
-                      <div
-                        className="location-row__bar"
-                        style={{ width: `${Math.min((entry.boxCount / stats.totalBoxes) * 100, 100)}%` }}
-                      />
-                    </div>
+                    <progress
+                      aria-label={`${entry.location}: ${entry.boxCount} Kisten`}
+                      className="location-row__progress"
+                      max={stats.totalBoxes}
+                      value={entry.boxCount}
+                    />
                     <span className="location-row__count">{entry.boxCount}</span>
                   </div>
                 ))}

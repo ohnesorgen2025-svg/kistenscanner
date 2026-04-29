@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { PageHeader } from "../components/PageHeader";
 import { CONTAINER_TYPE_ICONS, CONTAINER_TYPE_LABELS, listBoxes, resolveAssetUrl, type BoxSummary } from "../lib/api";
 
 export function BoxesPage() {
@@ -40,18 +39,16 @@ export function BoxesPage() {
   }, []);
 
   return (
-    <div className="page-stack">
-      <PageHeader
-        actions={(
-          <div className="action-row">
-            <Link className="button button--primary" to="/boxes/add">
-              Behälter hinzufügen
-            </Link>
-          </div>
-        )}
-        kicker="Inventar"
-        title="Behälter"
-      />
+    <div className="page-stack boxes-overview">
+      <header className="boxes-overview__header">
+        <div className="boxes-overview__heading">
+          <p className="boxes-overview__kicker">Inventar</p>
+          <h1 className="boxes-overview__title">Behälter</h1>
+        </div>
+        <Link className="button button--ghost boxes-overview__add" to="/boxes/add">
+          Hinzufügen
+        </Link>
+      </header>
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
@@ -71,7 +68,7 @@ export function BoxesPage() {
 
       <section className="box-grid">
         {boxes.map((box) => (
-          <Link className="box-card panel" key={box.id} to={`/boxes/${box.id}`}>
+          <Link className="box-card" key={box.id} to={`/boxes/${box.id}`}>
             <div className="box-card__media">
               {resolveAssetUrl(box.thumbnailPath) ? (
                 <img alt={box.name} src={resolveAssetUrl(box.thumbnailPath) ?? undefined} />
@@ -82,12 +79,12 @@ export function BoxesPage() {
               )}
             </div>
             <div className="box-card__body">
-              <div className="box-card__topline">
-                <span className="section-kicker">{CONTAINER_TYPE_LABELS[box.containerType] ?? "Kiste"} #{box.number}</span>
-                <span className="chip">{box.itemCount} Items</span>
+              <div className="box-card__metadata">
+                <span className="box-card__badge">{CONTAINER_TYPE_LABELS[box.containerType] ?? "Kiste"} #{box.number}</span>
+                <span className="box-card__badge">{box.itemCount} Items</span>
               </div>
-              <h2>{box.name}</h2>
-              <p>{box.location}</p>
+              <h2 className="box-card__title">{box.name}</h2>
+              <p className="box-card__location">{box.location}</p>
             </div>
           </Link>
         ))}

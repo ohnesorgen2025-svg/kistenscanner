@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { PageHeader } from "../components/PageHeader";
 import { getBoxByNumber, lookupBarcode, type BarcodeResult } from "../lib/api";
 
 type ScanMode = "qr" | "barcode";
@@ -221,12 +220,16 @@ export function ScanPage() {
   }, [navigate]);
 
   return (
-    <div className="page-stack">
-      <PageHeader kicker="Scannen" title="Scannen" />
+    <div className="page-stack scan-screen">
+      <header className="screen-header">
+        <p className="screen-kicker">Scanner</p>
+        <h1 className="screen-title">Scannen</h1>
+      </header>
 
-      <div className="action-row">
+      <div className="action-row scan-mode-toggle">
         <button
-          className={`button ${scanMode === "qr" ? "button--primary" : "button--ghost"}`}
+          aria-pressed={scanMode === "qr"}
+          className="button button--ghost"
           onClick={() => handleModeSwitch("qr")}
           type="button"
         >
@@ -234,7 +237,8 @@ export function ScanPage() {
           QR-Code
         </button>
         <button
-          className={`button ${scanMode === "barcode" ? "button--primary" : "button--ghost"}`}
+          aria-pressed={scanMode === "barcode"}
+          className="button button--ghost"
           onClick={() => handleModeSwitch("barcode")}
           type="button"
         >
@@ -291,7 +295,7 @@ export function ScanPage() {
               </label>
             </div>
           </div>
-          <div id="qr-file-reader" style={{ display: "none" }} />
+          <div className="qr-file-reader" id="qr-file-reader" />
 
           <div className="scan-status">
             <span className="chip">{status}</span>

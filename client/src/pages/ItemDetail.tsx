@@ -103,7 +103,7 @@ export function ItemDetailPage() {
     }
 
     void QRCode.toDataURL(buildItemQrValue(item.id), {
-      color: { dark: "#0F0F0F", light: "#FFFFFF" },
+      color: { dark: "black", light: "white" },
       margin: 1,
       width: 180,
     })
