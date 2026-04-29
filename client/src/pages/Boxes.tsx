@@ -11,8 +11,7 @@ import {
 
 type ViewMode = "list" | "grid";
 
-const FILTERS = ["Alle", "Keller", "Dachboden", "Werkstatt", "Büro"] as const;
-type Filter = (typeof FILTERS)[number];
+const ALL_FILTER = "Alle";
 
 function formatItems(count: number) {
   return `${count} ${count === 1 ? "Item" : "Items"}`;
@@ -33,7 +32,7 @@ export function BoxesPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState<ViewMode>("list");
-  const [filter, setFilter] = useState<Filter>("Alle");
+  const [filter, setFilter] = useState<string>(ALL_FILTER);
 
   useEffect(() => {
     let isMounted = true;
@@ -59,11 +58,25 @@ export function BoxesPage() {
     };
   }, []);
 
+  const locations = useMemo(() => {
+    const set = new Set<string>();
+    for (const b of boxes) {
+      const loc = (b.location ?? "").trim();
+      if (loc) set.add(loc);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "de"));
+  }, [boxes]);
+
+  // Reset filter when current selection no longer exists (e.g. after delete)
+  useEffect(() => {
+    if (filter !== ALL_FILTER && !locations.includes(filter)) {
+      setFilter(ALL_FILTER);
+    }
+  }, [filter, locations]);
+
   const filtered = useMemo(() => {
-    if (filter === "Alle") return boxes;
-    return boxes.filter((b) =>
-      (b.location ?? "").toLowerCase().includes(filter.toLowerCase()),
-    );
+    if (filter === ALL_FILTER) return boxes;
+    return boxes.filter((b) => (b.location ?? "").trim() === filter);
   }, [boxes, filter]);
 
   return (
@@ -79,23 +92,31 @@ export function BoxesPage() {
       </header>
 
       <div className="boxes-filter" role="toolbar" aria-label="Filter">
-        {FILTERS.map((f) => (
-          <button
-            key={f}
-            type="button"
-            className={`boxes-filter__chip${filter === f ? " boxes-filter__chip--active" : ""}`}
-            onClick={() => setFilter(f)}
-          >
-            {f}
-          </button>
-        ))}
+        <button
+          type="button"
+          className={`boxes-filter__chip${filter === ALL_FILTER ? " boxes-filter__chip--active" : ""}`}
+          onClick={() => setFilter(ALL_FILTER)}
+        >
+          {ALL_FILTER}
+          <span className="boxes-filter__count">{boxes.length}</span>
+        </button>
+        {locations.map((loc) => {
+          const count = boxes.filter((b) => (b.location ?? "").trim() === loc).length;
+          return (
+            <button
+              key={loc}
+              type="button"
+              className={`boxes-filter__chip${filter === loc ? " boxes-filter__chip--active" : ""}`}
+              onClick={() => setFilter(loc)}
+            >
+              {loc}
+              <span className="boxes-filter__count">{count}</span>
+            </button>
+          );
+        })}
 
         <span className="boxes-filter__sep" aria-hidden="true" />
 
-        <button type="button" className="boxes-filter__chip" disabled>
-          <span className="material-symbols-outlined">tune</span>
-          Filter
-        </button>
         <button type="button" className="boxes-filter__chip" disabled>
           <span className="material-symbols-outlined">swap_vert</span>
           Sortieren
