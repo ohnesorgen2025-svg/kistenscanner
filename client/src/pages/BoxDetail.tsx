@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react";
-import QRCode from "qrcode";
 import { Link, useNavigate, useParams } from "react-router-dom";
+
+import { buildBoxQrValue, generateQrSvgDataUrl } from "../lib/qr";
 
 import {
   batchDeleteItems,
@@ -63,20 +64,6 @@ type LabelSlot = {
   column: number;
   leftMm: number;
   topMm: number;
-};
-
-type StickerGeometry = {
-  insetX: number;
-  insetY: number;
-  halfWidth: number;
-  innerHeight: number;
-  numberCenterX: number;
-  contentCenterY: number;
-  qrCenterY: number;
-  numberFontSize: number;
-  qrSize: number;
-  qrX: number;
-  qrY: number;
 };
 
 const labelProfiles: LabelProfile[] = [
@@ -161,46 +148,13 @@ function buildSlots(profile: LabelProfile): LabelSlot[] {
   });
 }
 
-function buildQrValue(box: BoxRecord): string {
-  return `kistenscanner://box-number/${box.number}`;
-}
+
 
 function formatSlotList(slots: LabelSlot[]): string {
   return slots
     .map((slot) => slot.index + 1)
     .sort((left, right) => left - right)
     .join(", ");
-}
-
-function buildStickerGeometry(profile: LabelProfile, labelText: string): StickerGeometry {
-  const insetX = profile.labelWidthMm * 0.1;
-  const insetY = profile.labelHeightMm * 0.1;
-  const innerWidth = profile.labelWidthMm - insetX * 2;
-  const innerHeight = profile.labelHeightMm - insetY * 2;
-  const halfWidth = innerWidth / 2;
-  const numberCenterX = insetX + halfWidth / 2;
-  const qrCenterX = insetX + halfWidth + halfWidth / 2;
-  const contentCenterY = insetY + innerHeight / 2 + innerHeight * 0.035;
-  const qrCenterY = contentCenterY - innerHeight * 0.03;
-  const baseSize = Math.min(halfWidth, innerHeight);
-  const lengthFactor =
-    labelText.length <= 1 ? 0.86 : labelText.length === 2 ? 0.72 : labelText.length === 3 ? 0.58 : 0.46;
-  const numberFontSize = baseSize * lengthFactor;
-  const qrSize = Math.min(halfWidth, innerHeight) * 0.86;
-
-  return {
-    insetX,
-    insetY,
-    halfWidth,
-    innerHeight,
-    numberCenterX,
-    contentCenterY,
-    qrCenterY,
-    numberFontSize,
-    qrSize,
-    qrX: qrCenterX - qrSize / 2,
-    qrY: qrCenterY - qrSize / 2,
-  };
 }
 
 function StickerArtwork({
@@ -212,38 +166,25 @@ function StickerArtwork({
   profile: LabelProfile;
   qrCodeDataUrl: string | null;
 }) {
-  const geometry = buildStickerGeometry(profile, labelText);
+  const aspect = profile.labelWidthMm / profile.labelHeightMm;
+  const lengthFactor =
+    labelText.length <= 1 ? 0.62 : labelText.length === 2 ? 0.52 : labelText.length === 3 ? 0.42 : 0.34;
 
   return (
-    <svg
-      aria-hidden="true"
+    <div
       className="sticker-artwork"
-      preserveAspectRatio="none"
-      viewBox={`0 0 ${profile.labelWidthMm} ${profile.labelHeightMm}`}
+      style={{ aspectRatio: `${aspect}`, "--sticker-num-size": `${lengthFactor * 100}cqh` } as CSSProperties}
+      aria-hidden="true"
     >
-      <text
-        dominantBaseline="middle"
-        fill="black"
-        fontFamily="Inter, -apple-system, system-ui, sans-serif"
-        fontSize={geometry.numberFontSize}
-        fontWeight="600"
-        textAnchor="middle"
-        x={geometry.numberCenterX}
-        y={geometry.contentCenterY}
-      >
-        {labelText}
-      </text>
-      {qrCodeDataUrl ? (
-        <image
-          height={geometry.qrSize}
-          href={qrCodeDataUrl}
-          preserveAspectRatio="xMidYMid meet"
-          width={geometry.qrSize}
-          x={geometry.qrX}
-          y={geometry.qrY}
-        />
-      ) : null}
-    </svg>
+      <div className="sticker-artwork__num">{labelText}</div>
+      <div className="sticker-artwork__qr">
+        {qrCodeDataUrl ? (
+          <img alt="" src={qrCodeDataUrl} />
+        ) : (
+          <span className="sticker-artwork__qr-placeholder" />
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -411,11 +352,7 @@ export function BoxDetailPage() {
       };
     }
 
-    void QRCode.toDataURL(buildQrValue(box), {
-      color: { dark: "black", light: "white" },
-      margin: 1,
-      width: 320,
-    })
+    void generateQrSvgDataUrl(buildBoxQrValue(box.number))
       .then((dataUrl: string) => {
         if (isMounted) {
           setQrCodeDataUrl(dataUrl);

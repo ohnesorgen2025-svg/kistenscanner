@@ -1,7 +1,8 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ChangeEventHandler } from "react";
-import QRCode from "qrcode";
 import { Link } from "react-router-dom";
+
+import { buildBoxQrValue, generateQrSvgDataUrl } from "../lib/qr";
 
 import {
   analyzeBoxImages,
@@ -118,10 +119,6 @@ const DEMO_REVIEW_ITEMS: ReviewItem[] = [
     sourceImagePath: null,
   },
 ];
-
-function buildQrValue(box: BoxRecord): string {
-  return `kistenscanner://box-number/${box.number}`;
-}
 
 function getReviewImageUrl(item: ReviewItem): string | null {
   return resolveAssetUrl(item.thumbnailPath ?? item.sourceImagePath);
@@ -255,11 +252,7 @@ export function AddBoxPage() {
       };
     }
 
-    void QRCode.toDataURL(buildQrValue(savedBox), {
-      color: { dark: "black", light: "white" },
-      margin: 1,
-      width: 256,
-    })
+    void generateQrSvgDataUrl(buildBoxQrValue(savedBox.number))
       .then((dataUrl: string) => {
         if (isMounted) {
           setQrCodeDataUrl(dataUrl);

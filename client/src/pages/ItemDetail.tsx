@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import QRCode from "qrcode";
 import { Link, useParams } from "react-router-dom";
+
+import { buildItemQrValue, generateQrSvgDataUrl } from "../lib/qr";
 
 import {
   analyzeItemImages,
@@ -22,10 +23,6 @@ import {
   type PathSegment,
 } from "../lib/api";
 import { PageHeader } from "../components/PageHeader";
-
-function buildItemQrValue(itemId: number): string {
-  return `kistenscanner://item/${itemId}`;
-}
 
 export function ItemDetailPage() {
   const params = useParams();
@@ -102,11 +99,7 @@ export function ItemDetailPage() {
       return;
     }
 
-    void QRCode.toDataURL(buildItemQrValue(item.id), {
-      color: { dark: "black", light: "white" },
-      margin: 1,
-      width: 180,
-    })
+    void generateQrSvgDataUrl(buildItemQrValue(item.id))
       .then(setQrCodeDataUrl)
       .catch(() => setQrCodeDataUrl(null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
