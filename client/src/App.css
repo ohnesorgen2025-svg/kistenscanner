@@ -7096,7 +7096,7 @@ a.item-detail-header__fact-value:hover {
 
 .item-hero__title {
   font-family: var(--heading);
-  font-size: 1.6rem;
+  font-size: 1.85rem;
   font-weight: 700;
   line-height: 1.15;
   margin: 0;
@@ -7108,10 +7108,10 @@ a.item-detail-header__fact-value:hover {
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 8px;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   color: var(--text-secondary, var(--muted));
   margin: 0;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .item-hero__meta-link,
@@ -7172,28 +7172,29 @@ a.item-detail-header__fact-value:hover {
 .item-info {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .item-info__block {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .item-info__heading {
   font-family: var(--heading);
-  font-size: 0.78rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
   margin: 0;
+  line-height: 1.2;
 }
 
 .item-info__text {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   line-height: 1.6;
   color: var(--text);
 }
@@ -7276,11 +7277,43 @@ a.item-detail-header__fact-value:hover {
     max-height: 480px;
   }
   .item-hero__title {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   .item-hero__actions .button {
     flex: 0 0 auto;
   }
+}
+
+/* Edit-panel typography on item detail page — sentence case, bigger,
+   and visually aligned to input padding so label and value share an anchor. */
+.item-detail-page .panel-header h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.item-detail-page .panel-body.form-stack {
+  gap: 1rem;
+}
+
+.item-detail-page .field {
+  gap: 0.4rem;
+}
+
+.item-detail-page .field label {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
+  padding-inline: 1rem;
+}
+
+.item-detail-page .input,
+.item-detail-page .textarea {
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 
