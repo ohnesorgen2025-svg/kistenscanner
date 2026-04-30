@@ -53,14 +53,10 @@ function AppBar() {
   return (
     <header className="appbar">
       <div className="appbar__inner">
-        <div className="appbar__brand">
-          <Link to="/boxes" className="appbar__mark" aria-label="Kistenscanner">K</Link>
+        <Link to="/boxes" className="appbar__brand" aria-label="Kistenscanner">
+          <span className="appbar__mark" aria-hidden>K</span>
           <span className="appbar__name">Kistenscanner</span>
-          <span className="appbar__sep">/</span>
-          <span className="appbar__path">
-            stefan / <b>inventar</b>
-          </span>
-        </div>
+        </Link>
 
         <button type="button" className="cmdk" onClick={onCmdkClick} aria-label="Suchen oder Befehl">
           <span className="material-symbols-outlined">search</span>
@@ -81,7 +77,6 @@ function AppBar() {
           <Link to="/settings" className="appbar__icon" title="Einstellungen">
             <span className="material-symbols-outlined">settings</span>
           </Link>
-          <span className="appbar__avatar" aria-hidden="true" />
         </div>
       </div>
     </header>
