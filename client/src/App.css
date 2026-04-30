@@ -3135,6 +3135,18 @@ html {
 }
 
 @media (max-width: 32rem) {
+  /* Mobile gutter — single source of truth: 16px on .page-stack--route for
+     every route. .shell stays at 0 so we don’t double-pad. */
+  .shell {
+    padding-inline: 0;
+  }
+
+  .page-shell--app .page-stack--route,
+  .page-shell--detail .page-stack--route {
+    padding: 16px 16px calc(72px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+  }
+
   .page-stack {
     padding: 1rem 0;
   }
@@ -3143,9 +3155,7 @@ html {
     height: 3.5rem;
   }
 
-  .shell {
-    padding-inline: 0.5rem;
-  }
+  /* legacy .shell padding-inline: 0.5rem removed; consolidated above. */
 
   .panel {
     padding: 1rem;
@@ -5170,7 +5180,7 @@ a.item-detail-header__fact-value:hover {
   }
 }
 
-@media (max-width: 63.999rem) {
+@media (max-width: 63.999rem) and (min-width: 32.001rem) {
   .page-shell--detail .page-stack--route {
     padding: 16px 16px 64px;
   }
