@@ -6865,7 +6865,7 @@ a.item-detail-header__fact-value:hover {
 }
 
 .box-hero__actions .button {
-  justify-content: flex-start;
+  justify-content: center;
   display: inline-flex;
   align-items: center;
   gap: 8px;
