@@ -3341,57 +3341,9 @@ html {
     margin: 0;
   }
 
+  html,
   body {
     background: white;
-    color: black;
-  }
-
-  body.print-label-mode .topbar,
-  body.print-label-mode .bottom-nav,
-  body.print-label-mode .panel:not([data-print-label="true"]),
-  body.print-label-mode .feedback {
-    display: none;
-  }
-
-  body.print-label-mode .shell {
-    width: 100%;
-    min-height: auto;
-    padding: 0;
-  }
-
-  body.print-label-mode .page-shell,
-  body.print-label-mode .page-stack {
-    display: block;
-  }
-
-  body.print-label-mode .print-label-panel {
-    display: block;
-    width: 100%;
-    padding: 0;
-    border: 0;
-    border-radius: var(--radius-sm);
-    background: white;
-    box-shadow: none;
-  }
-
-  body.print-label-mode .print-sheet {
-    width: 210mm;
-    height: 297mm;
-    box-sizing: border-box;
-    margin: 0;
-  }
-
-  body.print-label-mode .print-sticker {
-    border: none;
-    color: black;
-  }
-
-  body.print-label-mode .print-sheet__guide {
-    border-color: rgba(0, 0, 0, 0.18);
-  }
-
-  body.print-label-mode .print-sticker__number,
-  body.print-label-mode .print-sticker__qr {
     color: black;
   }
 }

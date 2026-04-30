@@ -263,18 +263,6 @@ export function BoxDetailPage() {
   }
 
   useEffect(() => {
-    function clearPrintMode() {
-      document.body.classList.remove("print-label-mode");
-    }
-
-    window.addEventListener("afterprint", clearPrintMode);
-    return () => {
-      clearPrintMode();
-      window.removeEventListener("afterprint", clearPrintMode);
-    };
-  }, []);
-
-  useEffect(() => {
     return () => {
       if (confirmationTimeoutRef.current) {
         window.clearTimeout(confirmationTimeoutRef.current);
@@ -499,8 +487,83 @@ export function BoxDetailPage() {
   }
 
   function handlePrintLabel() {
-    document.body.classList.add("print-label-mode");
-    window.print();
+    if (!box) return;
+
+    const profile = activeLabelProfile;
+    const slots = selectedLabelSlots;
+    const numberText = String(box.number);
+    const qrSrc = qrCodeDataUrl ?? "";
+
+    const stickersHtml = slots
+      .map((slot) => {
+        return `
+          <div class="sticker" style="left:${slot.leftMm}mm;top:${slot.topMm}mm;width:${profile.labelWidthMm}mm;height:${profile.labelHeightMm}mm;">
+            <div class="num">${numberText}</div>
+            <div class="qr">${qrSrc ? `<img src="${qrSrc}" alt="" />` : ""}</div>
+          </div>
+        `;
+      })
+      .join("");
+
+    const doc = `<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Etikett ${numberText}</title>
+<style>
+  @page { size: ${profile.pageWidthMm}mm ${profile.pageHeightMm}mm; margin: 0; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; color: #000;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
+  .sheet { position: relative; width: ${profile.pageWidthMm}mm; height: ${profile.pageHeightMm}mm; background: #fff; }
+  .sticker { position: absolute; display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; justify-items: center; gap: 4%; padding: 8%; overflow: hidden; }
+  .sticker .num { font-weight: 700; font-size: ${profile.numberFontPt}pt;
+    line-height: 1; letter-spacing: -0.04em; color: #000; text-align: center; }
+  .sticker .qr { width: 100%; height: 100%; display: grid; place-items: center; }
+  .sticker .qr img { width: ${profile.qrMm}mm; height: ${profile.qrMm}mm;
+    display: block; object-fit: contain; }
+</style>
+</head>
+<body>
+  <div class="sheet">${stickersHtml}</div>
+</body>
+</html>`;
+
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("aria-hidden", "true");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const cleanup = () => {
+      window.setTimeout(() => {
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+      }, 200);
+    };
+
+    iframe.onload = () => {
+      const win = iframe.contentWindow;
+      if (!win) {
+        cleanup();
+        return;
+      }
+      // Wait one frame so the QR <img> in the iframe is decoded.
+      window.setTimeout(() => {
+        try {
+          win.focus();
+          win.print();
+        } finally {
+          cleanup();
+        }
+      }, 100);
+    };
+
+    iframe.srcdoc = doc;
   }
 
   function toggleSelectedLabelSlot(slotIndex: number) {
@@ -819,12 +882,6 @@ export function BoxDetailPage() {
     labelProfiles.find((profile) => profile.id === labelProfileId) ?? labelProfiles[0];
   const labelSlots = buildSlots(activeLabelProfile);
   const selectedLabelSlots = labelSlots.filter((slot) => selectedLabelSlotIndices.includes(slot.index));
-  const printSheetStyle = {
-    "--print-sheet-width": `${activeLabelProfile.pageWidthMm}mm`,
-    "--print-sheet-height": `${activeLabelProfile.pageHeightMm}mm`,
-    "--print-sticker-qr-size": `${activeLabelProfile.qrMm}mm`,
-    "--print-sticker-number-size": `${activeLabelProfile.numberFontPt}pt`,
-  } as CSSProperties;
 
   return (
     <div className="page-stack box-detail-page">
@@ -1166,43 +1223,6 @@ export function BoxDetailPage() {
                 Öffne den Bereich, wähle das Label-Profil und die freie Position auf dem Bogen.
               </p>
             )}
-          </section>
-
-          <section className="panel print-label-panel" data-print-label="true">
-            <div className="print-sheet" style={printSheetStyle}>
-              {labelSlots.map((slot) => {
-                const guideStyle = {
-                  left: `${slot.leftMm}mm`,
-                  top: `${slot.topMm}mm`,
-                  width: `${activeLabelProfile.labelWidthMm}mm`,
-                  height: `${activeLabelProfile.labelHeightMm}mm`,
-                } as CSSProperties;
-
-                return <div className="print-sheet__guide" key={slot.index} style={guideStyle} />;
-              })}
-              {selectedLabelSlots.map((slot) => {
-                const printStickerStyle = {
-                  "--print-sticker-width": `${activeLabelProfile.labelWidthMm}mm`,
-                  "--print-sticker-height": `${activeLabelProfile.labelHeightMm}mm`,
-                  "--print-sticker-left": `${slot.leftMm}mm`,
-                  "--print-sticker-top": `${slot.topMm}mm`,
-                } as CSSProperties;
-
-                return (
-                  <div
-                    className="print-sticker"
-                    key={slot.index}
-                    style={printStickerStyle}
-                  >
-                    <StickerArtwork
-                      labelText={String(box.number)}
-                      profile={activeLabelProfile}
-                      qrCodeDataUrl={qrCodeDataUrl}
-                    />
-                  </div>
-                );
-              })}
-            </div>
           </section>
 
           {isRescanOpen ? (
