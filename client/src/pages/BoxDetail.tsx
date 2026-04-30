@@ -421,7 +421,8 @@ export function BoxDetailPage() {
           setQrCodeDataUrl(dataUrl);
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("QR-Generierung fehlgeschlagen", err);
         if (isMounted) {
           setQrCodeDataUrl(null);
         }
@@ -966,7 +967,14 @@ export function BoxDetailPage() {
                         alt={`QR-Code für ${CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} ${box.number}`}
                         src={qrCodeDataUrl}
                       />
-                    ) : null}
+                    ) : (
+                      <span
+                        className="material-symbols-outlined box-hero__sticker-qr-skeleton"
+                        aria-hidden
+                      >
+                        qr_code_2
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="box-hero__sticker-caption">

@@ -6627,6 +6627,11 @@ a.item-detail-header__fact-value:hover {
   display: block;
 }
 
+.box-hero__sticker-qr-skeleton {
+  font-size: 60px;
+  color: rgba(0, 0, 0, 0.25);
+}
+
 .box-hero__sticker-caption {
   border-top: 1px dashed rgba(0, 0, 0, 0.15);
   background: rgba(0, 0, 0, 0.03);
