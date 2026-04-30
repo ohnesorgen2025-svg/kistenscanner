@@ -988,7 +988,7 @@ html {
 /* §2 PRIMARY */
 .button--primary {
   background: var(--accent);
-  color: var(--text-primary);
+  color: #ffffff;
   border-color: transparent;
 }
 
