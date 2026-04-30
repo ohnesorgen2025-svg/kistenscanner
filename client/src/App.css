@@ -1046,7 +1046,7 @@ html {
 .review-list {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
   min-width: 0;
 }
 
@@ -1474,12 +1474,12 @@ html {
 
 .review-card__media {
   position: relative;
-  height: 18rem;
+  height: 12rem;
   background: rgba(0, 0, 0, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1rem;
   border-bottom: 1px solid var(--border);
 }
 
@@ -1559,10 +1559,31 @@ html {
 
 .review-card__content {
   display: grid;
-  gap: 0.75rem;
-  padding: 0.75rem;
+  gap: 0.65rem;
+  padding: 0.85rem;
   flex: 1;
 }
+
+.review-card__content .textarea {
+  min-height: 4.25rem;
+  font-size: 13.5px;
+  padding: 0.55rem 0.75rem;
+  line-height: 1.4;
+}
+
+.review-card__content .input {
+  font-size: 14px;
+  min-height: 2.5rem;
+  height: 2.5rem;
+  padding: 0.45rem 0.75rem;
+}
+
+.review-card__content .field { gap: 0.3rem; }
+.review-card__content .field label { font-size: 0.65rem; letter-spacing: 0.1em; }
+.review-card__content .chip-row { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.15rem; }
+.review-card__content .chip { font-size: 0.65rem; letter-spacing: 0.06em; padding: 0.1rem 0.45rem; }
+.review-card__content .action-row { margin-top: 0.25rem; }
+.review-card__content .action-row .button { width: 100%; min-height: 2.4rem; font-size: 13px; }
 
 .review-card__edit-form {
   display: grid;
