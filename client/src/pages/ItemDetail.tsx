@@ -6,7 +6,6 @@ import { buildItemQrValue, generateQrSvgDataUrl } from "../lib/qr";
 import {
   analyzeItemImages,
   CONTAINER_TYPE_ICONS,
-  CONTAINER_TYPE_LABELS,
   deleteItem,
   getItem,
   getLoansForItem,
@@ -22,7 +21,6 @@ import {
   type ModelSummary,
   type PathSegment,
 } from "../lib/api";
-import { PageHeader } from "../components/PageHeader";
 
 export function ItemDetailPage() {
   const params = useParams();
@@ -50,6 +48,11 @@ export function ItemDetailPage() {
 
   // Loans
   const [loans, setLoans] = useState<LoanRecord[]>([]);
+
+  // UI state
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
 
   const confirmationTimeoutRef = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -191,6 +194,14 @@ export function ItemDetailPage() {
   }
 
   const activeLoans = loans.filter((l) => !l.returnedDate);
+  const galleryImages = item?.images ?? [];
+  const safeActiveIndex = galleryImages.length > 0
+    ? Math.min(activeImageIndex, galleryImages.length - 1)
+    : 0;
+  const activeImage = galleryImages[safeActiveIndex] ?? null;
+  const heroImageSrc = activeImage
+    ? resolveAssetUrl(activeImage.path)
+    : resolveAssetUrl(item?.thumbnailPath ?? null);
 
   return (
     <div className="page-stack item-detail-page">
@@ -220,79 +231,167 @@ export function ItemDetailPage() {
             </span>
           </nav>
 
-          <PageHeader title={item.name} />
-
-          {/* Header section */}
-          <section className="panel item-detail-header">
-            <div className="item-detail-header__top">
-              <div className="item-detail-header__image">
-                {resolveAssetUrl(item.thumbnailPath ?? item.images[0]?.path ?? null) ? (
-                  <img
-                    alt={item.name}
-                    src={resolveAssetUrl(item.thumbnailPath ?? item.images[0]?.path ?? null) ?? undefined}
-                  />
-                ) : (
-                  <div className="item-detail-header__no-image">
-                    <span className="material-symbols-outlined">imagesmode</span>
-                  </div>
-                )}
-              </div>
-
-              <div className="item-detail-header__info">
-                <div className="item-detail-header__facts">
-                  <div className="item-detail-header__fact">
-                    <span className="item-detail-header__fact-label">{CONTAINER_TYPE_LABELS[item.box.containerType as ContainerType] ?? "Kiste"}</span>
-                    <Link to={`/boxes/${item.box.id}`} className="item-detail-header__fact-value">
-                      #{item.box.number} · {item.box.name}
-                    </Link>
-                  </div>
-                  <div className="item-detail-header__fact">
-                    <span className="item-detail-header__fact-label">Standort</span>
-                    <strong className="item-detail-header__fact-value">{item.box.location}</strong>
-                  </div>
-                  <div className="item-detail-header__fact">
-                    <span className="item-detail-header__fact-label">Menge</span>
-                    <strong className="item-detail-header__fact-value">{item.quantity}{item.quantityUnit ? ` ${item.quantityUnit}` : ""}</strong>
-                  </div>
-                </div>
+          {/* Active loan banner */}
+          {activeLoans.length > 0 ? (
+            <div className="item-loan-banner" role="status">
+              <span className="material-symbols-outlined">person</span>
+              <div className="item-loan-banner__copy">
+                <strong>Verliehen</strong>
+                <span>
+                  {activeLoans.map((loan, idx) => (
+                    <span key={loan.id}>
+                      {idx > 0 ? ", " : ""}
+                      {loan.borrowerName}
+                      {loan.dueDate ? ` (bis ${loan.dueDate})` : ""}
+                    </span>
+                  ))}
+                </span>
               </div>
             </div>
+          ) : null}
 
-            {/* Toolbar */}
-            <div className="item-detail-toolbar" role="toolbar" aria-label="Item-Aktionen">
-              <button className="button button--ghost" onClick={beginEdit} type="button" title="Bearbeiten">
-                <span className="material-symbols-outlined">edit</span>
-                Bearbeiten
-              </button>
-              <label className="button button--ghost" title="Foto hinzufügen">
-                <span className="material-symbols-outlined">add_photo_alternate</span>
-                Foto
+          {/* Hero */}
+          <section className="item-hero" aria-label="Item-Übersicht">
+            <div className="item-hero__cover">
+              {heroImageSrc ? (
+                <img alt={item.name} src={heroImageSrc} />
+              ) : (
+                <div className="item-hero__cover-placeholder">
+                  <span className="material-symbols-outlined">imagesmode</span>
+                </div>
+              )}
+              {activeImage && !activeImage.isTitle ? (
+                <button
+                  className="item-hero__star"
+                  onClick={() => void handleSetTitleImage(activeImage.id)}
+                  type="button"
+                  title="Als Titelbild setzen"
+                  aria-label="Als Titelbild setzen"
+                >
+                  <span className="material-symbols-outlined">star</span>
+                </button>
+              ) : activeImage ? (
+                <span
+                  className="item-hero__star item-hero__star--active"
+                  title="Titelbild"
+                  aria-label="Titelbild"
+                >
+                  <span className="material-symbols-outlined">star</span>
+                </span>
+              ) : null}
+              <label className="item-hero__add" title="Foto hinzufügen">
+                <span className="material-symbols-outlined">add_a_photo</span>
+                <span className="sr-only">Foto hinzufügen</span>
                 <input
                   accept="image/*"
                   className="sr-only"
-                  onChange={(event) => void handleImageUpload(event.target.files?.[0] ?? null)}
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] ?? null;
+                    if (file) {
+                      const newIndex = galleryImages.length;
+                      void handleImageUpload(file).then(() => setActiveImageIndex(newIndex));
+                    }
+                    event.target.value = "";
+                  }}
                   ref={fileInputRef}
                   type="file"
                 />
               </label>
-              <button
-                className="button button--ghost"
-                onClick={() => setIsAnalysisPanelOpen(!isAnalysisPanelOpen)}
-                type="button"
-                title="KI-Analyse"
-              >
-                <span className="material-symbols-outlined">auto_awesome</span>
-                KI-Analyse
+            </div>
+
+            {galleryImages.length > 1 ? (
+              <div className="item-hero__thumbs" role="tablist" aria-label="Weitere Fotos">
+                {galleryImages.map((img, idx) => (
+                  <button
+                    key={img.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={idx === safeActiveIndex}
+                    className={
+                      "item-hero__thumb"
+                      + (idx === safeActiveIndex ? " item-hero__thumb--active" : "")
+                      + (img.isTitle ? " item-hero__thumb--title" : "")
+                    }
+                    onClick={() => setActiveImageIndex(idx)}
+                  >
+                    <img alt="" src={resolveAssetUrl(img.path) ?? undefined} />
+                    {img.isTitle ? (
+                      <span className="item-hero__thumb-star material-symbols-outlined" aria-hidden="true">star</span>
+                    ) : null}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+
+            <div className="item-hero__head">
+              <h1 className="item-hero__title">{item.name}</h1>
+              <p className="item-hero__meta">
+                <Link to={`/boxes/${item.box.id}`} className="item-hero__meta-link">
+                  <span className="material-symbols-outlined" aria-hidden="true">
+                    {CONTAINER_TYPE_ICONS[item.box.containerType as ContainerType] ?? "inventory_2"}
+                  </span>
+                  #{item.box.number} · {item.box.name}
+                </Link>
+                <span className="item-hero__meta-sep" aria-hidden="true">·</span>
+                <span className="item-hero__meta-chunk">
+                  <span className="material-symbols-outlined" aria-hidden="true">location_on</span>
+                  {item.box.location}
+                </span>
+                <span className="item-hero__meta-sep" aria-hidden="true">·</span>
+                <span className="item-hero__meta-chunk">
+                  <span className="material-symbols-outlined" aria-hidden="true">inventory</span>
+                  {item.quantity}{item.quantityUnit ? ` ${item.quantityUnit}` : " Stück"}
+                </span>
+              </p>
+            </div>
+
+            <div className="item-hero__actions" role="toolbar" aria-label="Item-Aktionen">
+              <button className="button button--primary" onClick={beginEdit} type="button">
+                <span className="material-symbols-outlined">edit</span>
+                Bearbeiten
               </button>
-              <button
-                className="button button--ghost item-detail-toolbar__action--danger"
-                onClick={() => void handleDelete()}
-                type="button"
-                title="Löschen"
-              >
-                <span className="material-symbols-outlined">delete</span>
-                Löschen
-              </button>
+              <div className="item-hero__overflow">
+                <button
+                  className="button button--primary item-hero__overflow-trigger"
+                  onClick={() => setIsActionsMenuOpen((v) => !v)}
+                  aria-haspopup="menu"
+                  aria-expanded={isActionsMenuOpen}
+                  aria-label="Weitere Aktionen"
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">more_horiz</span>
+                </button>
+                {isActionsMenuOpen ? (
+                  <>
+                    <button
+                      aria-label="Menü schließen"
+                      className="item-context__backdrop"
+                      onClick={() => setIsActionsMenuOpen(false)}
+                      type="button"
+                    />
+                    <div className="context-menu open" role="menu">
+                      <button
+                        className="ctx-item"
+                        onClick={() => { setIsActionsMenuOpen(false); setIsAnalysisPanelOpen(true); }}
+                        role="menuitem"
+                        type="button"
+                      >
+                        <span className="material-symbols-outlined">auto_awesome</span>
+                        <span>KI-Analyse</span>
+                      </button>
+                      <button
+                        className="ctx-item ctx-item--danger"
+                        onClick={() => { setIsActionsMenuOpen(false); void handleDelete(); }}
+                        role="menuitem"
+                        type="button"
+                      >
+                        <span className="material-symbols-outlined">delete</span>
+                        <span>Löschen</span>
+                      </button>
+                    </div>
+                  </>
+                ) : null}
+              </div>
             </div>
           </section>
 
@@ -435,106 +534,47 @@ export function ItemDetailPage() {
 
           {/* Description & Details */}
           {!isEditing && (item.description || item.detail) ? (
-            <section className="panel">
-              <div className="panel-header">
-                <h2>Informationen</h2>
-              </div>
-              <div className="panel-body">
-                {item.description ? (
-                  <div className="item-info-block">
-                    <p className="section-kicker">Beschreibung</p>
-                    <p>{item.description}</p>
-                  </div>
-                ) : null}
-                {item.detail ? (
-                  <div className="item-info-block">
-                    <p className="section-kicker">Details</p>
-                    <p className="item-detail-text">{item.detail}</p>
-                  </div>
-                ) : null}
-              </div>
-            </section>
-          ) : null}
-
-          {/* Active loans */}
-          {activeLoans.length > 0 ? (
-            <section className="panel">
-              <div className="panel-header">
-                <h2>Verliehen</h2>
-              </div>
-              <div className="panel-body">
-                <div className="chip-row">
-                  {activeLoans.map((loan) => (
-                    <span key={loan.id} className="chip chip--loan">
-                      <span className="material-symbols-outlined">person</span>
-                      {loan.borrowerName}
-                      {loan.dueDate ? ` · bis ${loan.dueDate}` : ""}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </section>
-          ) : null}
-
-          {/* Image gallery */}
-          {item.images.length > 0 ? (
-            <section className="panel">
-              <div className="panel-header">
-                <div>
-                  <p className="section-kicker">Fotos</p>
-                  <h2>{item.images.length} Bild{item.images.length > 1 ? "er" : ""}</h2>
-                </div>
-                <label className="button button--ghost" title="Foto hinzufügen">
-                  <span className="material-symbols-outlined">add_photo_alternate</span>
-                  Hinzufügen
-                  <input
-                    accept="image/*"
-                    className="sr-only"
-                    onChange={(e) => void handleImageUpload(e.target.files?.[0] ?? null)}
-                    type="file"
-                  />
-                </label>
-              </div>
-              <div className="item-image-gallery">
-                {item.images.map((img) => (
-                  <div key={img.id} className={`item-image-gallery__item${img.isTitle ? " item-image-gallery__item--title" : ""}`}>
-                    <img alt="Item-Bild" src={resolveAssetUrl(img.path) ?? undefined} />
-                    {!img.isTitle ? (
-                      <button
-                        className="item-image-gallery__title-btn"
-                        onClick={() => void handleSetTitleImage(img.id)}
-                        title="Als Titelbild setzen"
-                        type="button"
-                      >
-                        <span className="material-symbols-outlined">star</span>
-                      </button>
-                    ) : (
-                      <span className="item-image-gallery__title-badge" title="Titelbild">
-                        <span className="material-symbols-outlined">star</span>
-                      </span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          {/* QR Code */}
-          <section className="panel">
-            <div className="panel-header">
-              <div>
-                <p className="section-kicker">QR-Code</p>
-                <h2>Item-QR-Code</h2>
-              </div>
-            </div>
-            <div className="panel-body item-qr-section">
-              {qrCodeDataUrl ? (
-                <div className="item-qr-code">
-                  <img alt={`QR-Code für ${item.name}`} src={qrCodeDataUrl} />
+            <section className="item-info">
+              {item.description ? (
+                <div className="item-info__block">
+                  <h2 className="item-info__heading">Beschreibung</h2>
+                  <p className="item-info__text">{item.description}</p>
                 </div>
               ) : null}
-              <p className="hint-text">Scanne diesen QR-Code, um direkt zu diesem Item zu gelangen.</p>
-            </div>
+              {item.detail ? (
+                <div className="item-info__block">
+                  <h2 className="item-info__heading">Details</h2>
+                  <p className="item-info__text item-info__text--detail">{item.detail}</p>
+                </div>
+              ) : null}
+            </section>
+          ) : null}
+
+          {/* QR Code (collapsible) */}
+          <section className="item-qr">
+            <button
+              type="button"
+              className="item-qr__toggle"
+              onClick={() => setIsQrOpen((v) => !v)}
+              aria-expanded={isQrOpen}
+              aria-controls="item-qr-panel"
+            >
+              <span className="material-symbols-outlined">qr_code_2</span>
+              <span>QR-Code{isQrOpen ? " ausblenden" : " anzeigen"}</span>
+              <span className="material-symbols-outlined item-qr__chevron">
+                {isQrOpen ? "expand_less" : "expand_more"}
+              </span>
+            </button>
+            {isQrOpen ? (
+              <div className="item-qr__panel" id="item-qr-panel">
+                {qrCodeDataUrl ? (
+                  <div className="item-qr__code">
+                    <img alt={`QR-Code für ${item.name}`} src={qrCodeDataUrl} />
+                  </div>
+                ) : null}
+                <p className="item-qr__hint">Scanne diesen Code, um direkt zu diesem Item zu gelangen.</p>
+              </div>
+            ) : null}
           </section>
         </>
       ) : null}
