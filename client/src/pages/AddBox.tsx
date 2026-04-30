@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import type { ChangeEventHandler } from "react";
 import QRCode from "qrcode";
 import { Link } from "react-router-dom";
 
@@ -54,12 +55,106 @@ function createReviewItems(items: AnalysisItem[]): ReviewItem[] {
   }));
 }
 
+const DEMO_REVIEW_ITEMS: ReviewItem[] = [
+  {
+    name: "Tablet",
+    description: "Schwarzes Tablet, ausgeschalteter Bildschirm. Vermutlich 10\" Display.",
+    detail: "Modell unklar — auf der Rückseite nachsehen, ob iPad oder Android.",
+    quantity: 1,
+    sourceImageIndex: 0,
+    bbox: null,
+    thumbnailPath: null,
+    sourceImagePath: null,
+  },
+  {
+    name: "Smartphone",
+    description: "Kleines schwarzes Handy mit klassischer Tastatur, eventuell ein Nokia.",
+    detail: "Akkudeckel löst sich, Tape erwägen.",
+    quantity: 1,
+    sourceImageIndex: 0,
+    bbox: null,
+    thumbnailPath: null,
+    sourceImagePath: null,
+  },
+  {
+    name: "Stifte-Set",
+    description: "Mehrere Stifte und ein Füllfederhalter, gebündelt.",
+    detail: "Tinte vermutlich eingetrocknet.",
+    quantity: 4,
+    sourceImageIndex: 0,
+    bbox: null,
+    thumbnailPath: null,
+    sourceImagePath: null,
+  },
+  {
+    name: "USB-Stick",
+    description: "Grüner USB-Stick, ohne Beschriftung.",
+    detail: "Inhalt unbekannt — vor Reuse prüfen.",
+    quantity: 1,
+    sourceImageIndex: 0,
+    bbox: null,
+    thumbnailPath: null,
+    sourceImagePath: null,
+  },
+  {
+    name: "Notizpapier",
+    description: "Weißes Blatt mit handschriftlichem Text.",
+    detail: "",
+    quantity: 1,
+    sourceImageIndex: 0,
+    bbox: null,
+    thumbnailPath: null,
+    sourceImagePath: null,
+  },
+  {
+    name: "Kabelbinder",
+    description: "Bündel schwarzer Kabelbinder, ca. 20 cm.",
+    detail: "",
+    quantity: 12,
+    sourceImageIndex: 0,
+    bbox: null,
+    thumbnailPath: null,
+    sourceImagePath: null,
+  },
+];
+
 function buildQrValue(box: BoxRecord): string {
   return `kistenscanner://box-number/${box.number}`;
 }
 
 function getReviewImageUrl(item: ReviewItem): string | null {
   return resolveAssetUrl(item.thumbnailPath ?? item.sourceImagePath);
+}
+
+const DEMO_THUMBNAIL_FLAG = "demo://accent";
+
+type AutoTextareaProps = {
+  value: string;
+  onChange: ChangeEventHandler<HTMLTextAreaElement>;
+  placeholder?: string;
+  className?: string;
+  "aria-label"?: string;
+};
+
+function AutoTextarea({ value, onChange, placeholder, className, ...rest }: AutoTextareaProps) {
+  const ref = useRef<HTMLTextAreaElement | null>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [value]);
+  return (
+    <textarea
+      ref={ref}
+      className={className}
+      onChange={onChange}
+      placeholder={placeholder}
+      rows={1}
+      value={value}
+      {...rest}
+    />
+  );
 }
 
 export function AddBoxPage() {
@@ -320,6 +415,15 @@ export function AddBoxPage() {
     setError(null);
   }
 
+  function loadDemoReviewItems() {
+    setReviewItems(
+      DEMO_REVIEW_ITEMS.map((item) => ({ ...item, thumbnailPath: DEMO_THUMBNAIL_FLAG })),
+    );
+    setBoxName((current) => current || "Demo-Box");
+    setLocation((current) => current || "Demo-Regal");
+    setError(null);
+  }
+
   function removeReviewItem(index: number) {
     setReviewItems((current) => current.filter((_, itemIndex) => itemIndex !== index));
   }
@@ -544,68 +648,96 @@ export function AddBoxPage() {
           >
             Item manuell hinzufügen
           </button>
+          {import.meta.env.DEV ? (
+            <button
+              className="button button--ghost"
+              onClick={loadDemoReviewItems}
+              type="button"
+              title="Nur im Dev-Modus sichtbar"
+            >
+              Demo-Items laden
+            </button>
+          ) : null}
         </div>
 
         <div className="review-list">
-          {reviewItems.map((item, index) => (
-            <article className="review-card" key={`${item.name}-${index}`}>
-              <div className="review-card__media">
-                {getReviewImageUrl(item) ? (
-                  <img alt={item.name || `Item ${index + 1}`} src={getReviewImageUrl(item) ?? undefined} />
-                ) : (
-                  <div className="box-card__placeholder">
-                    <span className="material-symbols-outlined">inventory_2</span>
-                  </div>
-                )}
-              </div>
-              <div className="review-card__content">
-                <div className="field">
-                  <label htmlFor={`item-name-${index}`}>Name</label>
+          {reviewItems.map((item, index) => {
+            const isDemo = item.thumbnailPath === DEMO_THUMBNAIL_FLAG;
+            const thumb = isDemo ? null : getReviewImageUrl(item);
+            return (
+              <article className="review-row" key={`${item.name}-${index}`}>
+                <div
+                  className={`review-row__media${isDemo ? " review-row__media--demo" : ""}`}
+                >
+                  {thumb ? (
+                    <img alt={item.name || `Item ${index + 1}`} src={thumb} />
+                  ) : (
+                    <div className="review-row__placeholder" aria-hidden>
+                      <span className="material-symbols-outlined">inventory_2</span>
+                    </div>
+                  )}
+                </div>
+                <div className="review-row__body">
                   <input
-                    className="input"
-                    id={`item-name-${index}`}
+                    aria-label="Name"
+                    className="review-row__name"
                     onChange={(event) => updateReviewItem(index, { name: event.target.value })}
+                    placeholder="Name"
                     value={item.name}
                   />
-                </div>
-                <div className="field">
-                  <label htmlFor={`item-description-${index}`}>Beschreibung</label>
-                  <textarea
-                    className="textarea"
-                    id={`item-description-${index}`}
+                  <AutoTextarea
+                    aria-label="Beschreibung"
+                    className="review-row__desc"
                     onChange={(event) =>
                       updateReviewItem(index, { description: event.target.value })
                     }
-                    rows={2}
+                    placeholder="Beschreibung"
                     value={item.description}
                   />
-                </div>
-                <div className="field">
-                  <label htmlFor={`item-detail-${index}`}>Details</label>
-                  <textarea
-                    className="textarea"
-                    id={`item-detail-${index}`}
+                  <AutoTextarea
+                    aria-label="Details"
+                    className="review-row__detail"
                     onChange={(event) => updateReviewItem(index, { detail: event.target.value })}
-                    rows={2}
+                    placeholder="Details (intern)"
                     value={item.detail}
                   />
                 </div>
-                <div className="chip-row">
-                  <span className="chip">Menge {item.quantity}</span>
-                  {item.sourceImagePath ? <span className="chip chip--quiet">Quelle gespeichert</span> : null}
-                </div>
-                <div className="action-row">
+                <div className="review-row__aside">
+                  <div className="review-row__qty">
+                    <button
+                      aria-label="Menge verringern"
+                      className="review-row__qty-btn"
+                      disabled={item.quantity <= 1}
+                      onClick={() =>
+                        updateReviewItem(index, { quantity: Math.max(1, item.quantity - 1) })
+                      }
+                      type="button"
+                    >
+                      −
+                    </button>
+                    <span className="review-row__qty-value">{item.quantity}</span>
+                    <button
+                      aria-label="Menge erhöhen"
+                      className="review-row__qty-btn"
+                      onClick={() => updateReviewItem(index, { quantity: item.quantity + 1 })}
+                      type="button"
+                    >
+                      +
+                    </button>
+                  </div>
                   <button
-                    className="button button--ghost"
+                    aria-label="Item entfernen"
+                    className="review-row__remove"
                     onClick={() => removeReviewItem(index)}
+                    title="Item entfernen"
                     type="button"
                   >
-                    Item entfernen
+                    <span className="material-symbols-outlined">delete</span>
                   </button>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
 
           {reviewItems.length === 0 ? (
             <div className="empty-state">
