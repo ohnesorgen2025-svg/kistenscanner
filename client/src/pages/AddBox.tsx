@@ -65,7 +65,7 @@ const DEMO_REVIEW_ITEMS: ReviewItem[] = [
     quantity: 1,
     sourceImageIndex: 0,
     bbox: null,
-    thumbnailPath: null,
+    thumbnailPath: "demo://tablet",
     sourceImagePath: null,
   },
   {
@@ -75,7 +75,7 @@ const DEMO_REVIEW_ITEMS: ReviewItem[] = [
     quantity: 1,
     sourceImageIndex: 0,
     bbox: null,
-    thumbnailPath: null,
+    thumbnailPath: "demo://smartphone",
     sourceImagePath: null,
   },
   {
@@ -85,7 +85,7 @@ const DEMO_REVIEW_ITEMS: ReviewItem[] = [
     quantity: 4,
     sourceImageIndex: 0,
     bbox: null,
-    thumbnailPath: null,
+    thumbnailPath: "demo://stifte-set",
     sourceImagePath: null,
   },
   {
@@ -95,7 +95,7 @@ const DEMO_REVIEW_ITEMS: ReviewItem[] = [
     quantity: 1,
     sourceImageIndex: 0,
     bbox: null,
-    thumbnailPath: null,
+    thumbnailPath: "demo://usb-stick",
     sourceImagePath: null,
   },
   {
@@ -105,7 +105,7 @@ const DEMO_REVIEW_ITEMS: ReviewItem[] = [
     quantity: 1,
     sourceImageIndex: 0,
     bbox: null,
-    thumbnailPath: null,
+    thumbnailPath: "demo://notizpapier",
     sourceImagePath: null,
   },
   {
@@ -115,7 +115,7 @@ const DEMO_REVIEW_ITEMS: ReviewItem[] = [
     quantity: 12,
     sourceImageIndex: 0,
     bbox: null,
-    thumbnailPath: null,
+    thumbnailPath: "demo://kabelbinder",
     sourceImagePath: null,
   },
 ];
@@ -123,8 +123,6 @@ const DEMO_REVIEW_ITEMS: ReviewItem[] = [
 function getReviewImageUrl(item: ReviewItem): string | null {
   return resolveAssetUrl(item.thumbnailPath ?? item.sourceImagePath);
 }
-
-const DEMO_THUMBNAIL_FLAG = "demo://accent";
 
 type AutoTextareaProps = {
   value: string;
@@ -449,9 +447,7 @@ export function AddBoxPage() {
   }
 
   function loadDemoReviewItems() {
-    setReviewItems(
-      DEMO_REVIEW_ITEMS.map((item) => ({ ...item, thumbnailPath: DEMO_THUMBNAIL_FLAG })),
-    );
+    setReviewItems(DEMO_REVIEW_ITEMS.map((item) => ({ ...item })));
     setBoxName((current) => current || "Demo-Box");
     setLocation((current) => current || "Demo-Regal");
     setError(null);
@@ -795,8 +791,8 @@ export function AddBoxPage() {
 
         <div className="review-list">
           {reviewItems.map((item, index) => {
-            const isDemo = item.thumbnailPath === DEMO_THUMBNAIL_FLAG;
-            const thumb = isDemo ? null : getReviewImageUrl(item);
+            const isDemo = item.thumbnailPath?.startsWith("demo://") ?? false;
+            const thumb = getReviewImageUrl(item);
             return (
               <article className="review-row" key={`${item.name}-${index}`}>
                 <div

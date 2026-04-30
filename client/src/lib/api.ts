@@ -137,6 +137,23 @@ export function resolveAssetUrl(assetPath: string | null | undefined): string | 
     return assetPath;
   }
 
+  // Demo placeholder paths used by the "Demo-Items laden" flow.
+  // `demo://<slug>` → `/demo-items/<slug>.svg`. Unknown slugs fall through
+  // to the accent fallback so existing rows with `demo://accent` keep working.
+  if (assetPath.startsWith("demo://")) {
+    const slug = assetPath.slice("demo://".length).trim();
+    const known = new Set([
+      "accent",
+      "tablet",
+      "smartphone",
+      "stifte-set",
+      "usb-stick",
+      "notizpapier",
+      "kabelbinder",
+    ]);
+    return `/demo-items/${known.has(slug) ? slug : "accent"}.svg`;
+  }
+
   return assetPath.startsWith("/") ? assetPath : `/${assetPath}`;
 }
 
