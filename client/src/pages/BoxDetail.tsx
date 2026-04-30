@@ -902,79 +902,106 @@ export function BoxDetailPage() {
             <span>{box.name}</span>
           </nav>
 
-          <section className="box-detail-header">
-            <div className="box-detail-header__identity">
-              <div className="box-detail-header__qr-panel">
-                {qrCodeDataUrl ? <img alt={`QR-Code für ${CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} ${box.number}`} src={qrCodeDataUrl} /> : null}
+          <section className="box-hero">
+            <div
+              className="box-hero__cover"
+              style={
+                box.images[0]
+                  ? { backgroundImage: `url(${resolveAssetUrl(box.images[0].path) ?? ""})` }
+                  : undefined
+              }
+            >
+              {!box.images[0] ? (
+                <span className="material-symbols-outlined box-hero__cover-placeholder" aria-hidden>
+                  image
+                </span>
+              ) : null}
+
+              <div className="box-hero__stamp">
+                <span className="box-hero__stamp-label">
+                  {CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"}
+                </span>
+                <span className="box-hero__stamp-num">#{box.number}</span>
+                <span className="box-hero__stamp-name">
+                  {box.name} · {box.location}
+                  {" · "}
+                  {box.itemCount} {box.itemCount === 1 ? "Item" : "Items"}
+                </span>
               </div>
 
-              <div className="box-detail-header__summary">
-                <h1 className="box-detail-header__location">{box.location}</h1>
-                <p className="box-detail-header__meta">
-                  {CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} #{box.number}
-                  <span> · </span>
-                  {box.name}
-                  <span> · </span>
-                  {box.itemCount} Items
-                </p>
+              <div className="box-hero__cover-actions">
+                <button
+                  aria-label="Foto hinzufügen"
+                  className="box-hero__cover-btn"
+                  onClick={openRescan}
+                  title="Foto hinzufügen"
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">add_a_photo</span>
+                </button>
+                {box.images.length > 0 ? (
+                  <span className="box-hero__cover-count" title="Anzahl Fotos">
+                    <span className="material-symbols-outlined">collections</span>
+                    {box.images.length}
+                  </span>
+                ) : null}
               </div>
             </div>
 
-            <div className="box-detail-toolbar" role="toolbar" aria-label="Kistenaktionen">
+            <aside className="box-hero__side">
               <button
-                aria-label="Kiste bearbeiten"
-                className={`box-detail-toolbar__action${isBoxEditing ? " button--active" : ""}`}
-                onClick={openBoxEdit}
-                title="Kiste bearbeiten"
-                type="button"
-              >
-                <span className="material-symbols-outlined">edit</span>
-              </button>
-              <button
-                aria-label="Foto hinzufügen"
-                className={`box-detail-toolbar__action${isRescanOpen ? " button--active" : ""}`}
-                onClick={openRescan}
-                title="Re-Scan: Neue Fotos analysieren"
-                type="button"
-              >
-                <span className="material-symbols-outlined">add_a_photo</span>
-              </button>
-              <button
-                aria-label="Label drucken"
-                className={`box-detail-toolbar__action${isLabelPanelOpen ? " button--active" : ""}`}
+                className="box-hero__sticker"
                 onClick={openLabelPanel}
-                title="Label drucken"
+                title="Etikett drucken"
                 type="button"
               >
-                <span className="material-symbols-outlined">print</span>
+                <div className="box-hero__sticker-inner">
+                  <div className="box-hero__sticker-num">
+                    <span className="box-hero__sticker-hash">#</span>
+                    {box.number}
+                  </div>
+                  <div className="box-hero__sticker-qr">
+                    {qrCodeDataUrl ? (
+                      <img
+                        alt={`QR-Code für ${CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} ${box.number}`}
+                        src={qrCodeDataUrl}
+                      />
+                    ) : null}
+                  </div>
+                </div>
+                <div className="box-hero__sticker-caption">
+                  <span className="material-symbols-outlined">print</span>
+                  Etikett drucken
+                </div>
               </button>
-              <button
-                aria-label="Packliste teilen"
-                className="box-detail-toolbar__action"
-                onClick={() => void handleShare()}
-                title="Inhalt teilen / Packliste kopieren"
-                type="button"
-              >
-                <span className="material-symbols-outlined">ios_share</span>
-              </button>
-              <Link
-                aria-label="Zurück zu den Kisten"
-                className="box-detail-toolbar__action"
-                title="Zurück zu den Kisten"
-                to="/boxes"
-              >
-                <span className="material-symbols-outlined">arrow_back</span>
-              </Link>
-              <button
-                aria-label="Kiste löschen"
-                className="box-detail-toolbar__action box-detail-toolbar__action--danger"
-                onClick={() => void handleDeleteBox()}
-                title="Kiste löschen"
-                type="button"
-              >
-                <span className="material-symbols-outlined">delete</span>
-              </button>
-            </div>
+
+              <div className="box-hero__actions" role="toolbar" aria-label="Kistenaktionen">
+                <button
+                  className={`button button--primary${isBoxEditing ? " button--active" : ""}`}
+                  onClick={openBoxEdit}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">edit</span>
+                  Bearbeiten
+                </button>
+                <button
+                  className="button button--ghost"
+                  onClick={() => void handleShare()}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">ios_share</span>
+                  Teilen
+                </button>
+                <button
+                  className="button button--ghost button--danger"
+                  onClick={() => void handleDeleteBox()}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">delete</span>
+                  Löschen
+                </button>
+              </div>
+            </aside>
           </section>
 
           {isBoxEditing ? (
