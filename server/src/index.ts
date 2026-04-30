@@ -16,6 +16,7 @@ import { searchRouter } from "./routes/search.js";
 import { aiFeaturesRouter } from "./routes/ai-features.js";
 import { barcodeRouter } from "./routes/barcode.js";
 import { loansRouter } from "./routes/loans.js";
+import { activityRouter } from "./routes/activity.js";
 
 const DEFAULT_SERVER_PORT = 4001;
 const DEFAULT_HTTPS_PORT = 4443;
@@ -44,6 +45,7 @@ app.use("/api/models", modelsRouter);
 app.use("/api/ai", aiFeaturesRouter);
 app.use("/api/loans", loansRouter);
 app.use("/api/barcode", barcodeRouter);
+app.use("/api/activity", activityRouter);
 
 app.get("/api", (_request, response) => {
   response.json({

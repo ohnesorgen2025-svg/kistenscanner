@@ -3,6 +3,7 @@ import { Link, NavLink, Route, Routes, useLocation, useNavigate } from "react-ro
 
 import "./App.css";
 import { AddBoxPage } from "./pages/AddBox";
+import { ActivityPage } from "./pages/Activity";
 import { BoxDetailPage } from "./pages/BoxDetail";
 import { BoxesPage } from "./pages/Boxes";
 import { HelpPage } from "./pages/Help";
@@ -35,7 +36,7 @@ const subNavItems: SubNavItem[] = [
       p === "/boxes" || (p.startsWith("/boxes/") && p !== "/boxes/add") || p.startsWith("/items/"),
   },
   { label: "Suchen", icon: "search", to: "/", match: (p) => p === "/" },
-  { label: "Aktivität", icon: "history", disabled: true },
+  { label: "Aktivität", icon: "history", to: "/activity", match: (p) => p === "/activity" },
 ];
 
 const mobileNavItems = [
@@ -479,6 +480,7 @@ function App() {
             <Route element={<BoxDetailPage />} path="/boxes/:id" />
             <Route element={<ItemDetailPage />} path="/items/:id" />
             <Route element={<HelpPage />} path="/help" />
+            <Route element={<ActivityPage />} path="/activity" />
           </Routes>
         </div>
       </main>

@@ -8,6 +8,7 @@ const PAGES = [
   { name: 'scan',       path: '/scan' },
   { name: 'settings',   path: '/settings' },
   { name: 'help',       path: '/help' },
+  { name: 'activity',   path: '/activity' },
 ];
 
 (async () => {

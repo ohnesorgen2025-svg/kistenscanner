@@ -456,6 +456,32 @@ export async function returnLoan(loanId: number): Promise<LoanRecord> {
   });
 }
 
+// --- Activity ---
+
+export type ActivityKind =
+  | "box-created"
+  | "box-updated"
+  | "item-created"
+  | "item-updated"
+  | "loan-started"
+  | "loan-returned";
+
+export type ActivityEvent = {
+  id: string;
+  kind: ActivityKind;
+  at: string;
+  title: string;
+  subtitle: string | null;
+  boxId: number | null;
+  boxNumber: number | null;
+  itemId: number | null;
+  thumbnailPath: string | null;
+};
+
+export async function listActivity(limit = 60): Promise<ActivityEvent[]> {
+  return requestJson<ActivityEvent[]>(`/api/activity?limit=${encodeURIComponent(String(limit))}`);
+}
+
 // --- Box Update ---
 
 export async function updateBox(
