@@ -13,6 +13,34 @@ type ViewMode = "list" | "grid";
 
 const ALL_FILTER = "Alle";
 
+type SortKey = "updated" | "items" | "name" | "number";
+
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: "updated", label: "Letzte Änderung" },
+  { key: "number", label: "Behälter-Nr." },
+  { key: "items", label: "Anzahl Items" },
+  { key: "name", label: "Name (A–Z)" },
+];
+
+function sortBoxes(rows: BoxSummary[], key: SortKey): BoxSummary[] {
+  const next = [...rows];
+  switch (key) {
+    case "updated":
+      next.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+      break;
+    case "items":
+      next.sort((a, b) => b.itemCount - a.itemCount || a.number - b.number);
+      break;
+    case "name":
+      next.sort((a, b) => a.name.localeCompare(b.name, "de"));
+      break;
+    case "number":
+      next.sort((a, b) => a.number - b.number);
+      break;
+  }
+  return next;
+}
+
 function formatItems(count: number) {
   return `${count} ${count === 1 ? "Item" : "Items"}`;
 }
@@ -33,6 +61,8 @@ export function BoxesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState<ViewMode>("list");
   const [filter, setFilter] = useState<string>(ALL_FILTER);
+  const [sortKey, setSortKey] = useState<SortKey>("updated");
+  const [isSortOpen, setIsSortOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -75,9 +105,22 @@ export function BoxesPage() {
   }, [filter, locations]);
 
   const filtered = useMemo(() => {
-    if (filter === ALL_FILTER) return boxes;
-    return boxes.filter((b) => (b.location ?? "").trim() === filter);
-  }, [boxes, filter]);
+    const base = filter === ALL_FILTER ? boxes : boxes.filter((b) => (b.location ?? "").trim() === filter);
+    return sortBoxes(base, sortKey);
+  }, [boxes, filter, sortKey]);
+
+  useEffect(() => {
+    if (!isSortOpen) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest(".boxes-filter__sort")) return;
+      setIsSortOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isSortOpen]);
+
+  const sortLabel = SORT_OPTIONS.find((o) => o.key === sortKey)?.label ?? "Sortieren";
 
   return (
     <div className="boxes-page">
@@ -117,10 +160,42 @@ export function BoxesPage() {
 
         <span className="boxes-filter__sep" aria-hidden="true" />
 
-        <button type="button" className="boxes-filter__chip" disabled>
-          <span className="material-symbols-outlined">swap_vert</span>
-          Sortieren
-        </button>
+        <div className="boxes-filter__sort">
+          <button
+            type="button"
+            className={`boxes-filter__chip${isSortOpen ? " boxes-filter__chip--active" : ""}`}
+            onClick={() => setIsSortOpen((v) => !v)}
+            aria-expanded={isSortOpen}
+            aria-haspopup="listbox"
+          >
+            <span className="material-symbols-outlined">swap_vert</span>
+            {sortLabel}
+            <span className="material-symbols-outlined boxes-filter__caret">
+              {isSortOpen ? "expand_less" : "expand_more"}
+            </span>
+          </button>
+          {isSortOpen ? (
+            <ul className="boxes-filter__menu" role="listbox">
+              {SORT_OPTIONS.map((opt) => (
+                <li key={opt.key} role="option" aria-selected={opt.key === sortKey}>
+                  <button
+                    type="button"
+                    className={`boxes-filter__menu-item${opt.key === sortKey ? " is-active" : ""}`}
+                    onClick={() => {
+                      setSortKey(opt.key);
+                      setIsSortOpen(false);
+                    }}
+                  >
+                    <span>{opt.label}</span>
+                    {opt.key === sortKey ? (
+                      <span className="material-symbols-outlined">check</span>
+                    ) : null}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
 
         <div className="boxes-filter__view" role="group" aria-label="Ansicht">
           <button
