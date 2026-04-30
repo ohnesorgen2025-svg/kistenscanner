@@ -992,43 +992,37 @@ html {
   border-color: transparent;
 }
 
-/* §2 SECONDARY (Outline-Blau) */
+/* §2 SECONDARY (Voll-Blau wie Primary) */
 .button--secondary {
-  background: transparent;
-  color: var(--accent-bright);
-  border: 1.5px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid transparent;
 }
 
 .button--secondary:hover {
-  background: var(--accent-muted);
-  border-color: var(--accent-bright);
-  color: var(--accent-bright);
+  background: var(--accent-hover);
 }
 
-/* Ghost — gleiches Outline-Blau wie Secondary */
+/* Ghost — Voll-Blau wie Primary */
 .button--ghost {
-  background: transparent;
-  color: var(--accent-bright);
-  border: 1.5px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid transparent;
 }
 
 .button--ghost:hover {
-  background: var(--accent-muted);
-  border-color: var(--accent-bright);
-  color: var(--accent-bright);
+  background: var(--accent-hover);
 }
 
-/* Danger als Outline-Blau (Phase 1: einheitliche Blau-Hierarchie) */
+/* Danger — Voll-Blau (Phase 1: einheitliche Blau-Hierarchie) */
 .button--danger {
-  background: transparent;
-  color: var(--accent-bright);
-  border: 1.5px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid transparent;
 }
 
 .button--danger:hover {
-  background: var(--accent-muted);
-  border-color: var(--accent-bright);
-  color: var(--accent-bright);
+  background: var(--accent-hover);
 }
 
 /* 1 button alone → 100% width (use action-row) */
@@ -5326,14 +5320,14 @@ a.item-detail-header__fact-value:hover {
 }
 
 .box-detail-page .box-detail-toolbar__action--danger {
-  color: var(--accent-bright);
-  background: transparent;
-  border-color: var(--accent);
+  color: #ffffff;
+  background: var(--accent);
+  border-color: transparent;
 }
 
 .box-detail-page .box-detail-toolbar__action--danger:hover {
-  background: var(--accent-muted);
-  border-color: var(--accent-bright);
+  background: var(--accent-hover);
+  border-color: transparent;
 }
 
 /* Add labels next to icons via CSS (after-content), since JSX only renders icons */
@@ -6878,13 +6872,13 @@ a.item-detail-header__fact-value:hover {
 }
 
 .box-hero__actions .button--danger {
-  color: var(--accent-bright);
-  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  border-color: transparent;
 }
 
 .box-hero__actions .button--danger:hover {
-  background: var(--accent-muted);
-  border-color: var(--accent-bright);
+  background: var(--accent-hover);
 }
 
 @media (max-width: 760px) {
