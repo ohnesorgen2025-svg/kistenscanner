@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Save-Flow Mockups</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-base:#0B0D10;
+    --bg-panel:#111418;
+    --bg-elevated:#161A1F;
+    --text-primary:#E6E8EB;
+    --text-secondary:#9097A0;
+    --text-tertiary:#5B6168;
+    --accent:#4A8DFF;
+    --accent-bright:#6EA8FF;
+    --accent-muted:rgba(74,141,255,0.10);
+    --success:#3FB984;
+    --success-muted:rgba(63,185,132,0.12);
+    --border-subtle:rgba(255,255,255,0.06);
+    --border-default:rgba(255,255,255,0.10);
+    --border-strong:rgba(255,255,255,0.16);
+    --radius-sm:4px;
+    --radius-md:6px;
+    --radius-lg:8px;
+    --radius-xl:10px;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding:48px 32px 96px;
+    font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+    background:var(--bg-base);
+    color:var(--text-primary);
+    line-height:1.45;
+  }
+  h1.page-title{font-size:14px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-secondary);margin:0 0 8px}
+  p.page-sub{margin:0 0 40px;color:var(--text-secondary);max-width:720px;font-size:14px}
+  .lab{
+    max-width:1100px;
+    margin:0 auto 56px;
+  }
+  .lab > h2{
+    margin:0 0 4px;
+    font-size:20px;
+    font-weight:600;
+    color:var(--text-primary);
+  }
+  .lab > .label{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--text-tertiary);
+    margin:0 0 14px;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+  }
+  .lab > p.note{margin:0 0 18px;color:var(--text-secondary);font-size:13.5px;max-width:720px}
+  .stack{display:grid;gap:14px}
+  .panel{
+    background:var(--bg-panel);
+    border:1px solid var(--border-default);
+    border-radius:var(--radius-xl);
+    padding:24px;
+  }
+  .panel-h{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:18px;
+  }
+  .panel-h h3{margin:0;font-size:15px;font-weight:600}
+  .muted{color:var(--text-secondary)}
+  .mono{font-family:var(--mono)}
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--border-strong);background:transparent;color:var(--text-primary);
+    padding:8px 14px;border-radius:var(--radius-md);
+    font:500 13px Inter,sans-serif;cursor:pointer;
+  }
+  .btn--primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn--ghost{background:transparent}
+  .btn--success{background:var(--success-muted);border-color:rgba(63,185,132,.4);color:var(--success)}
+  .btn--block{display:flex;width:100%;justify-content:center;padding:12px 16px;font-weight:500}
+  .material-symbols-outlined{font-size:18px;line-height:1}
+  label.fl{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  label.fl > span{font:500 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--text-secondary)}
+  .input,.select{
+    background:var(--bg-elevated);border:1px solid var(--border-default);color:var(--text-primary);
+    padding:10px 12px;border-radius:var(--radius-md);font:400 14px Inter,sans-serif;
+  }
+  .chip{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:4px 9px;border-radius:99px;
+    background:var(--accent-muted);color:var(--accent-bright);
+    font:500 10.5px var(--mono);letter-spacing:.05em;text-transform:uppercase;
+  }
+  .chip--success{background:var(--success-muted);color:var(--success)}
+  .chip--neutral{background:rgba(255,255,255,.05);color:var(--text-secondary);text-transform:none;font-family:Inter}
+  .icon-row{display:inline-flex;align-items:center;gap:8px;color:var(--text-secondary);font-size:13.5px}
+  .icon-row .material-symbols-outlined{font-size:16px;color:var(--text-tertiary)}
+
+  /* ---- Mockup 1: Single hero card ---- */
+  .m1-grid{
+    display:grid;
+    grid-template-columns:1fr 280px;
+    gap:24px;
+    align-items:start;
+  }
+  .m1-form .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .m1-summary{
+    background:var(--bg-elevated);
+    border:1px solid var(--border-subtle);
+    border-radius:var(--radius-lg);
+    padding:18px;
+    display:flex;flex-direction:column;gap:14px;
+  }
+  .m1-summary__head{
+    display:flex;align-items:center;gap:12px
+  }
+  .m1-icon-tile{
+    width:44px;height:44px;border-radius:var(--radius-md);
+    background:var(--accent-muted);color:var(--accent-bright);
+    display:grid;place-items:center;
+  }
+  .m1-summary__num{font-family:var(--mono);font-size:11px;color:var(--text-tertiary);letter-spacing:.05em}
+  .m1-summary__title{font-size:15px;font-weight:600;margin-top:2px}
+  .m1-summary__list{display:flex;flex-direction:column;gap:6px}
+  .footer-hint{
+    margin-top:14px;color:var(--text-secondary);font-size:13px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .save-cta{margin-top:6px}
+
+  /* saved state for m1 */
+  .m1-saved{
+    display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+  }
+  .m1-saved__title{display:flex;align-items:center;gap:10px;margin:0 0 10px;font-size:18px}
+  .m1-saved__list{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+  .m1-saved__actions{display:flex;flex-wrap:wrap;gap:8px}
+  .qr-card{
+    background:#fff;border-radius:var(--radius-lg);padding:14px;
+    width:200px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  }
+  .qr-card svg{display:block}
+  .qr-card .qr-num{font-family:var(--mono);font-weight:600;color:#000;font-size:13px;letter-spacing:.04em}
+
+  /* ---- Mockup 2: Stage rail ---- */
+  .m2{
+    display:grid;grid-template-columns:240px 1fr;gap:24px;
+  }
+  .m2-rail{
+    background:var(--bg-panel);border:1px solid var(--border-default);
+    border-radius:var(--radius-xl);padding:18px;
+    position:sticky;top:0;
+    display:flex;flex-direction:column;gap:4px;
+  }
+  .m2-step{
+    display:flex;align-items:flex-start;gap:12px;
+    padding:10px 8px;border-radius:var(--radius-md);
+    color:var(--text-secondary);
+  }
+  .m2-step.active{background:var(--accent-muted);color:var(--text-primary)}
+  .m2-step.done{color:var(--success)}
+  .m2-step__dot{
+    width:22px;height:22px;border-radius:50%;
+    border:1.5px solid var(--border-strong);
+    display:grid;place-items:center;flex-shrink:0;font-size:12px;font-family:var(--mono)
+  }
+  .m2-step.active .m2-step__dot{border-color:var(--accent);color:var(--accent-bright)}
+  .m2-step.done .m2-step__dot{background:var(--success-muted);border-color:rgba(63,185,132,.4);color:var(--success)}
+  .m2-step__body{display:flex;flex-direction:column;gap:1px;font-size:13.5px}
+  .m2-step__label{font-weight:500;color:inherit}
+  .m2-step__sub{font-size:11.5px;color:var(--text-tertiary)}
+
+  .m2-saved{
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:32px 24px;gap:16px;
+  }
+  .m2-saved__check{
+    width:56px;height:56px;border-radius:50%;
+    background:var(--success-muted);color:var(--success);
+    display:grid;place-items:center;
+  }
+  .m2-saved__check .material-symbols-outlined{font-size:32px}
+  .m2-saved__title{font-size:22px;font-weight:600;margin:0}
+  .m2-saved__sub{margin:0;color:var(--text-secondary);font-size:14px}
+  .m2-saved__qr{margin-top:8px}
+  .m2-saved__actions{display:flex;gap:10px;margin-top:8px}
+
+  /* ---- Mockup 3: Linear minimal ---- */
+  .m3{display:flex;flex-direction:column;gap:18px}
+  .m3 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .m3-summary-line{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:10px 14px;
+    background:var(--bg-elevated);
+    border:1px dashed var(--border-default);
+    border-radius:var(--radius-md);
+    color:var(--text-secondary);font-size:13px;
+  }
+  .m3-summary-line strong{color:var(--text-primary);font-weight:500}
+  .m3-saved{
+    display:flex;flex-direction:column;align-items:center;text-align:center;
+    padding:36px 24px;gap:18px;
+  }
+  .m3-saved__num{font-family:var(--mono);font-size:13px;color:var(--text-tertiary);letter-spacing:.05em}
+  .m3-saved__title{margin:0;font-size:24px;font-weight:600}
+  .m3-saved__meta{display:flex;gap:14px;color:var(--text-secondary);font-size:13.5px}
+  .m3-saved__actions{display:flex;gap:10px;margin-top:6px}
+
+  /* fake QR */
+  .fake-qr{
+    background:
+      conic-gradient(from 0deg, #000 0 25%, transparent 0 50%, #000 0 75%, transparent 0) 0 0/16px 16px,
+      #fff;
+    width:160px;height:160px;border-radius:6px;
+  }
+  .fake-qr--lg{width:200px;height:200px}
+  .fake-qr--sm{width:120px;height:120px}
+
+  hr.sep{border:none;border-top:1px solid var(--border-subtle);margin:28px 0 0}
+
+  .nav-links{display:flex;gap:14px;margin-bottom:24px;font-size:13px}
+  .nav-links a{color:var(--accent-bright);text-decoration:none}
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Save-Flow · Mockups</h1>
+<p class="page-sub">Drei Richtungen für „Behälter speichern" + „Gespeichert"-Bestätigung. Jeweils gleiche Daten, unterschiedlicher Aufbau. Wähle eine — wir bauen sie dann sauber in <code>AddBox.tsx</code> nach.</p>
+
+<div class="nav-links">
+  <a href="#m1">A · Hero-Card mit Side-Summary</a>
+  <a href="#m2">B · Stage-Rail mit Bestätigungs-Hero</a>
+  <a href="#m3">C · Linear & flach</a>
+</div>
+
+<!-- ============================================================ -->
+<!-- MOCKUP A: Hero-Card -->
+<!-- ============================================================ -->
+<section class="lab" id="m1">
+  <h2>A · Hero-Card mit Side-Summary</h2>
+  <div class="label">Edit-State</div>
+  <p class="note">Form links, kompakte Live-Summary rechts (Icon-Tile statt eigene Mini-Box). Nach dem Speichern <em>derselbe Container</em> wechselt in die Bestätigung — keine zweite Section.</p>
+
+  <div class="panel">
+    <div class="panel-h">
+      <h3>Behälter speichern</h3>
+      <span class="chip chip--neutral">6 Items bereit</span>
+    </div>
+    <div class="m1-grid">
+      <div class="m1-form">
+        <label class="fl"><span>Name</span><input class="input" value="Werkzeug klein" /></label>
+        <div class="row">
+          <label class="fl"><span>Standort</span><input class="input" value="Werkstatt · Regal 2" /></label>
+          <label class="fl"><span>Behältertyp</span>
+            <select class="select"><option>Kiste</option><option>Schrank</option><option>Schublade</option></select>
+          </label>
+        </div>
+        <button class="btn btn--primary btn--block save-cta">Behälter anlegen</button>
+        <div class="footer-hint">
+          <span class="material-symbols-outlined" style="color:var(--accent-bright)">info</span>
+          6 Items werden in #007 angelegt.
+        </div>
+      </div>
+
+      <aside class="m1-summary">
+        <div class="m1-summary__head">
+          <div class="m1-icon-tile"><span class="material-symbols-outlined">inventory_2</span></div>
+          <div>
+            <div class="m1-summary__num">#007 · neu</div>
+            <div class="m1-summary__title">Werkzeug klein</div>
+          </div>
+        </div>
+        <div class="m1-summary__list">
+          <div class="icon-row"><span class="material-symbols-outlined">location_on</span>Werkstatt · Regal 2</div>
+          <div class="icon-row"><span class="material-symbols-outlined">inventory</span>6 Items</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <hr class="sep" />
+  <div class="label" style="margin-top:18px">Saved-State (selber Container, swap)</div>
+  <div class="panel">
+    <div class="panel-h">
+      <h3 style="display:flex;align-items:center;gap:8px"><span class="material-symbols-outlined" style="color:var(--success)">check_circle</span>Gespeichert</h3>
+      <a class="btn btn--ghost" href="#">Details öffnen <span class="material-symbols-outlined">arrow_forward</span></a>
+    </div>
+    <div class="m1-saved">
+      <div>
+        <div class="m1-summary__num" style="margin-bottom:4px">#007</div>
+        <h3 class="m1-saved__title" style="margin-top:0">Werkzeug klein</h3>
+        <div class="m1-saved__list">
+          <div class="icon-row"><span class="material-symbols-outlined">location_on</span>Werkstatt · Regal 2</div>
+          <div class="icon-row"><span class="material-symbols-outlined">inventory_2</span>Kiste · 6 Items</div>
+        </div>
+        <div class="m1-saved__actions">
+          <button class="btn btn--primary"><span class="material-symbols-outlined">print</span>Etikett drucken</button>
+          <button class="btn"><span class="material-symbols-outlined">replay</span>Nächsten Behälter</button>
+        </div>
+      </div>
+      <div class="qr-card">
+        <div class="fake-qr"></div>
+        <div class="qr-num">#007</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MOCKUP B: Stage-Rail -->
+<!-- ============================================================ -->
+<section class="lab" id="m2">
+  <h2>B · Stage-Rail mit Bestätigungs-Hero</h2>
+  <div class="label">Saved-State (Erfolgs-Fokus)</div>
+  <p class="note">Linke Schiene zeigt den Workflow (Bilder → Items → Speichern → Fertig). Rechts ist immer nur <em>eine</em> Sache zu sehen — beim Speichern: das Form, danach: ein zentrierter Erfolgs-Hero mit großem QR.</p>
+
+  <div class="m2">
+    <aside class="m2-rail">
+      <div class="m2-step done">
+        <span class="m2-step__dot"><span class="material-symbols-outlined" style="font-size:14px">check</span></span>
+        <span class="m2-step__body"><span class="m2-step__label">Bilder</span><span class="m2-step__sub">3 Aufnahmen</span></span>
+      </div>
+      <div class="m2-step done">
+        <span class="m2-step__dot"><span class="material-symbols-outlined" style="font-size:14px">check</span></span>
+        <span class="m2-step__body"><span class="m2-step__label">Items prüfen</span><span class="m2-step__sub">6 Items</span></span>
+      </div>
+      <div class="m2-step done">
+        <span class="m2-step__dot"><span class="material-symbols-outlined" style="font-size:14px">check</span></span>
+        <span class="m2-step__body"><span class="m2-step__label">Behälter</span><span class="m2-step__sub">Werkzeug klein</span></span>
+      </div>
+      <div class="m2-step active">
+        <span class="m2-step__dot">4</span>
+        <span class="m2-step__body"><span class="m2-step__label">Fertig</span><span class="m2-step__sub">QR drucken</span></span>
+      </div>
+    </aside>
+
+    <div class="panel">
+      <div class="m2-saved">
+        <div class="m2-saved__check"><span class="material-symbols-outlined">check</span></div>
+        <h3 class="m2-saved__title">Behälter angelegt</h3>
+        <p class="m2-saved__sub">#007 · Werkzeug klein · 6 Items in <span style="color:var(--text-primary)">Werkstatt · Regal 2</span></p>
+        <div class="qr-card m2-saved__qr">
+          <div class="fake-qr fake-qr--lg"></div>
+          <div class="qr-num">#007 · Werkzeug klein</div>
+        </div>
+        <div class="m2-saved__actions">
+          <button class="btn btn--primary"><span class="material-symbols-outlined">print</span>Etikett drucken</button>
+          <button class="btn"><span class="material-symbols-outlined">visibility</span>Details</button>
+          <button class="btn btn--ghost"><span class="material-symbols-outlined">replay</span>Nächsten Behälter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- MOCKUP C: Linear minimal -->
+<!-- ============================================================ -->
+<section class="lab" id="m3">
+  <h2>C · Linear & flach</h2>
+  <div class="label">Edit-State</div>
+  <p class="note">Eine Spalte. Keine Mini-Vorschau-Card. Eine ruhige Hint-Zeile zeigt, wie es danach heißen wird. Nach Save: ein zentrierter „Quittungs"-Block, alles auf der Mittelachse — wie ein Beleg.</p>
+
+  <div class="panel m3">
+    <div class="panel-h" style="margin-bottom:6px">
+      <h3>Behälter speichern</h3>
+    </div>
+
+    <div class="row">
+      <label class="fl"><span>Name</span><input class="input" value="Werkzeug klein" /></label>
+      <label class="fl"><span>Standort</span><input class="input" value="Werkstatt · Regal 2" /></label>
+    </div>
+    <label class="fl" style="max-width:240px"><span>Behältertyp</span>
+      <select class="select"><option>Kiste</option><option>Schrank</option><option>Schublade</option></select>
+    </label>
+
+    <div class="m3-summary-line">
+      <span>Wird angelegt als <strong>#007 · Werkzeug klein</strong> mit <strong>6 Items</strong> in <strong>Werkstatt · Regal 2</strong>.</span>
+      <span class="chip">bereit</span>
+    </div>
+
+    <button class="btn btn--primary btn--block">Behälter anlegen</button>
+  </div>
+
+  <hr class="sep" />
+  <div class="label" style="margin-top:18px">Saved-State („Quittung")</div>
+  <div class="panel">
+    <div class="m3-saved">
+      <span class="chip chip--success"><span class="material-symbols-outlined" style="font-size:14px">check</span>Gespeichert</span>
+      <div>
+        <div class="m3-saved__num">#007</div>
+        <h3 class="m3-saved__title">Werkzeug klein</h3>
+      </div>
+      <div class="m3-saved__meta">
+        <span class="icon-row"><span class="material-symbols-outlined">location_on</span>Werkstatt · Regal 2</span>
+        <span class="icon-row"><span class="material-symbols-outlined">inventory</span>6 Items</span>
+      </div>
+      <div class="qr-card">
+        <div class="fake-qr"></div>
+        <div class="qr-num">kistenscanner://box/007</div>
+      </div>
+      <div class="m3-saved__actions">
+        <button class="btn btn--primary"><span class="material-symbols-outlined">print</span>Etikett drucken</button>
+        <button class="btn"><span class="material-symbols-outlined">visibility</span>Details</button>
+        <button class="btn btn--ghost"><span class="material-symbols-outlined">replay</span>Nächsten Behälter</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

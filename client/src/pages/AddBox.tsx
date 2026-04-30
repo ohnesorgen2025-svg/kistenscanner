@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 
 import {
   analyzeBoxImages,
+  CONTAINER_TYPE_ICONS,
   CONTAINER_TYPE_LABELS,
   createBox,
   createItem,
@@ -410,6 +411,45 @@ export function AddBoxPage() {
     );
   }
 
+  const nextBoxNumber =
+    allBoxes.length > 0 ? Math.max(...allBoxes.map((b) => b.number)) + 1 : 1;
+  const parentBox = parentId ? allBoxes.find((b) => b.id === parentId) ?? null : null;
+
+  const currentStage: 1 | 2 | 3 | 4 = savedBox
+    ? 4
+    : reviewItems.length > 0
+    ? 3
+    : previewUrls.length > 0
+    ? 2
+    : 1;
+
+  const stages: Array<{ idx: 1 | 2 | 3 | 4; label: string; sub: string }> = [
+    {
+      idx: 1,
+      label: "Bilder",
+      sub: previewUrls.length
+        ? `${previewUrls.length} ${previewUrls.length === 1 ? "Aufnahme" : "Aufnahmen"}`
+        : "Fotos erfassen",
+    },
+    {
+      idx: 2,
+      label: "Items prüfen",
+      sub: reviewItems.length
+        ? `${reviewItems.length} ${reviewItems.length === 1 ? "Item" : "Items"}`
+        : "KI-Analyse",
+    },
+    {
+      idx: 3,
+      label: "Behälter",
+      sub: boxName.trim() || "Name & Standort",
+    },
+    {
+      idx: 4,
+      label: "Fertig",
+      sub: savedBox ? `#${String(savedBox.number).padStart(3, "0")}` : "QR drucken",
+    },
+  ];
+
   function appendManualReviewItem() {
     setReviewItems((current) => [...current, createEmptyReviewItem()]);
     setError(null);
@@ -511,6 +551,106 @@ export function AddBoxPage() {
 
       {error ? <div className="feedback feedback--error">{error}</div> : null}
 
+      <div className="add-box-layout">
+        <aside className="add-box-rail" aria-label="Workflow">
+          <ol className="stage-rail">
+            {stages.map((stage) => {
+              const status =
+                stage.idx < currentStage
+                  ? "done"
+                  : stage.idx === currentStage
+                  ? "active"
+                  : "todo";
+              return (
+                <li
+                  className={`stage-rail__step stage-rail__step--${status}`}
+                  key={stage.idx}
+                >
+                  <span className="stage-rail__dot" aria-hidden>
+                    {status === "done" ? (
+                      <span className="material-symbols-outlined">check</span>
+                    ) : (
+                      stage.idx
+                    )}
+                  </span>
+                  <span className="stage-rail__body">
+                    <span className="stage-rail__label">{stage.label}</span>
+                    <span className="stage-rail__sub">{stage.sub}</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ol>
+        </aside>
+
+        <div className="add-box-flow">
+          {savedBox ? (
+            <section className="panel saved-hero">
+              <div className="saved-hero__check" aria-hidden>
+                <span className="material-symbols-outlined">check</span>
+              </div>
+              <p className="saved-hero__kicker">
+                #{String(savedBox.number).padStart(3, "0")}
+              </p>
+              <h2 className="saved-hero__title">{savedBox.name}</h2>
+              <p className="saved-hero__sub">
+                {CONTAINER_TYPE_LABELS[savedBox.containerType] ?? "Kiste"}
+                {" · "}
+                {savedBox.itemCount} {savedBox.itemCount === 1 ? "Item" : "Items"}
+                {" · "}
+                {savedBox.location || "—"}
+              </p>
+
+              <div className="saved-hero__qr">
+                {qrCodeDataUrl ? (
+                  <img
+                    alt={`QR-Code für Kiste ${savedBox.number}`}
+                    src={qrCodeDataUrl}
+                  />
+                ) : (
+                  <div className="saved-hero__qr-skeleton" aria-hidden>
+                    <span className="material-symbols-outlined">qr_code_2</span>
+                  </div>
+                )}
+                <span className="saved-hero__qr-caption">
+                  #{String(savedBox.number).padStart(3, "0")} · {savedBox.name}
+                </span>
+              </div>
+
+              <div className="saved-hero__actions">
+                <button
+                  className="button button--primary"
+                  onClick={() => window.print()}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">print</span>
+                  Etikett drucken
+                </button>
+                <Link className="button button--ghost" to={`/boxes/${savedBox.id}`}>
+                  <span className="material-symbols-outlined">visibility</span>
+                  Details
+                </Link>
+                <button
+                  className="button button--ghost"
+                  onClick={() => {
+                    setFiles([]);
+                    setPreviewUrls([]);
+                    setReviewItems([]);
+                    setBoxName("");
+                    setSavedBox(null);
+                    setQrCodeDataUrl(null);
+                    setError(null);
+                    void listBoxes().then(setAllBoxes).catch(() => undefined);
+                  }}
+                  type="button"
+                >
+                  <span className="material-symbols-outlined">replay</span>
+                  Nächsten Behälter
+                </button>
+              </div>
+            </section>
+          ) : (
+            <>
       <section className="panel">
         <div className="panel-header">
           <div>
@@ -755,132 +895,162 @@ export function AddBoxPage() {
           </div>
         </div>
 
-        <div className="form-grid">
-          <div className="field">
-            <label htmlFor="container-type">Behältertyp</label>
-            <select
-              className="input"
-              id="container-type"
-              onChange={(event) => setContainerType(event.target.value as ContainerType)}
-              value={containerType}
-            >
-              {(Object.entries(CONTAINER_TYPE_LABELS) as [ContainerType, string][]).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+        <div className="save-panel">
+          <div className="save-panel__form">
+            <div className="field">
+              <label htmlFor="box-name">Name</label>
+              <input
+                className="input"
+                id="box-name"
+                onChange={(event) => setBoxName(event.target.value)}
+                placeholder="Werkstatt-Adapter"
+                value={boxName}
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="box-location">Standort</label>
+              {allLocations.length > 0 ? (
+                <div className="save-panel__location-chips">
+                  {allLocations.slice(0, 8).map((loc) => (
+                    <button
+                      className={`chip chip--clickable${
+                        location === loc ? " chip--active" : ""
+                      }`}
+                      key={loc}
+                      onClick={() => setLocation(loc)}
+                      type="button"
+                    >
+                      {loc}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
+              <input
+                autoComplete="off"
+                className="input"
+                id="box-location"
+                list="location-suggestions"
+                onChange={(event) => setLocation(event.target.value)}
+                placeholder="z. B. Garagenregal 02"
+                value={location}
+              />
+              <datalist id="location-suggestions">
+                {allLocations.map((loc) => (
+                  <option key={loc} value={loc} />
+                ))}
+              </datalist>
+            </div>
+
+            <div className="field">
+              <label htmlFor="container-type">Was ist es?</label>
+              <select
+                className="input"
+                id="container-type"
+                onChange={(event) => setContainerType(event.target.value as ContainerType)}
+                value={containerType}
+              >
+                {(Object.entries(CONTAINER_TYPE_LABELS) as [ContainerType, string][]).map(
+                  ([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ),
+                )}
+              </select>
+            </div>
+
+            {containerType !== "room" && allBoxes.length > 0 ? (
+              <details className="save-panel__advanced">
+                <summary>Liegt in einem anderen Behälter? (optional)</summary>
+                <div className="field" style={{ marginTop: "0.6rem" }}>
+                  <label htmlFor="parent-container" className="visually-hidden">
+                    Übergeordneter Behälter
+                  </label>
+                  <select
+                    className="input"
+                    id="parent-container"
+                    onChange={(event) => {
+                      const v = Number(event.target.value);
+                      setParentId(v > 0 ? v : null);
+                    }}
+                    value={parentId ?? ""}
+                  >
+                    <option value="">– Eigenständig –</option>
+                    {allBoxes.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {CONTAINER_TYPE_LABELS[b.containerType] ?? "Kiste"} #{b.number} · {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </details>
+            ) : null}
           </div>
-          <div className="field">
-            <label htmlFor="parent-container">Übergeordneter Behälter (optional)</label>
-            <select
-              className="input"
-              id="parent-container"
-              onChange={(event) => {
-                const v = Number(event.target.value);
-                setParentId(v > 0 ? v : null);
-              }}
-              value={parentId ?? ""}
-            >
-              <option value="">– Kein übergeordneter Behälter –</option>
-              {allBoxes.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {CONTAINER_TYPE_LABELS[b.containerType] ?? "Kiste"} #{b.number} · {b.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="field">
-            <label htmlFor="box-name">Name</label>
-            <input
-              className="input"
-              id="box-name"
-              onChange={(event) => setBoxName(event.target.value)}
-              placeholder="Werkstatt-Adapter"
-              value={boxName}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="box-location">Standort</label>
-            <input
-              autoComplete="off"
-              className="input"
-              id="box-location"
-              list="location-suggestions"
-              onChange={(event) => setLocation(event.target.value)}
-              placeholder="Garagenregal 02"
-              value={location}
-            />
-            <datalist id="location-suggestions">
-              {allLocations.map((loc) => (
-                <option key={loc} value={loc} />
-              ))}
-            </datalist>
-          </div>
+
+          <aside className="save-panel__preview" aria-label="Vorschau">
+            <div className="save-panel__preview-card">
+              <div className="save-panel__preview-thumb">
+                <span className="material-symbols-outlined">
+                  {CONTAINER_TYPE_ICONS[containerType] ?? "inventory_2"}
+                </span>
+              </div>
+              <div className="save-panel__preview-num">
+                #{String(nextBoxNumber).padStart(3, "0")}
+              </div>
+              <h3 className="save-panel__preview-title">
+                {boxName || "Neuer Behälter"}
+              </h3>
+              <div className="save-panel__preview-meta">
+                <span className="material-symbols-outlined">location_on</span>
+                <span>{location || "Standort wählen"}</span>
+              </div>
+              <div className="save-panel__preview-meta">
+                <span className="material-symbols-outlined">category</span>
+                <span>{CONTAINER_TYPE_LABELS[containerType] ?? "Kiste"}</span>
+              </div>
+              {parentBox ? (
+                <div className="save-panel__preview-meta save-panel__preview-meta--muted">
+                  <span className="material-symbols-outlined">subdirectory_arrow_right</span>
+                  <span>
+                    in {CONTAINER_TYPE_LABELS[parentBox.containerType] ?? "Kiste"} #
+                    {parentBox.number}
+                  </span>
+                </div>
+              ) : null}
+              <div className="save-panel__preview-footer">
+                <span className="chip">
+                  {reviewItems.length} {reviewItems.length === 1 ? "Item" : "Items"}
+                </span>
+              </div>
+            </div>
+            {!boxName || !location ? (
+              <p className="save-panel__hint">
+                Sobald Name und Standort gesetzt sind, kannst du speichern.
+              </p>
+            ) : (
+              <p className="save-panel__hint save-panel__hint--ok">
+                Bereit: {reviewItems.length}{" "}
+                {reviewItems.length === 1 ? "Item wird" : "Items werden"} in #
+                {String(nextBoxNumber).padStart(3, "0")} angelegt.
+              </p>
+            )}
+          </aside>
         </div>
 
         <button
           className="button button--primary button--wide"
-          disabled={reviewItems.length === 0 || isSaving}
+          disabled={reviewItems.length === 0 || isSaving || !boxName || !location}
           onClick={() => void handleSave()}
           type="button"
         >
           {isSaving ? "Speichere…" : "Behälter anlegen und Items speichern"}
         </button>
       </section>
-
-      {savedBox ? (
-        <section className="panel">
-          <div className="panel-header">
-            <div>
-              <h2>Gespeicherte Kiste</h2>
-            </div>
-            <Link className="button button--ghost" to={`/boxes/${savedBox.id}`}>
-              Details öffnen
-            </Link>
-          </div>
-
-          <div className="saved-box-grid">
-            <div className="saved-box-copy">
-              <h3>
-                {CONTAINER_TYPE_LABELS[savedBox.containerType] ?? "Kiste"} #{savedBox.number} · {savedBox.name}
-              </h3>
-              <p>{savedBox.location}</p>
-              <div className="chip-row">
-                <span className="chip">{savedBox.itemCount} Items</span>
-              </div>
-              <div className="action-row">
-                <button
-                  className="button button--primary"
-                  onClick={() => window.print()}
-                  type="button"
-                >
-                  Etikett drucken
-                </button>
-                <button
-                  className="button button--ghost"
-                  onClick={() => {
-                    setFiles([]);
-                    setPreviewUrls([]);
-                    setReviewItems([]);
-                    setBoxName("");
-                    setSavedBox(null);
-                    setQrCodeDataUrl(null);
-                    setError(null);
-                    void listBoxes().then(setAllBoxes).catch(() => undefined);
-                  }}
-                  type="button"
-                >
-                  <span className="material-symbols-outlined">replay</span>
-                  Nächsten Behälter erfassen
-                </button>
-              </div>
-            </div>
-
-            <div className="qr-panel">
-              {qrCodeDataUrl ? <img alt={`QR-Code für Kiste ${savedBox.number}`} src={qrCodeDataUrl} /> : null}
-            </div>
-          </div>
-        </section>
-      ) : null}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
