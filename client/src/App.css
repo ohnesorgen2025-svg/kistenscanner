@@ -6433,7 +6433,7 @@ a.item-detail-header__fact-value:hover {
 /* === BoxDetail · Hero (cover + sticker side) ============================ */
 .box-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
+  grid-template-columns: minmax(0, 1fr) 320px;
   gap: 0;
   overflow: hidden;
   border-radius: var(--radius-xl);
@@ -6588,16 +6588,16 @@ a.item-detail-header__fact-value:hover {
 
 .box-hero__sticker-inner {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 8px;
+  grid-template-columns: 1fr 116px;
+  gap: 14px;
   align-items: center;
-  padding: 14px 14px 12px;
+  padding: 16px 16px 14px;
 }
 
 .box-hero__sticker-num {
   font-family: var(--mono);
   font-weight: 700;
-  font-size: 64px;
+  font-size: 80px;
   line-height: 0.85;
   color: #000;
   letter-spacing: -0.04em;
@@ -6607,29 +6607,35 @@ a.item-detail-header__fact-value:hover {
 }
 
 .box-hero__sticker-hash {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 600;
   color: rgba(0, 0, 0, 0.55);
-  margin-right: 2px;
-  margin-top: 6px;
+  margin-right: 3px;
+  margin-top: 8px;
 }
 
 .box-hero__sticker-qr {
-  width: 74px;
-  height: 74px;
-  display: grid;
-  place-items: center;
-}
-
-.box-hero__sticker-qr img {
-  width: 100%;
-  height: 100%;
+  width: 116px;
+  height: 116px;
   display: block;
 }
 
+.box-hero__sticker-qr img {
+  width: 116px;
+  height: 116px;
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
 .box-hero__sticker-qr-skeleton {
-  font-size: 60px;
+  font-size: 92px;
   color: rgba(0, 0, 0, 0.25);
+  display: block;
+  width: 116px;
+  height: 116px;
+  text-align: center;
+  line-height: 116px;
 }
 
 .box-hero__sticker-caption {

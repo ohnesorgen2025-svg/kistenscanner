@@ -414,7 +414,7 @@ export function BoxDetailPage() {
     void QRCode.toDataURL(buildQrValue(box), {
       color: { dark: "black", light: "white" },
       margin: 1,
-      width: 220,
+      width: 320,
     })
       .then((dataUrl: string) => {
         if (isMounted) {
