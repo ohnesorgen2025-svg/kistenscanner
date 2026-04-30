@@ -90,8 +90,11 @@ export function ItemDetailPage() {
 
     void Promise.all([listModels(), getSettings()]).then(([loadedModels, settings]) => {
       setModels(loadedModels);
-      setSelectedModelId(settings.activeModelId || (loadedModels[0]?.id ?? ""));
-    }).catch(() => undefined);
+      const activeId = settings.activeModelId || loadedModels.find((m) => m)?.id ?? "";
+      setSelectedModelId(activeId);
+    }).catch((err) => {
+      setError(err instanceof Error ? err.message : "KI-Modelle konnten nicht geladen werden.");
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemId]);
 
