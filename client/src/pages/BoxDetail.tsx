@@ -942,69 +942,62 @@ export function BoxDetailPage() {
                 ) : null}
               </div>
             </div>
-
-            <aside className="box-hero__side">
-              <button
-                className="box-hero__sticker"
-                onClick={openLabelPanel}
-                title="Etikett drucken"
-                type="button"
-              >
-                <div className="box-hero__sticker-inner">
-                  <div className="box-hero__sticker-num">
-                    <span className="box-hero__sticker-hash">#</span>
-                    {box.number}
-                  </div>
-                  <div className="box-hero__sticker-qr">
-                    {qrCodeDataUrl ? (
-                      <img
-                        alt={`QR-Code für ${CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} ${box.number}`}
-                        src={qrCodeDataUrl}
-                      />
-                    ) : (
-                      <span
-                        className="material-symbols-outlined box-hero__sticker-qr-skeleton"
-                        aria-hidden
-                      >
-                        qr_code_2
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="box-hero__sticker-caption">
-                  <span className="material-symbols-outlined">print</span>
-                  Etikett drucken
-                </div>
-              </button>
-
-              <div className="box-hero__actions" role="toolbar" aria-label="Kistenaktionen">
-                <button
-                  className={`button button--primary${isBoxEditing ? " button--active" : ""}`}
-                  onClick={openBoxEdit}
-                  type="button"
-                >
-                  <span className="material-symbols-outlined">edit</span>
-                  Bearbeiten
-                </button>
-                <button
-                  className="button button--ghost"
-                  onClick={() => void handleShare()}
-                  type="button"
-                >
-                  <span className="material-symbols-outlined">ios_share</span>
-                  Teilen
-                </button>
-                <button
-                  className="button button--ghost button--danger"
-                  onClick={() => void handleDeleteBox()}
-                  type="button"
-                >
-                  <span className="material-symbols-outlined">delete</span>
-                  Löschen
-                </button>
-              </div>
-            </aside>
           </section>
+
+          <div className="box-detail-actions" role="toolbar" aria-label="Kistenaktionen">
+            <button
+              className={`button button--primary${isBoxEditing ? " button--active" : ""}`}
+              onClick={openBoxEdit}
+              type="button"
+            >
+              <span className="material-symbols-outlined">edit</span>
+              Bearbeiten
+            </button>
+            <button
+              className="button button--ghost"
+              onClick={() => void handleShare()}
+              type="button"
+            >
+              <span className="material-symbols-outlined">ios_share</span>
+              Teilen
+            </button>
+            <button
+              className="button button--ghost button--danger"
+              onClick={() => void handleDeleteBox()}
+              type="button"
+            >
+              <span className="material-symbols-outlined">delete</span>
+              Löschen
+            </button>
+          </div>
+
+          <button
+            className="box-qr-row"
+            onClick={openLabelPanel}
+            title="Etikett drucken"
+            type="button"
+          >
+            <div className="box-qr-row__icon">
+              {qrCodeDataUrl ? (
+                <img
+                  alt={`QR-Code für ${CONTAINER_TYPE_LABELS[box.containerType as ContainerType] ?? "Kiste"} ${box.number}`}
+                  src={qrCodeDataUrl}
+                />
+              ) : (
+                <span className="material-symbols-outlined" aria-hidden>
+                  qr_code_2
+                </span>
+              )}
+            </div>
+            <div className="box-qr-row__info">
+              <strong>#{box.number} · {box.name}</strong>
+              <span>Scannen zum Öffnen</span>
+            </div>
+            <span className="box-qr-row__print">
+              <span className="material-symbols-outlined">print</span>
+              Etikett
+            </span>
+          </button>
 
           {isBoxEditing ? (
             <section className="panel box-edit-panel">
@@ -1105,125 +1098,7 @@ export function BoxDetailPage() {
             </section>
           ) : null}
 
-          <section
-            className={`panel label-print-panel${isLabelPanelOpen ? "" : " label-print-panel--collapsed"}`}
-            ref={labelPanelRef}
-          >
-            <div className="panel-header">
-              <div>
-                <p className="section-kicker">Stickerdruck</p>
-                <h2>Bogen und Position</h2>
-              </div>
-              <button
-                aria-expanded={isLabelPanelOpen}
-                className="button button--ghost"
-                onClick={() => setIsLabelPanelOpen((current) => !current)}
-                type="button"
-              >
-                <span className="material-symbols-outlined">
-                  {isLabelPanelOpen ? "expand_less" : "expand_more"}
-                </span>
-                {isLabelPanelOpen ? "Einklappen" : "Aufklappen"}
-              </button>
-            </div>
-
-            {isLabelPanelOpen ? (
-              <>
-                <div className="form-grid">
-                  <div className="field">
-                    <label htmlFor="label-profile">Label-Profil</label>
-                    <select
-                      className="input"
-                      id="label-profile"
-                      onChange={(event) => {
-                        const nextProfileId = event.target.value;
-                        setLabelProfileId(nextProfileId);
-                        setSelectedLabelSlotIndices([0]);
-                      }}
-                      value={labelProfileId}
-                    >
-                      {labelProfiles.map((profile) => (
-                        <option key={profile.id} value={profile.id}>
-                          {profile.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="label-preview__meta">
-                  <div className="label-preview__meta-copy">
-                    <p className="section-kicker">Auswahl</p>
-                    <p className="label-preview__selection">
-                      {selectedLabelSlots.length === 0
-                        ? "Noch kein Feld ausgewählt"
-                        : `${selectedLabelSlots.length} Etikett${selectedLabelSlots.length > 1 ? "en" : ""} · Felder ${formatSlotList(selectedLabelSlots)}`}
-                    </p>
-                    <p className="label-preview__selection-hint">
-                      Klicke mehrere freie Felder an, wenn dieselbe Nummer mehrfach auf den Bogen soll.
-                    </p>
-                  </div>
-                  <div className="label-preview__meta-actions">
-                    <button
-                      className="button button--ghost"
-                      onClick={() => setSelectedLabelSlotIndices([0])}
-                      type="button"
-                    >
-                      Auswahl zurücksetzen
-                    </button>
-                    <button
-                      className="button button--primary"
-                      disabled={selectedLabelSlots.length === 0}
-                      onClick={handlePrintLabel}
-                      type="button"
-                    >
-                      Druckdialog öffnen
-                    </button>
-                  </div>
-                </div>
-
-                <div className="label-preview">
-                  <div className="label-preview__sheet">
-                    {labelSlots.map((slot) => {
-                      const isSelected = selectedLabelSlotIndices.includes(slot.index);
-                      const slotStyle = {
-                        left: `${(slot.leftMm / activeLabelProfile.pageWidthMm) * 100}%`,
-                        top: `${(slot.topMm / activeLabelProfile.pageHeightMm) * 100}%`,
-                        width: `${(activeLabelProfile.labelWidthMm / activeLabelProfile.pageWidthMm) * 100}%`,
-                        height: `${(activeLabelProfile.labelHeightMm / activeLabelProfile.pageHeightMm) * 100}%`,
-                      } as CSSProperties;
-
-                      return (
-                        <button
-                          className={`label-preview__slot${isSelected ? " label-preview__slot--active" : ""}`}
-                          key={slot.index}
-                          onClick={() => toggleSelectedLabelSlot(slot.index)}
-                          style={slotStyle}
-                          type="button"
-                        >
-                          {isSelected ? (
-                            <div className="label-preview__sticker">
-                              <StickerArtwork
-                                labelText={String(box.number)}
-                                profile={activeLabelProfile}
-                                qrCodeDataUrl={qrCodeDataUrl}
-                              />
-                            </div>
-                          ) : (
-                            <span className="label-preview__slot-index">{slot.index + 1}</span>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              </>
-            ) : (
-              <p className="label-print-panel__hint">
-                Öffne den Bereich, wähle das Label-Profil und die freie Position auf dem Bogen.
-              </p>
-            )}
-          </section>
+          {/* Label-Druck ist jetzt über die QR-Row erreichbar */}
 
           {isRescanOpen ? (
             <section className="panel rescan-panel">

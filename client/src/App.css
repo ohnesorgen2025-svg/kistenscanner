@@ -3261,8 +3261,15 @@ html {
   border: 0;
 }
 
+/* Force hide file inputs that browsers sometimes render as buttons */
+input[type="file"].sr-only {
+  display: none !important;
+}
+
 @media (min-width: 48rem) {
   .shell {
+    position: relative;
+    padding-top: 2rem;
     padding-inline: 1.5rem;
   }
 
@@ -3314,7 +3321,7 @@ html {
   }
 
   .page-shell--app .box-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -3412,7 +3419,7 @@ html {
   }
 
   .page-shell--app .box-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -4126,6 +4133,7 @@ html {
   display: grid;
   grid-template-columns: 1fr;
   gap: 8px;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
 }
 
 .box-detail-page .review-card--detail {
@@ -5120,6 +5128,18 @@ a.item-detail-header__fact-value:hover {
   display: grid;
   grid-template-columns: 4.5rem 1fr auto;
   align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  transition: background 100ms ease;
+}
+
+.review-list--list .review-card:last-child {
+  border-bottom: 0;
+}
+
+.review-list--list .review-card:hover {
+  background: var(--bg-card);
+  transform: none;
 }
 
 .review-list--list .review-card__media {
@@ -5364,7 +5384,6 @@ a.item-detail-header__fact-value:hover {
 .box-detail-page .panel-header h2 {
   font-size: 14px;
   font-weight: 600;
-  letter-spacing: -0.005em;
   color: var(--text-primary);
   margin: 0;
 }
@@ -5419,7 +5438,7 @@ a.item-detail-header__fact-value:hover {
   border-bottom: 0;
 }
 
-.box-detail-page .review-list.box-detail-item-list .review-card--detail:hover {
+.box-detail-page .review-list.box-detail-item-list .review-card:hover {
   background: var(--bg-card);
   transform: none;
 }
@@ -5658,7 +5677,6 @@ a.item-detail-header__fact-value:hover {
 .search-screen .search-result__headline {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   gap: 8px;
 }
 
@@ -6703,9 +6721,9 @@ a.item-detail-header__fact-value:hover {
 
 .box-hero__stamp-num {
   font-family: var(--mono);
-  font-size: 48px;
   font-weight: 700;
-  line-height: 1;
+  font-size: 48px;
+  line-height: 0.85;
   color: var(--text-primary);
   letter-spacing: -0.02em;
 }
@@ -6894,6 +6912,10 @@ a.item-detail-header__fact-value:hover {
 @media (max-width: 760px) {
   .box-hero {
     grid-template-columns: 1fr;
+    margin-inline: -16px;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
   }
   .box-hero__side {
     border-left: 0;
@@ -6904,6 +6926,31 @@ a.item-detail-header__fact-value:hover {
   }
   .box-hero__stamp-num {
     font-size: 40px;
+  }
+}
+
+@media (max-width: 32rem) {
+  .box-hero {
+    margin-inline: -16px;
+    border-radius: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+  .box-hero__stamp {
+    left: 16px;
+    bottom: 16px;
+    padding: 10px 14px;
+    min-width: 120px;
+  }
+  .box-hero__stamp-num {
+    font-size: 32px;
+  }
+  .box-hero__stamp-name {
+    font-size: 11px;
+  }
+  .box-hero__cover-actions {
+    top: 10px;
+    right: 10px;
   }
 }
 
@@ -7314,6 +7361,154 @@ a.item-detail-header__fact-value:hover {
 .item-detail-page .textarea {
   font-size: 1rem;
   line-height: 1.5;
+}
+
+/* ── Box Detail Actions (unter Hero) ── */
+.box-detail-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  margin: 0;
+}
+
+.box-detail-actions .button {
+  flex: 1;
+  justify-content: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.box-detail-actions .button--ghost {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+.box-detail-actions .button--ghost:hover {
+  background: var(--bg-elevated);
+}
+
+.box-detail-actions .button--danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.box-detail-actions .button--danger:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* ── Box QR Row (kompakt unter Actions) ── */
+.box-qr-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 16px 12px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  appearance: none;
+  width: calc(100% - 32px);
+  box-sizing: border-box;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  transition: background 120ms ease;
+}
+
+.box-qr-row:hover {
+  background: var(--bg-elevated);
+}
+
+.box-qr-row__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-base);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+}
+
+.box-qr-row__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.box-qr-row__icon .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--accent);
+}
+
+.box-qr-row__info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.box-qr-row__info strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.box-qr-row__info span {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.box-qr-row__print {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.box-qr-row__print .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* ── Mobile Box Hero Anpassungen ── */
+@media (max-width: 760px) {
+  .box-hero__stamp {
+    left: 12px;
+    bottom: 12px;
+    padding: 10px 14px 8px;
+    min-width: auto;
+  }
+
+  .box-hero__stamp-num {
+    font-size: 32px;
+  }
+
+  .box-hero__stamp-name {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .box-hero__cover-actions {
+    top: 10px;
+    right: 10px;
+  }
 }
 
 
