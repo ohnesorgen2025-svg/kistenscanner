@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box Detail — Mockup</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #0f1117;
+    color: #e2e4e9;
+    max-width: 390px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ── Breadcrumb ── */
+  .breadcrumb {
+    padding: 12px 16px 4px;
+    font-size: 0.85rem;
+    color: #8b8f99;
+  }
+  .breadcrumb a { color: #4A8DFF; text-decoration: none; }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    margin: 8px 16px;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #1a1d26 0%, #14161d 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #252a35;
+  }
+  .hero__placeholder {
+    font-size: 3rem;
+    opacity: 0.15;
+    color: #8b8f99;
+  }
+  .hero__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(15,17,23,0.7);
+    backdrop-filter: blur(8px);
+    color: #e2e4e9;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .hero__add {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #4A8DFF;
+    color: #fff;
+    border: none;
+    font-size: 1.4rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(74,141,255,0.25);
+  }
+
+  /* ── Head ── */
+  .head {
+    padding: 12px 16px 4px;
+  }
+  .head h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  .head__meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #8b8f99;
+  }
+  .head__meta span { display: flex; align-items: center; gap: 4px; }
+
+  /* ── Actions ── */
+  .actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  .btn {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: opacity 0.15s;
+  }
+  .btn:active { opacity: 0.8; }
+  .btn--primary { background: #4A8DFF; color: #fff; }
+  .btn--ghost  { background: #1a1d26; color: #8b8f99; border: 1px solid #252a35; }
+  .btn--danger  { background: rgba(239,68,68,0.12); color: #EF4444; border: 1px solid rgba(239,68,68,0.2); }
+
+  /* ── QR Row ── */
+  .qr-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 16px;
+    padding: 12px;
+    background: #1a1d26;
+    border-radius: 12px;
+    border: 1px solid #252a35;
+  }
+  .qr-row__code {
+    width: 48px; height: 48px;
+    background: #0f1117;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; color: #4A8DFF;
+    border: 1px solid #252a35;
+  }
+  .qr-row__info { flex: 1; }
+  .qr-row__info strong { font-size: 0.9rem; color: #e2e4e9; }
+  .qr-row__info p { font-size: 0.78rem; color: #8b8f99; }
+  .qr-row__print {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #4A8DFF;
+    color: #fff;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ── Section Header ── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 16px 8px;
+  }
+  .section-head h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+  .section-head__count {
+    font-size: 0.8rem;
+    color: #8b8f99;
+    font-weight: 500;
+  }
+  .section-head .btn--primary {
+    flex: 0;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+  }
+
+  /* ── Item Cards ── */
+  .items { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+  .item-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1a1d26;
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid #252a35;
+    transition: box-shadow 0.15s;
+  }
+  .item-card:active { box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .item-card__img {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    background: #0f1117;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    color: #3a3f4d;
+    overflow: hidden;
+  }
+  .item-card__img img { width: 100%; height: 100%; object-fit: cover; }
+  .item-card__body { flex: 1; min-width: 0; }
+  .item-card__body h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: #e2e4e9;
+  }
+  .item-card__body p {
+    font-size: 0.8rem;
+    color: #8b8f99;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .item-card__more {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #8b8f99;
+    font-size: 1.2rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* ── Bottom Nav ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 390px;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+    background: #0f1117;
+    border-top: 1px solid #252a35;
+  }
+  .bottom-nav a {
+    color: #8b8f99;
+    text-decoration: none;
+    font-size: 1.4rem;
+    padding: 8px 16px;
+  }
+  .bottom-nav a.active { color: #4A8DFF; }
+
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined', sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.2rem;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .hero__placeholder.material-symbols-outlined { font-size: 3rem; }
+  .hero__add.material-symbols-outlined { font-size: 1.4rem; }
+  .item-card__img.material-symbols-outlined { font-size: 1.5rem; }
+  .item-card__more.material-symbols-outlined { font-size: 1.2rem; }
+  .qr-row__code.material-symbols-outlined { font-size: 1.5rem; }
+</style>
+</head>
+<body>
+
+  <nav class="breadcrumb">
+    <a href="#">Behälter</a> / Demo-Box
+  </nav>
+
+  <div class="hero">
+    <span class="hero__placeholder material-symbols-outlined">inventory_2</span>
+    <span class="hero__badge">Kiste</span>
+    <button class="hero__add material-symbols-outlined">add_a_photo</button>
+  </div>
+
+  <div class="head">
+    <h1>Demo-Box</h1>
+    <div class="head__meta">
+      <span><span class="material-symbols-outlined" style="font-size:0.9rem">location_on</span> Demo-Regal</span>
+      <span><span class="material-symbols-outlined" style="font-size:0.9rem">inventory_2</span> 6 Items</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn--primary"><span class="material-symbols-outlined">edit</span> Bearbeiten</button>
+    <button class="btn btn--ghost"><span class="material-symbols-outlined">ios_share</span> Teilen</button>
+    <button class="btn btn--danger"><span class="material-symbols-outlined">delete</span> Löschen</button>
+  </div>
+
+  <div class="qr-row">
+    <div class="qr-row__code material-symbols-outlined">qr_code_2</div>
+    <div class="qr-row__info">
+      <strong>Kiste #9</strong>
+      <p>Scannen zum Öffnen</p>
+    </div>
+    <button class="qr-row__print"><span class="material-symbols-outlined">print</span> Etikett</button>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <h2>Inhalt</h2>
+      <span class="section-head__count">6 Items</span>
+    </div>
+    <button class="btn btn--primary"><span class="material-symbols-outlined">add</span> Hinzufügen</button>
+  </div>
+
+  <div class="items">
+    <div class="item-card">
+      <div class="item-card__img material-symbols-outlined">tablet</div>
+      <div class="item-card__body">
+        <h3>Tablet</h3>
+        <p>Schwarzes Tablet, 10" Display</p>
+      </div>
+      <button class="item-card__more material-symbols-outlined">more_horiz</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img material-symbols-outlined">smartphone</div>
+      <div class="item-card__body">
+        <h3>Smartphone</h3>
+        <p>Nokia mit klassischer Tastatur</p>
+      </div>
+      <button class="item-card__more material-symbols-outlined">more_horiz</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img material-symbols-outlined">edit</div>
+      <div class="item-card__body">
+        <h3>Stifte-Set</h3>
+        <p>Füllfederhalter & Stifte</p>
+      </div>
+      <button class="item-card__more material-symbols-outlined">more_horiz</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img material-symbols-outlined">usb</div>
+      <div class="item-card__body">
+        <h3>USB-Stick</h3>
+        <p>Grün, ohne Beschriftung</p>
+      </div>
+      <button class="item-card__more material-symbols-outlined">more_horiz</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img material-symbols-outlined">description</div>
+      <div class="item-card__body">
+        <h3>Notizpapier</h3>
+        <p>Handschriftlicher Text</p>
+      </div>
+      <button class="item-card__more material-symbols-outlined">more_horiz</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img material-symbols-outlined">link</div>
+      <div class="item-card__body">
+        <h3>Kabelbinder</h3>
+        <p>Schwarz, ca. 20 cm</p>
+      </div>
+      <button class="item-card__more material-symbols-outlined">more_horiz</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="#" class="material-symbols-outlined">search</a>
+    <a href="#" class="active material-symbols-outlined">inventory_2</a>
+    <a href="#" class="material-symbols-outlined">add_circle</a>
+    <a href="#" class="material-symbols-outlined">qr_code_scanner</a>
+    <a href="#" class="material-symbols-outlined">more_horiz</a>
+  </nav>
+
+</body>
+</html>

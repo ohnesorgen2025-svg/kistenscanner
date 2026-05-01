@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Box Detail — Mockup</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f4f5f7;
+    color: #1a1a2e;
+    max-width: 390px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* ── Breadcrumb ── */
+  .breadcrumb {
+    padding: 12px 16px 4px;
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+  .breadcrumb a { color: #4A8DFF; text-decoration: none; }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative;
+    margin: 8px 16px;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    background: linear-gradient(135deg, #e8ecf1 0%, #d5dbe3 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero__placeholder {
+    font-size: 3rem;
+    opacity: 0.3;
+  }
+  .hero__badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .hero__add {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: #4A8DFF;
+    color: #fff;
+    border: none;
+    font-size: 1.4rem;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(74,141,255,0.35);
+  }
+
+  /* ── Head ── */
+  .head {
+    padding: 12px 16px 4px;
+  }
+  .head h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .head__meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+  .head__meta span { display: flex; align-items: center; gap: 4px; }
+
+  /* ── Actions ── */
+  .actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  .btn {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: opacity 0.15s;
+  }
+  .btn:active { opacity: 0.8; }
+  .btn--primary { background: #4A8DFF; color: #fff; }
+  .btn--ghost  { background: #e8ecf1; color: #374151; }
+  .btn--danger  { background: #FEE2E2; color: #DC2626; }
+
+  /* ── QR Row ── */
+  .qr-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 16px;
+    padding: 12px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+  }
+  .qr-row__code {
+    width: 48px; height: 48px;
+    background: #f9fafb;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; color: #9ca3af;
+  }
+  .qr-row__info { flex: 1; }
+  .qr-row__info strong { font-size: 0.9rem; }
+  .qr-row__info p { font-size: 0.78rem; color: #6b7280; }
+  .qr-row__print {
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: #4A8DFF;
+    color: #fff;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ── Section Header ── */
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 16px 8px;
+  }
+  .section-head h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .section-head__count {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    font-weight: 500;
+  }
+  .section-head .btn--primary {
+    flex: 0;
+    padding: 8px 16px;
+    font-size: 0.82rem;
+  }
+
+  /* ── Item Cards ── */
+  .items { padding: 0 16px; display: flex; flex-direction: column; gap: 8px; }
+  .item-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    transition: box-shadow 0.15s;
+  }
+  .item-card:active { box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .item-card__img {
+    width: 56px; height: 56px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    color: #d1d5db;
+    overflow: hidden;
+  }
+  .item-card__img img { width: 100%; height: 100%; object-fit: cover; }
+  .item-card__body { flex: 1; min-width: 0; }
+  .item-card__body h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .item-card__body p {
+    font-size: 0.8rem;
+    color: #6b7280;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 2px;
+  }
+  .item-card__more {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 1.2rem;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* ── Bottom Nav ── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 390px;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0px));
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+  }
+  .bottom-nav a {
+    color: #9ca3af;
+    text-decoration: none;
+    font-size: 1.4rem;
+    padding: 8px 16px;
+  }
+  .bottom-nav a.active { color: #4A8DFF; }
+</style>
+</head>
+<body>
+
+  <nav class="breadcrumb">
+    <a href="#">Behälter</a> / Demo-Box
+  </nav>
+
+  <div class="hero">
+    <span class="hero__placeholder">📦</span>
+    <span class="hero__badge">Kiste</span>
+    <button class="hero__add">+</button>
+  </div>
+
+  <div class="head">
+    <h1>Demo-Box</h1>
+    <div class="head__meta">
+      <span>📍 Demo-Regal</span>
+      <span>📦 6 Items</span>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn--primary">✏️ Bearbeiten</button>
+    <button class="btn btn--ghost">📤 Teilen</button>
+    <button class="btn btn--danger">🗑 Löschen</button>
+  </div>
+
+  <div class="qr-row">
+    <div class="qr-row__code">QR</div>
+    <div class="qr-row__info">
+      <strong>Kiste #9</strong>
+      <p>Scannen zum Öffnen</p>
+    </div>
+    <button class="qr-row__print">🖨 Etikett</button>
+  </div>
+
+  <div class="section-head">
+    <div>
+      <h2>Inhalt</h2>
+      <span class="section-head__count">6 Items</span>
+    </div>
+    <button class="btn btn--primary">+ Hinzufügen</button>
+  </div>
+
+  <div class="items">
+    <div class="item-card">
+      <div class="item-card__img">📱</div>
+      <div class="item-card__body">
+        <h3>Tablet</h3>
+        <p>Schwarzes Tablet, 10" Display</p>
+      </div>
+      <button class="item-card__more">⋯</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img">📱</div>
+      <div class="item-card__body">
+        <h3>Smartphone</h3>
+        <p>Nokia mit klassischer Tastatur</p>
+      </div>
+      <button class="item-card__more">⋯</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img">🖊</div>
+      <div class="item-card__body">
+        <h3>Stifte-Set</h3>
+        <p>Füllfederhalter & Stifte</p>
+      </div>
+      <button class="item-card__more">⋯</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img">💾</div>
+      <div class="item-card__body">
+        <h3>USB-Stick</h3>
+        <p>Grün, ohne Beschriftung</p>
+      </div>
+      <button class="item-card__more">⋯</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img">📄</div>
+      <div class="item-card__body">
+        <h3>Notizpapier</h3>
+        <p>Handschriftlicher Text</p>
+      </div>
+      <button class="item-card__more">⋯</button>
+    </div>
+    <div class="item-card">
+      <div class="item-card__img">🔗</div>
+      <div class="item-card__body">
+        <h3>Kabelbinder</h3>
+        <p>Schwarz, ca. 20 cm</p>
+      </div>
+      <button class="item-card__more">⋯</button>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <a href="#">🔍</a>
+    <a href="#" class="active">📦</a>
+    <a href="#">➕</a>
+    <a href="#">📷</a>
+    <a href="#">⋯</a>
+  </nav>
+
+</body>
+</html>

@@ -150,44 +150,6 @@ function buildSlots(profile: LabelProfile): LabelSlot[] {
 
 
 
-function formatSlotList(slots: LabelSlot[]): string {
-  return slots
-    .map((slot) => slot.index + 1)
-    .sort((left, right) => left - right)
-    .join(", ");
-}
-
-function StickerArtwork({
-  labelText,
-  profile,
-  qrCodeDataUrl,
-}: {
-  labelText: string;
-  profile: LabelProfile;
-  qrCodeDataUrl: string | null;
-}) {
-  const aspect = profile.labelWidthMm / profile.labelHeightMm;
-  const lengthFactor =
-    labelText.length <= 1 ? 0.62 : labelText.length === 2 ? 0.52 : labelText.length === 3 ? 0.42 : 0.34;
-
-  return (
-    <div
-      className="sticker-artwork"
-      style={{ aspectRatio: `${aspect}`, "--sticker-num-size": `${lengthFactor * 100}cqh` } as CSSProperties}
-      aria-hidden="true"
-    >
-      <div className="sticker-artwork__num">{labelText}</div>
-      <div className="sticker-artwork__qr">
-        {qrCodeDataUrl ? (
-          <img alt="" src={qrCodeDataUrl} />
-        ) : (
-          <span className="sticker-artwork__qr-placeholder" />
-        )}
-      </div>
-    </div>
-  );
-}
-
 function getItemImageUrl(item: ItemRecord): string | null {
   return resolveAssetUrl(item.thumbnailPath ?? item.images[0]?.path ?? null);
 }
@@ -196,7 +158,6 @@ export function BoxDetailPage() {
   const params = useParams();
   const navigate = useNavigate();
   const boxId = Number(params.id);
-  const labelPanelRef = useRef<HTMLElement | null>(null);
   const [box, setBox] = useState<BoxRecord | null>(null);
   const [boxes, setBoxes] = useState<BoxSummary[]>([]);
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
@@ -207,9 +168,6 @@ export function BoxDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
-  const [labelProfileId, setLabelProfileId] = useState<string>(labelProfiles[0].id);
-  const [selectedLabelSlotIndices, setSelectedLabelSlotIndices] = useState<number[]>([0]);
-  const [isLabelPanelOpen, setIsLabelPanelOpen] = useState(false);
   const [isRescanOpen, setIsRescanOpen] = useState(false);
   const [rescanFiles, setRescanFiles] = useState<File[]>([]);
   const [rescanPreviewUrls, setRescanPreviewUrls] = useState<string[]>([]);
@@ -359,16 +317,6 @@ export function BoxDetailPage() {
   }, [box]);
 
   useEffect(() => {
-    if (!isLabelPanelOpen) {
-      return;
-    }
-
-    window.requestAnimationFrame(() => {
-      labelPanelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  }, [isLabelPanelOpen]);
-
-  useEffect(() => {
     const urls = rescanFiles.map((file) => URL.createObjectURL(file));
     setRescanPreviewUrls(urls);
     return () => {
@@ -390,7 +338,6 @@ export function BoxDetailPage() {
     setBoxEditContainerType(box.containerType as ContainerType);
     setBoxEditParentId(box.path.length >= 2 ? box.path[box.path.length - 2].id : null);
     setIsRescanOpen(false);
-    setIsLabelPanelOpen(false);
     setIsBoxEditing((current) => !current);
     setError(null);
     void listLocations().then(setLocations);
@@ -423,7 +370,6 @@ export function BoxDetailPage() {
 
   function openRescan() {
     setIsBoxEditing(false);
-    setIsLabelPanelOpen(false);
     setIsRescanOpen((current) => !current);
     setRescanFiles([]);
     setRescanResult(null);
@@ -484,102 +430,6 @@ export function BoxDetailPage() {
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "Änderungen konnten nicht gespeichert werden.");
     }
-  }
-
-  function handlePrintLabel() {
-    if (!box) return;
-
-    const profile = activeLabelProfile;
-    const slots = selectedLabelSlots;
-    const numberText = String(box.number);
-    const qrSrc = qrCodeDataUrl ?? "";
-
-    const stickersHtml = slots
-      .map((slot) => {
-        return `
-          <div class="sticker" style="left:${slot.leftMm}mm;top:${slot.topMm}mm;width:${profile.labelWidthMm}mm;height:${profile.labelHeightMm}mm;">
-            <div class="num">${numberText}</div>
-            <div class="qr">${qrSrc ? `<img src="${qrSrc}" alt="" />` : ""}</div>
-          </div>
-        `;
-      })
-      .join("");
-
-    const doc = `<!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8" />
-<title>Etikett ${numberText}</title>
-<style>
-  @page { size: ${profile.pageWidthMm}mm ${profile.pageHeightMm}mm; margin: 0; }
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: #fff; color: #000;
-    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
-  .sheet { position: relative; width: ${profile.pageWidthMm}mm; height: ${profile.pageHeightMm}mm; background: #fff; }
-  .sticker { position: absolute; display: grid; grid-template-columns: 1fr 1fr;
-    align-items: center; justify-items: center; gap: 4%; padding: 8%; overflow: hidden; }
-  .sticker .num { font-weight: 700; font-size: ${profile.numberFontPt}pt;
-    line-height: 1; letter-spacing: -0.04em; color: #000; text-align: center; }
-  .sticker .qr { width: 100%; height: 100%; display: grid; place-items: center; }
-  .sticker .qr img { width: ${profile.qrMm}mm; height: ${profile.qrMm}mm;
-    display: block; object-fit: contain; }
-</style>
-</head>
-<body>
-  <div class="sheet">${stickersHtml}</div>
-</body>
-</html>`;
-
-    const iframe = document.createElement("iframe");
-    iframe.setAttribute("aria-hidden", "true");
-    iframe.style.position = "fixed";
-    iframe.style.right = "0";
-    iframe.style.bottom = "0";
-    iframe.style.width = "0";
-    iframe.style.height = "0";
-    iframe.style.border = "0";
-    document.body.appendChild(iframe);
-
-    const cleanup = () => {
-      window.setTimeout(() => {
-        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-      }, 200);
-    };
-
-    iframe.onload = () => {
-      const win = iframe.contentWindow;
-      if (!win) {
-        cleanup();
-        return;
-      }
-      // Wait one frame so the QR <img> in the iframe is decoded.
-      window.setTimeout(() => {
-        try {
-          win.focus();
-          win.print();
-        } finally {
-          cleanup();
-        }
-      }, 100);
-    };
-
-    iframe.srcdoc = doc;
-  }
-
-  function toggleSelectedLabelSlot(slotIndex: number) {
-    setSelectedLabelSlotIndices((current) => {
-      if (current.includes(slotIndex)) {
-        return current.filter((entry) => entry !== slotIndex);
-      }
-
-      return [...current, slotIndex].sort((left, right) => left - right);
-    });
-  }
-
-  function openLabelPanel() {
-    setIsBoxEditing(false);
-    setIsRescanOpen(false);
-    setIsLabelPanelOpen((current) => !current);
   }
 
   function beginEdit(item: ItemRecord) {
@@ -878,10 +728,6 @@ export function BoxDetailPage() {
 
 
   const availableMoveTargets = boxes.filter((entry) => entry.id !== box?.id);
-  const activeLabelProfile =
-    labelProfiles.find((profile) => profile.id === labelProfileId) ?? labelProfiles[0];
-  const labelSlots = buildSlots(activeLabelProfile);
-  const selectedLabelSlots = labelSlots.filter((slot) => selectedLabelSlotIndices.includes(slot.index));
 
   return (
     <div className="page-stack box-detail-page">
@@ -973,7 +819,6 @@ export function BoxDetailPage() {
 
           <button
             className="box-qr-row"
-            onClick={openLabelPanel}
             title="Etikett drucken"
             type="button"
           >
