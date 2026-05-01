@@ -90,7 +90,7 @@ export function ItemDetailPage() {
 
     void Promise.all([listModels(), getSettings()]).then(([loadedModels, settings]) => {
       setModels(loadedModels);
-      const activeId = settings.activeModelId || loadedModels.find((m) => m)?.id ?? "";
+      const activeId = settings.activeModelId || (loadedModels.find((m) => m)?.id ?? "");
       setSelectedModelId(activeId);
     }).catch((err) => {
       setError(err instanceof Error ? err.message : "KI-Modelle konnten nicht geladen werden.");
