@@ -432,6 +432,62 @@ export function BoxDetailPage() {
     }
   }
 
+  function handlePrintLabel() {
+    if (!box) return;
+    const numberText = String(box.number);
+    const qrSrc = qrCodeDataUrl ?? "";
+
+    const doc = `<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<title>Etikett ${numberText}</title>
+<style>
+  @page { size: 62mm 30mm; margin: 0; }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; color: #000;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; }
+  .label { display: flex; align-items: center; gap: 4mm; padding: 3mm; width: 62mm; height: 30mm; }
+  .num { font-weight: 700; font-size: 28pt; line-height: 1; letter-spacing: -0.04em; }
+  .qr { width: 24mm; height: 24mm; flex-shrink: 0; }
+  .qr img { width: 100%; height: 100%; display: block; }
+</style>
+</head>
+<body>
+  <div class="label">
+    <div class="num">#${numberText}</div>
+    <div class="qr">${qrSrc ? `<img src="${qrSrc}" alt="" />` : ""}</div>
+  </div>
+</body>
+</html>`;
+
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("aria-hidden", "true");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+
+    const cleanup = () => {
+      window.setTimeout(() => {
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+      }, 200);
+    };
+
+    iframe.onload = () => {
+      const win = iframe.contentWindow;
+      if (!win) { cleanup(); return; }
+      window.setTimeout(() => {
+        try { win.focus(); win.print(); } finally { cleanup(); }
+      }, 100);
+    };
+
+    iframe.srcdoc = doc;
+  }
+
   function beginEdit(item: ItemRecord) {
     setOpenItemMenuId(null);
     setEditingItemId(item.id);
@@ -819,6 +875,7 @@ export function BoxDetailPage() {
 
           <button
             className="box-qr-row"
+            onClick={() => void handlePrintLabel()}
             title="Etikett drucken"
             type="button"
           >
